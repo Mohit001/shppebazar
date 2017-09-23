@@ -11,6 +11,10 @@ public enum ApiResponseStatus {
 	LOGIN_FAIL(0, "Please provide valid username and password"),
 	LOGIN_SUCCESS(1, "User login successfully"),
 	MULTIPLE_USER_FOUND(3, "Multiple user record found with same credentials. Please contact to administrator"),
+	FORGOT_PASSWORD_FAIL(0, "User not fount with provided email."),
+	FORGOT_PASSWORD_SUCCESS(1, "Reset password link sent. Please check your email id"),
+	
+	
 	
 	//database related enums
 	DATABASE_CONNECTINO_ERROR(1001, "Server encounter issue to connect database."),
