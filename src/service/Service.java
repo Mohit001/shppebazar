@@ -44,7 +44,7 @@ public class Service {
 		String responseString = "";
 		List<Person> list = new ArrayList<>();
 		Person person = new Person();
-		person.setId(1);
+		person.setUser_id(1);
 		person.setName("test");
 		list.add(person);
 		try {

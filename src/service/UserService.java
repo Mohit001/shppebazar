@@ -25,9 +25,11 @@ import basemodel.BaseResponse;
 import database.Database;
 import database.DatabaseConnector;
 import model.Person;
+import model.Profile;
 
 @Path("/user")
 @Produces(MediaType.APPLICATION_JSON)
+@Consumes(MediaType.APPLICATION_JSON)
 public class UserService {
 
 	private ObjectMapper mapper = new ObjectMapper();
@@ -36,20 +38,22 @@ public class UserService {
 	/**
 	 * User login webservice 
 	 * @param requestJson : you need to pass json object of user class
-	 * @return
-	 * @throws JsonProcessingException
-	 * sample json
-	 * {
+	 * </br>
+	 * <i>{
         "id": 0,
         "name": "",
         "email": "pinank1510@gmail.com",
         "password": "pinank"
-		}
+		}</i>
+	 * @return {@link BaseResponse}
+	 * @throws JsonProcessingException
+	 * sample json
+	 * 
 	 */
 	
 	@POST
 	@Path("/login")
-	@Consumes(MediaType.APPLICATION_JSON)
+//	@Consumes(MediaType.APPLICATION_JSON)
 	public Response userlogin(String requestJson) throws JsonProcessingException {
 		String responseJson = "";
 		ApiResponseStatus apiResponseStatus = ApiResponseStatus.OUT_OF_SERVICE;
@@ -62,45 +66,64 @@ public class UserService {
 				apiResponseStatus = ApiResponseStatus.INVALID_REQUEST;
 			} else {
 				user = mapper.readValue(requestJson, Person.class);
-				
 				DatabaseConnector connector = new DatabaseConnector();
 				Connection connection = connector.getConnection();
-				String quary = "Select "
-						+Database.Login.USER_ID
-						+","+Database.Login.EMAIL
-						+","+Database.Login.PASSWORD
-						+","+Database.Login.IS_ENABLE
-						+","+Database.Login.REFFERENCE_ID
-						+" from login where "
-						+ Database.Login.EMAIL+"=? and "
-						+ Database.Login.PASSWORD+"=?";
-				PreparedStatement preparedStatement = connection.prepareStatement(quary);
-				preparedStatement.setString(1, user.getEmail());
-				preparedStatement.setString(2, user.getPassword());
+				String query = "SELECT "
+						+ Database.Login.TABLE_NAME + "." + Database.Login.USER_ID
+						+ ", "+Database.Login.TABLE_NAME + "."+Database.Login.EMAIL
+						+ ", "+Database.Profile.TABLE_NAME + "."+Database.Profile.COMPANY_NAME
+						+ ", "+Database.Profile.TABLE_NAME+"."+Database.Profile.FIRST_NAME
+						+ ", "+Database.Profile.TABLE_NAME+"."+Database.Profile.LAST_NAME
+						+", "+Database.Profile.TABLE_NAME+"."+Database.Profile.STATE
+						+", "+Database.Profile.TABLE_NAME+"."+Database.Profile.COUNTRY
+						+", "+Database.Profile.TABLE_NAME+"."+Database.Profile.CITY
+						+", "+Database.Profile.TABLE_NAME+"."+Database.Profile.STREET_ADDRESS
+						+", "+Database.Profile.TABLE_NAME+"."+Database.Profile.ALTERNET_MOBILE
+						+", "+Database.Profile.TABLE_NAME+"."+Database.Profile.MOBILE
+						+" FROM "
+						+Database.Login.TABLE_NAME
+						+" INNER JOIN "
+						+Database.Profile.TABLE_NAME
+						+" ON "
+						+Database.Login.TABLE_NAME+"."+Database.Login.USER_ID+" = "+Database.Profile.TABLE_NAME+"."+Database.Profile.USER_ID
+						+" WHERE "
+						+Database.Login.TABLE_NAME+"."+Database.Login.EMAIL+" = ?"
+						+" AND "
+						+Database.Login.TABLE_NAME+"."+Database.Login.PASSWORD+"= ?";
 				
-				System.out.println(preparedStatement.toString());
+				PreparedStatement statement = connection.prepareStatement(query);
+				statement.setString(1, user.getEmail());
+				statement.setString(2, user.getPassword());
+				ResultSet resultSet = statement.executeQuery();
 				
-				ResultSet resultSet = preparedStatement.executeQuery();
 				resultSet.last();
-				int rowCount = resultSet.getRow();
-				System.out.println("Resultset: "+resultSet.toString());
-				System.out.println("row count: "+rowCount);
 				
-				if(rowCount == 0) {
+				if(resultSet.getRow() == 0) {
 
 					System.out.println(resultSet.getInt(0));
 					System.out.println(resultSet.getString(1));
 					apiResponseStatus = ApiResponseStatus.LOGIN_FAIL;
-				} else if(rowCount > 1){
+				} else if(resultSet.getRow() > 1){
 					apiResponseStatus = ApiResponseStatus.MULTIPLE_USER_FOUND;
 				} else {
 					resultSet.first();
-					System.out.println(resultSet.toString());
-					user.setId(resultSet.getInt(Database.Login.USER_ID));
+					Profile profile = new Profile();
+					profile.setCompnay_name(resultSet.getString(Database.Profile.COMPANY_NAME));
+					profile.setFname(resultSet.getString(Database.Profile.FIRST_NAME));
+					profile.setLname(resultSet.getString(Database.Profile.LAST_NAME));
+					profile.setState(resultSet.getString(Database.Profile.STATE));
+					profile.setCountry(resultSet.getString(Database.Profile.COUNTRY));
+					profile.setState(resultSet.getString(Database.Profile.STATE));
+					profile.setCity(resultSet.getString(Database.Profile.CITY));
+					profile.setStreet_address(resultSet.getString(Database.Profile.STREET_ADDRESS));
+					profile.setAlternet_mobile(resultSet.getString(Database.Profile.ALTERNET_MOBILE));
+					profile.setMobile(resultSet.getString(Database.Profile.MOBILE));
+					
+
+					user.setUser_id(resultSet.getInt(Database.Login.USER_ID));
 					user.setEmail(resultSet.getString(Database.Login.EMAIL));
-					user.setPassword(resultSet.getString(Database.Login.PASSWORD));
-					user.setIs_enable(resultSet.getInt(Database.Login.IS_ENABLE));
-					user.setReffrence_id(resultSet.getInt(Database.Login.REFFERENCE_ID));
+					user.setProfile(profile);
+					
 					response.setInfo(user);
 					
 					// udpate api status to success
@@ -143,22 +166,23 @@ public class UserService {
 	}
 	
 	/**
-	 * Forgot Password api
-	 * @param requestJson : user object json
-	 * @return
-	 * @throws JsonProcessingException
-	 * sample json
-	 * {
+	 * 
+	 * @param requestJson : user object json 
+	 * </br>
+	 * <i>{
         "id": 0,
         "name": "",
         "email": "pinank1510@gmail.com",
         "password": ""
-		}
+		}</i>
+	 * @return {@link BaseResponse}
+	 * @throws JsonProcessingException
+	 * 
 	 */
 	
 	@POST
 	@Path("/forgotPassowrd")
-	@Consumes(MediaType.APPLICATION_JSON)
+//	@Consumes(MediaType.APPLICATION_JSON)
 	public Response forgotPassword(String requestJson) throws JsonProcessingException {
 		String responseJson = "";
 		ApiResponseStatus apiResponseStatus = ApiResponseStatus.OUT_OF_SERVICE;
@@ -209,4 +233,118 @@ public class UserService {
 		
 		return Response.status(Status.OK).entity(responseJson).build();
 	}
+	
+	/**
+	 * 
+	 * @param requestJson : user object json 
+	 * </br>
+	 * <i>{
+        "id": 21,
+        "name": "",
+        "email": "",
+        "password": ""
+		}</i>
+	 * @return
+	 * @throws JsonProcessingException
+	 */
+	
+	@POST
+	@Path("/userProfile")
+	public Response userProfile(String requestJson) throws JsonProcessingException {
+		String responseJson = "";
+		ApiResponseStatus apiResponseStatus = ApiResponseStatus.OUT_OF_SERVICE;
+		BaseResponse<Person> response = new BaseResponse<>();
+		response.setStatus(apiResponseStatus.getStatus_code());
+		response.setMessage(apiResponseStatus.getStatus_message());
+		Person user = new Person();
+		
+		try {
+			if(requestJson.isEmpty()) {
+				apiResponseStatus = ApiResponseStatus.INVALID_REQUEST;
+			} else {
+				user = mapper.readValue(requestJson, Person.class);
+				DatabaseConnector connector = new DatabaseConnector();
+				Connection connection = connector.getConnection();
+				String query = "SELECT "
+						+ Database.Login.TABLE_NAME + "." + Database.Login.USER_ID
+						+ ", "+Database.Login.TABLE_NAME + "."+Database.Login.EMAIL
+						+ ", "+Database.Profile.TABLE_NAME + "."+Database.Profile.COMPANY_NAME
+						+ ", "+Database.Profile.TABLE_NAME+"."+Database.Profile.FIRST_NAME
+						+ ", "+Database.Profile.TABLE_NAME+"."+Database.Profile.LAST_NAME
+						+", "+Database.Profile.TABLE_NAME+"."+Database.Profile.STATE
+						+", "+Database.Profile.TABLE_NAME+"."+Database.Profile.COUNTRY
+						+", "+Database.Profile.TABLE_NAME+"."+Database.Profile.CITY
+						+", "+Database.Profile.TABLE_NAME+"."+Database.Profile.STREET_ADDRESS
+						+", "+Database.Profile.TABLE_NAME+"."+Database.Profile.ALTERNET_MOBILE
+						+", "+Database.Profile.TABLE_NAME+"."+Database.Profile.MOBILE
+						+" FROM "
+						+Database.Login.TABLE_NAME
+						+" INNER JOIN "
+						+Database.Profile.TABLE_NAME
+						+" ON "
+						+Database.Login.TABLE_NAME+"."+Database.Login.USER_ID+" = "+Database.Profile.TABLE_NAME+"."+Database.Profile.USER_ID
+						+" WHERE "
+						+Database.Login.TABLE_NAME+"."+Database.Login.USER_ID+" = ?";
+				
+				PreparedStatement statement = connection.prepareStatement(query);
+				statement.setInt(1, user.getUser_id());
+				ResultSet resultSet = statement.executeQuery();
+				
+				resultSet.last();
+				
+				if(resultSet.getRow() == 0) {
+					apiResponseStatus = ApiResponseStatus.INVALID_USER_ID;
+				} else if(resultSet.getRow() > 1) {
+					apiResponseStatus = ApiResponseStatus.MULTIPLE_USER_FOUND;
+				} else {
+					Profile profile = new Profile();
+					profile.setCompnay_name(resultSet.getString(Database.Profile.COMPANY_NAME));
+					profile.setFname(resultSet.getString(Database.Profile.FIRST_NAME));
+					profile.setLname(resultSet.getString(Database.Profile.LAST_NAME));
+					profile.setState(resultSet.getString(Database.Profile.STATE));
+					profile.setCountry(resultSet.getString(Database.Profile.COUNTRY));
+					profile.setState(resultSet.getString(Database.Profile.STATE));
+					profile.setCity(resultSet.getString(Database.Profile.CITY));
+					profile.setStreet_address(resultSet.getString(Database.Profile.STREET_ADDRESS));
+					profile.setAlternet_mobile(resultSet.getString(Database.Profile.ALTERNET_MOBILE));
+					profile.setMobile(resultSet.getString(Database.Profile.MOBILE));
+					
+
+					user.setUser_id(resultSet.getInt(Database.Login.USER_ID));
+					user.setEmail(resultSet.getString(Database.Login.EMAIL));
+					user.setProfile(profile);
+					
+					response.setInfo(user);
+					
+					//set api response to success
+					apiResponseStatus = ApiResponseStatus.PROFILE_FATCH_SUCCESS;
+				}
+				
+			}
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			apiResponseStatus = ApiResponseStatus.REQUEST_PARSING_ERROR;
+			
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			apiResponseStatus = ApiResponseStatus.DATABASE_CONNECTINO_ERROR;
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			apiResponseStatus = ApiResponseStatus.MYSQL_EXCEPTION;
+		}finally {
+			
+			response.setStatus(apiResponseStatus.getStatus_code());
+			response.setMessage(apiResponseStatus.getStatus_message());
+			response.setInfo(user);
+			responseJson = mapper.writeValueAsString(response);
+			
+		}
+		
+		return Response.status(Status.OK).entity(responseJson).build();
+	}
+	
+
 }

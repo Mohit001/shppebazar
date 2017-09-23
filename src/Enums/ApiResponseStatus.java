@@ -13,7 +13,8 @@ public enum ApiResponseStatus {
 	MULTIPLE_USER_FOUND(3, "Multiple user record found with same credentials. Please contact to administrator"),
 	FORGOT_PASSWORD_FAIL(0, "User not fount with provided email."),
 	FORGOT_PASSWORD_SUCCESS(1, "Reset password link sent. Please check your email id"),
-	
+	INVALID_USER_ID(4, "Please provide valid user id"),
+	PROFILE_FATCH_SUCCESS(0, "User profile fatch successfully"),
 	
 	
 	//database related enums
