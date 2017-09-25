@@ -28,6 +28,8 @@ public enum ApiResponseStatus {
 	//Category-Subcategory related
 	CATEGORY_NOT_FOUND(0, "No category found"),
 	CATEGORY_LIST(1, "Category list"),
+	CATEGORY_PRODUCT_NOT_FOUND(0, "No Product found under this category."),
+	CATEGORY_PRODUCT_FOUND(0, "Product list for this category."),
 	
 	//Product Related
 	PRODUCT_NOT_FOUND(0, "Product not found. Please send valid product id"),
