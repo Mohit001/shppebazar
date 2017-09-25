@@ -258,25 +258,28 @@ public class UserService {
 		}</i>
 	 * @return
 	 * @throws JsonProcessingException
+	 * @throws SQLException 
 	 */
 	
 	@POST
 	@Path("/userProfile")
-	public Response userProfile(String requestJson) throws JsonProcessingException {
+	public Response userProfile(String requestJson) throws JsonProcessingException, SQLException {
 		String responseJson = "";
 		ApiResponseStatus apiResponseStatus = ApiResponseStatus.OUT_OF_SERVICE;
 		BaseResponse<Person> response = new BaseResponse<>();
 		response.setStatus(apiResponseStatus.getStatus_code());
 		response.setMessage(apiResponseStatus.getStatus_message());
 		Person user = new Person();
-		
+		Connection connection = null;
 		try {
 			if(requestJson.isEmpty()) {
 				apiResponseStatus = ApiResponseStatus.INVALID_REQUEST;
 			} else {
 				user = mapper.readValue(requestJson, Person.class);
 				DatabaseConnector connector = new DatabaseConnector();
-				Connection connection = connector.getConnection();
+				connection = connector.getConnection();
+				connection.setAutoCommit(false);
+				
 				String query = "SELECT "
 						+ Database.Login.TABLE_NAME + "." + Database.Login.USER_ID
 						+ ", "+Database.Login.TABLE_NAME + "."+Database.Login.EMAIL
@@ -332,6 +335,7 @@ public class UserService {
 					apiResponseStatus = ApiResponseStatus.PROFILE_FATCH_SUCCESS;
 				}
 				
+				connection.commit();
 				statement.close();
 				connection.close();
 			}
@@ -342,10 +346,12 @@ public class UserService {
 			
 		} catch (ClassNotFoundException e) {
 			// TODO Auto-generated catch block
+			connection.rollback();
 			e.printStackTrace();
 			apiResponseStatus = ApiResponseStatus.DATABASE_CONNECTINO_ERROR;
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
+			connection.rollback();
 			e.printStackTrace();
 			apiResponseStatus = ApiResponseStatus.MYSQL_EXCEPTION;
 		}finally {
@@ -354,6 +360,10 @@ public class UserService {
 			response.setMessage(apiResponseStatus.getStatus_message());
 			response.setInfo(user);
 			responseJson = mapper.writeValueAsString(response);
+		
+			if(connection != null && !connection.isClosed()){
+				connection.close();
+			}
 			
 		}
 		
@@ -363,14 +373,14 @@ public class UserService {
 
 	@POST
 	@Path("/registerUser")
-	public Response createUser(String requestJson) throws JsonProcessingException {
+	public Response createUser(String requestJson) throws JsonProcessingException, SQLException {
 		String responseJson = "";
 		ApiResponseStatus apiResponseStatus = ApiResponseStatus.OUT_OF_SERVICE;
 		BaseResponse<Person> response = new BaseResponse<>();
 		response.setStatus(apiResponseStatus.getStatus_code());
 		response.setMessage(apiResponseStatus.getStatus_message());
 		Person user = new Person();
-		
+		Connection connection = null;
 		try {
 			if(requestJson.isEmpty()) {
 				apiResponseStatus = ApiResponseStatus.INVALID_REQUEST;
@@ -379,8 +389,8 @@ public class UserService {
 				
 				// init database connection
 				DatabaseConnector connector = new DatabaseConnector();
-				Connection connection = connector.getConnection();
-				
+				connection = connector.getConnection();
+				connection.setAutoCommit(false);
 				
 				// check user is already available with same email or not.
 				String query = "SELECT "
@@ -426,7 +436,7 @@ public class UserService {
 					} else {
 						resultSet.first();
 						int lastInsertedID = resultSet.getInt(1); // last inserted user_id will always on index = 1
-					
+						resultSet.close();
 						
 						Profile profile = user.getProfile();
 						
@@ -481,7 +491,7 @@ public class UserService {
 					
 				}
 				
-				
+				connection.commit();
 				statement.close();
 				resultSet.close();
 				connection.close();
@@ -494,10 +504,12 @@ public class UserService {
 		
 		} catch (ClassNotFoundException e) {
 			// TODO Auto-generated catch block
+			connection.rollback();
 			e.printStackTrace();
 			apiResponseStatus = ApiResponseStatus.DATABASE_CONNECTINO_ERROR;
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
+			connection.rollback();
 			e.printStackTrace();
 			apiResponseStatus = ApiResponseStatus.MYSQL_EXCEPTION;
 		}finally {
@@ -506,6 +518,10 @@ public class UserService {
 			response.setMessage(apiResponseStatus.getStatus_message());
 			response.setInfo(user);
 			responseJson = mapper.writeValueAsString(response);
+			
+			if(connection != null && !connection.isClosed()) {
+				connection.close();
+			}
 			
 		}
 	
