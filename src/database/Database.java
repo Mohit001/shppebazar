@@ -35,4 +35,17 @@ public class Database {
 		public static final String MOBILE = "mobile";
 		
 	}
+	
+	
+	public static class CategoryMaster{
+		public static final String TABLE_NAME = "category_master";
+		public static final String  CAT_ID = "cat_id";
+		public static final String  CAT_NAME = "cat_name";
+		public static final String  CAT_DESCRIPTION = "cat_description";
+		public static final String  CAT_IMAGE = "cat_image";
+		public static final String  IS_ENABLE = "is_enable";
+		public static final String  USER_ID = "user_id";
+		public static final String  CREATE_DATE = "create_date";
+		public static final String  PARENT_ID = "parent_id";
+	}
 }

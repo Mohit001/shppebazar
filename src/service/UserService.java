@@ -5,6 +5,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -15,12 +16,15 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
+import org.apache.tomcat.util.http.fileupload.ParameterParser;
+
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mysql.jdbc.exceptions.MySQLSyntaxErrorException;
 
 import Enums.ApiResponseStatus;
+import Utils.UtilsString;
 import basemodel.BaseResponse;
 import database.Database;
 import database.DatabaseConnector;
@@ -128,8 +132,11 @@ public class UserService {
 					
 					// udpate api status to success
 					apiResponseStatus = ApiResponseStatus.LOGIN_SUCCESS;
+					
 				}
 				
+				statement.close();
+				connection.close();
 
 			}
 			
@@ -159,6 +166,8 @@ public class UserService {
 			response.setMessage(apiResponseStatus.getStatus_message());
 			response.setInfo(user);
 			responseJson = mapper.writeValueAsString(response);
+			
+
 		}
 		
 		
@@ -221,6 +230,9 @@ public class UserService {
 					
 					apiResponseStatus = ApiResponseStatus.FORGOT_PASSWORD_SUCCESS;
 				}
+				
+				statement.close();
+				connection.close();
 			}
 		}catch(Exception exception) {
 			exception.printStackTrace();
@@ -320,6 +332,8 @@ public class UserService {
 					apiResponseStatus = ApiResponseStatus.PROFILE_FATCH_SUCCESS;
 				}
 				
+				statement.close();
+				connection.close();
 			}
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
@@ -347,4 +361,154 @@ public class UserService {
 	}
 	
 
+	@POST
+	@Path("/registerUser")
+	public Response createUser(String requestJson) throws JsonProcessingException {
+		String responseJson = "";
+		ApiResponseStatus apiResponseStatus = ApiResponseStatus.OUT_OF_SERVICE;
+		BaseResponse<Person> response = new BaseResponse<>();
+		response.setStatus(apiResponseStatus.getStatus_code());
+		response.setMessage(apiResponseStatus.getStatus_message());
+		Person user = new Person();
+		
+		try {
+			if(requestJson.isEmpty()) {
+				apiResponseStatus = ApiResponseStatus.INVALID_REQUEST;
+			} else {
+				user = mapper.readValue(requestJson, Person.class);
+				
+				// init database connection
+				DatabaseConnector connector = new DatabaseConnector();
+				Connection connection = connector.getConnection();
+				
+				
+				// check user is already available with same email or not.
+				String query = "SELECT "
+						+Database.Login.EMAIL
+						+" FROM "
+						+Database.Login.TABLE_NAME
+						+" WHERE "
+						+Database.Login.EMAIL+"=?";
+				PreparedStatement statement = connection.prepareStatement(query);
+				statement.setString(1, user.getEmail());
+				ResultSet resultSet = statement.executeQuery();
+				
+				resultSet.last();
+				if(resultSet.getRow() >= 1) {
+					apiResponseStatus = ApiResponseStatus.REGISTRATION_FAIL;
+				} else {
+										
+					// no user is register with same email address so continue with registration
+					query = "INSERT INTO "
+							+Database.Login.TABLE_NAME
+							+"("
+							+Database.Login.EMAIL
+							+"," +Database.Login.PASSWORD
+							+"," +Database.Login.IS_ENABLE
+							+"," +Database.Login.ROLE
+							+"," +Database.Login.REFFERENCE_ID
+							+")"
+							+" VALUES "
+							+"(?,?,?,?,?)";
+					
+					statement = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
+					statement.setString(1, user.getEmail());
+					statement.setString(2, user.getPassword());
+					statement.setInt(3, 1); // set default enable = 1
+					statement.setInt(4, 3); // set default user role = 3
+					statement.setInt(5, 1); // set default reference id = 1(admin)
+					
+					int afftectedRow = statement.executeUpdate();
+					resultSet = statement.getGeneratedKeys();
+					
+					if(afftectedRow == 0) {
+						apiResponseStatus = ApiResponseStatus.MYSQL_EXCEPTION;
+					} else {
+						resultSet.first();
+						int lastInsertedID = resultSet.getInt(1); // last inserted user_id will always on index = 1
+					
+						
+						Profile profile = user.getProfile();
+						
+						// insert data into profile table
+						query = "INSERT INTO "
+								+Database.Profile.TABLE_NAME
+								+"("
+								+Database.Profile.USER_ID
+								+"," +Database.Profile.ACCOUNT_TYPE
+								+"," +Database.Profile.COMPANY_NAME
+								+"," +Database.Profile.FIRST_NAME
+								+"," +Database.Profile.LAST_NAME
+								+"," +Database.Profile.STATE
+								+"," +Database.Profile.COUNTRY
+								+"," +Database.Profile.CITY
+								+"," +Database.Profile.STREET_ADDRESS
+								+"," +Database.Profile.ALTERNET_MOBILE
+								+"," +Database.Profile.MOBILE
+								+")"
+								+" VALUES "
+								+"(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+						
+						statement = connection.prepareStatement(query);
+						statement.setInt(1, lastInsertedID);
+						statement.setInt(2, 1); // static value to match database
+						statement.setString(3, UtilsString.getStirng(profile.getCompnay_name()));
+						statement.setString(4, UtilsString.getStirng(profile.getFname()));
+						statement.setString(5, UtilsString.getStirng(profile.getLname()));
+						statement.setString(6, UtilsString.getStirng(profile.getState()));
+						statement.setString(7, UtilsString.getStirng(profile.getCountry()));
+						statement.setString(8, UtilsString.getStirng(profile.getCity()));
+						statement.setString(9, UtilsString.getStirng(profile.getStreet_address()));
+						statement.setString(10, UtilsString.getStirng(profile.getAlternet_mobile()));
+						statement.setString(11, UtilsString.getStirng(profile.getMobile()));
+						
+						afftectedRow = statement.executeUpdate();
+						
+						if(afftectedRow == 0) {
+							//rollback transaction
+						} else {
+							user.setUser_id(lastInsertedID);
+							profile.setUser_id(lastInsertedID);
+							user.setProfile(profile);
+						}
+						
+						
+						apiResponseStatus = ApiResponseStatus.REGISTRATION_SUCCESS;
+						
+					}
+					
+					System.out.println(statement.toString());
+					
+				}
+				
+				
+				statement.close();
+				resultSet.close();
+				connection.close();
+			}
+			
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			apiResponseStatus = ApiResponseStatus.REQUEST_PARSING_ERROR;
+		
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			apiResponseStatus = ApiResponseStatus.DATABASE_CONNECTINO_ERROR;
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			apiResponseStatus = ApiResponseStatus.MYSQL_EXCEPTION;
+		}finally {
+			
+			response.setStatus(apiResponseStatus.getStatus_code());
+			response.setMessage(apiResponseStatus.getStatus_message());
+			response.setInfo(user);
+			responseJson = mapper.writeValueAsString(response);
+			
+		}
+	
+		return Response.status(Status.OK).entity(responseJson).build();
+	}
 }
