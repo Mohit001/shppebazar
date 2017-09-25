@@ -29,6 +29,10 @@ public enum ApiResponseStatus {
 	CATEGORY_NOT_FOUND(0, "No category found"),
 	CATEGORY_LIST(1, "Category list"),
 	
+	//Product Related
+	PRODUCT_NOT_FOUND(0, "Product not found. Please send valid product id"),
+	PRODUCT_FOUND(1, "Product Details"),
+	
 	//database related enums
 	DATABASE_CONNECTINO_ERROR(1001, "Server encounter issue to connect database."),
 	MYSQL_EXCEPTION(1002, "MySQL Exception");

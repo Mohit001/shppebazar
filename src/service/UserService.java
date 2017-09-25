@@ -370,6 +370,36 @@ public class UserService {
 		return Response.status(Status.OK).entity(responseJson).build();
 	}
 	
+	/**
+	 * 
+	 * @param requestJson user object json 
+	 * </br>
+	 * <i>{
+		  "user_id": 0,
+		  "reffrence_id": 0,
+		  "email": "test6@gmail.com",
+		  "name": "",
+		  "password": "",
+		  "is_enable": 0,
+		  "profile": {
+		    "profie_id": 0,
+		    "user_id": 0,
+		    "account_type": 0,
+		    "compnay_name": "test",
+		    "fname": "Pinank",
+		    "lname": "Soni",
+		    "state": "Gujrat",
+		    "country": "India",
+		    "city": "Ankleshwar",
+		    "street_address": "navidivi",
+		    "alternet_mobile": "0264652535",
+		    "mobile": "8000059755"
+		  	}
+		}</i>
+	 * @return {@link Person}
+	 * @throws JsonProcessingException
+	 * @throws SQLException
+	 */
 
 	@POST
 	@Path("/registerUser")

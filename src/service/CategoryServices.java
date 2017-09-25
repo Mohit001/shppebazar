@@ -34,6 +34,11 @@ public class CategoryServices {
 
 	ObjectMapper mapper = new ObjectMapper();
 	
+	/**
+	 * 
+	 * @return {@link Category}}
+	 * @throws JsonProcessingException
+	 */
 	@GET
 	@Path("/")
 	public Response getAllCategories() throws JsonProcessingException {
@@ -177,4 +182,6 @@ public class CategoryServices {
 		
 		return subCategoryList;
 	}
+
+	 
 }

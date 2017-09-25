@@ -48,4 +48,36 @@ public class Database {
 		public static final String  CREATE_DATE = "create_date";
 		public static final String  PARENT_ID = "parent_id";
 	}
+	
+	
+	public static class ProductMaster{
+		public static final String TABLE_NAME = "product_master";
+		public static final String PRO_MST_ID = "pro_mst_id";
+		public static final String PRO_NAME = "pro_name";
+		public static final String PRO_CODE = "pro_code";
+		public static final String PRO_DESCRIPTION = "pro_description";
+		public static final String PRO_PRICE = "pro_price";
+		public static final String IS_ENABLE = "is_enable";
+		public static final String CREATE_DATE = "create_date";
+		public static final String CAT_ID = "cat_id";
+		public static final String BRAND_ID = "brand_id";
+		public static final String USER_ID = "user_id";
+		public static final String GST_TYPE = "gst_type";
+		public static final String GST = "gst";
+		public static final String DISCOUNT_PRICE = "discount_price";
+		public static final String PRO_IMAGE = "pro_image";
+		
+	}
+	
+	public static class ProductImage{
+		public static final String TABLE_NAME = "product_image";
+		public static final String IMAGE_ID = "imge_id";
+		public static final String IMAGE_NAME = "image_name";
+		public static final String PRODUCT_ID = "product_id";
+		public static final String CREATE_DATE = "create_date";
+		public static final String IS_ENABLE = "is_enable";
+		public static final String DEFAULT = "default";
+		public static final String USER_ID = "user_id";
+		public static final String IMAGE_PATH = "image_path";
+	}
 }
