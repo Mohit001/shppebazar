@@ -1,6 +1,5 @@
 package service;
 
-import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -26,7 +25,6 @@ import basemodel.BaseResponse;
 import database.Database;
 import database.DatabaseConnector;
 import model.Category;
-import model.Person;
 import model.Product;
 import model.ProductImage;
 

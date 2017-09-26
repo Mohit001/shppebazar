@@ -1,6 +1,6 @@
 package model;
 
-import com.fasterxml.jackson.annotation.JacksonAnnotation;
+
 
 public class ProductImage {
 
