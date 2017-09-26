@@ -290,7 +290,7 @@ public class UserService {
 						+", "+Database.Profile.TABLE_NAME+"."+Database.Profile.MOBILE
 						+" FROM "
 						+Database.Login.TABLE_NAME
-						+" INNER JOIN "
+						+" LEFT JOIN "
 						+Database.Profile.TABLE_NAME
 						+" ON "
 						+Database.Login.TABLE_NAME+"."+Database.Login.USER_ID+" = "+Database.Profile.TABLE_NAME+"."+Database.Profile.USER_ID

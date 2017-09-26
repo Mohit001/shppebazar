@@ -80,4 +80,21 @@ public class Database {
 		public static final String USER_ID = "user_id";
 		public static final String IMAGE_PATH = "image_path";
 	}
+	
+	public static class UserAddress{
+		public static final String TABLE_NAME = "user_address";
+		public static final String ADDRESS_ID = "address_id";
+		public static final String ADDRESS1 = "address1";
+		public static final String ADDRESS2 = "address2";
+		public static final String STATE = "state";
+		public static final String CITY = "city";
+		public static final String POSTCODE = "postcode";
+		public static final String ADDITIONAL_DETIALS = "addition_detail";
+		public static final String USER_ID = "user_id";
+		public static final String IS_ENABLE = "is_enable";
+		public static final String DEFAULT_VALUE = "default_value";
+		public static final String CREATE_DATE = "create_date";
+		public static final String FULL_NAME = "full_name";
+		public static final String EMAIL = "email";
+	}
 }

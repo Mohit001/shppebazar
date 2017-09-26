@@ -35,10 +35,24 @@ public enum ApiResponseStatus {
 	PRODUCT_NOT_FOUND(0, "Product not found. Please send valid product id"),
 	PRODUCT_FOUND(1, "Product Details"),
 	
-	//database related enums
+	
+	
+	// Address Related enums Range 201-299
+	ADDRESS_FAIL(0, "No address found."),
+	ADDRESS_SUCCESS(1, "Address found successfully"),
+	ADDRESS_UPDATE_FAIL(0, "Fail to update address"),
+	ADDRESS_UPDATE_SUCCESS(1, "Address update successfully"),
+	ADDRESS_DELETE_FAIL(0, "Fail to delete address"),
+	ADDRESS_DELETE_SUCCESS(1, "Address delete successfully"),
+	ADDRESS_ADD_FAIL(0, "Fail to add address"),
+	ADDRESS_ADD_SUCCESS(1, "Address addded successfully"),
+	ADDRESS_INVALID_USER_ID(201, "Please provide valid userid"),
+	ADDRESS_INVALID_ADDRESS_ID(202, "Please provide valid addressid"),
+	
+	
+	//database related enums range 1001 - 1099
 	DATABASE_CONNECTINO_ERROR(1001, "Server encounter issue to connect database."),
 	MYSQL_EXCEPTION(1002, "MySQL Exception");
-	
 	
 	// enum variables
 	private final int status_code;
