@@ -259,7 +259,99 @@ public class AddressService {
 	
 	
 	
-	
+	@POST
+	@Path("/update")
+	public Response updateUserAddress(String requestJson) throws SQLException, JsonProcessingException {
+		String responseJson = "";
+		ApiResponseStatus apiResponseStatus = ApiResponseStatus.OUT_OF_SERVICE;
+		BaseResponse<List<Address>> response = new BaseResponse<>();
+		response.setStatus(apiResponseStatus.getStatus_code());
+		response.setMessage(apiResponseStatus.getStatus_message());
+		List<Address> addressList = new ArrayList<>();
+		
+		Connection connection = null;
+		
+		try {
+				Address address = mapper.readValue(requestJson, Address.class);
+				DatabaseConnector connector = new DatabaseConnector();
+				connection = connector.getConnection();
+				connection.setAutoCommit(false);
+				
+				String query = "UPDATE "
+						+Database.UserAddress.TABLE_NAME
+						+" SET "
+						+Database.UserAddress.ADDRESS1 +"=?"
+						+", "+Database.UserAddress.ADDRESS2+"=?"
+						+", "+Database.UserAddress.STATE+"=?"
+						+", "+Database.UserAddress.CITY+"=?"
+						+", "+Database.UserAddress.POSTCODE+"=?"
+						+", "+Database.UserAddress.ADDITIONAL_DETIALS+"=?"
+						+", "+Database.UserAddress.FULL_NAME+"=?"
+						+", "+Database.UserAddress.EMAIL+"=?"
+						+", "+Database.UserAddress.DEFAULT_VALUE+"=?"
+						+""
+						+" WHERE "
+						+Database.UserAddress.ADDRESS_ID+"=?";
+				
+				PreparedStatement statement = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
+				statement.setString(1, address.getAddress1());
+				statement.setString(2, address.getAddress2());
+				statement.setString(3, address.getState());
+				statement.setString(4, address.getCity());
+				statement.setString(5, address.getPostcode());
+				statement.setString(6, address.getAddition_detail());
+				statement.setString(7, address.getFull_name());
+				statement.setString(8, address.getEmail());
+				statement.setInt(9, address.getDefault_value());
+				statement.setInt(10, address.getAddress_id());
+				
+				int affectedRaw = statement.executeUpdate();
+				if(affectedRaw == 0) {
+					apiResponseStatus = ApiResponseStatus.ADDRESS_UPDATE_FAIL;
+					connection.rollback();
+				} else {
+//					ResultSet resultSet = statement.getGeneratedKeys();
+//					resultSet.first();
+//					int insertedNewID = resultSet.getInt(1);
+					connection.commit();
+					addressList.clear();
+//					addressList.addAll(getUserAddressList(Integer.parseInt(address.getUser_id())));
+					response.setInfo(addressList);
+//					resultSet.close();
+					
+					apiResponseStatus = ApiResponseStatus.ADDRESS_UPDATE_SUCCESS; 
+				}
+				connection.commit();
+				statement.close();
+				connection.close();
+			
+		}catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			connection.rollback();
+			e.printStackTrace();
+			apiResponseStatus = ApiResponseStatus.DATABASE_CONNECTINO_ERROR;
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			connection.rollback();
+			e.printStackTrace();
+			apiResponseStatus = ApiResponseStatus.MYSQL_EXCEPTION;
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally {
+
+			response.setStatus(apiResponseStatus.getStatus_code());
+			response.setMessage(apiResponseStatus.getStatus_message());
+			response.setInfo(addressList);
+			responseJson = mapper.writeValueAsString(response);
+			
+			if(connection != null && !connection.isClosed()) {
+				connection.close();
+			}
+		}
+
+		return Response.status(Status.OK).entity(responseJson).build();
+	}
 	
 	
 	private List<Address> getUserAddressList(int id) throws ClassNotFoundException, SQLException{
