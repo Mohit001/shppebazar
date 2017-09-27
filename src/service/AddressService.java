@@ -87,6 +87,77 @@ public class AddressService {
 	}
 	
 	
+	@GET
+	@Path("/remove/{id}")
+	public Response removeUserAddress(@PathParam("id") int id) throws SQLException, JsonProcessingException {
+		String responseJson = "";
+		ApiResponseStatus apiResponseStatus = ApiResponseStatus.OUT_OF_SERVICE;
+		BaseResponse<List<Address>> response = new BaseResponse<>();
+		response.setStatus(apiResponseStatus.getStatus_code());
+		response.setMessage(apiResponseStatus.getStatus_message());
+		List<Address> addressList = new ArrayList<>();
+		
+		Connection connection = null;
+		
+		try {
+			if(id == 0) {
+				apiResponseStatus = ApiResponseStatus.ADDRESS_INVALID_ADDRESS_ID;
+			}  else {
+				
+				DatabaseConnector connector = new DatabaseConnector();
+				connection = connector.getConnection();
+				connection.setAutoCommit(false);
+				String query  = "DELETE FROM "
+						+Database.UserAddress.TABLE_NAME
+						+" WHERE "
+						+Database.UserAddress.ADDRESS_ID+"=?";
+				PreparedStatement statement = connection.prepareStatement(query);
+				statement.setInt(1, id);
+				int affectedRow = statement.executeUpdate();
+				
+				if(affectedRow == 0 || affectedRow > 1) {
+					connection.rollback();
+					apiResponseStatus = ApiResponseStatus.ADDRESS_DELETE_FAIL;
+				} else {
+					
+					connection.commit();
+					addressList.clear();
+					addressList.addAll(getUserAddressList(id));
+					
+						response.setInfo(addressList);
+						
+						statement.close();
+						connection.close();
+						
+						apiResponseStatus = ApiResponseStatus.ADDRESS_DELETE_SUCCESS;
+					
+				}
+			}
+		}catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			connection.rollback();
+			e.printStackTrace();
+			apiResponseStatus = ApiResponseStatus.DATABASE_CONNECTINO_ERROR;
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			connection.rollback();
+			e.printStackTrace();
+			apiResponseStatus = ApiResponseStatus.MYSQL_EXCEPTION;
+		} finally {
+
+			response.setStatus(apiResponseStatus.getStatus_code());
+			response.setMessage(apiResponseStatus.getStatus_message());
+			response.setInfo(addressList);
+			responseJson = mapper.writeValueAsString(response);
+			
+			if(connection != null && !connection.isClosed()) {
+				connection.close();
+			}
+		}
+
+		return Response.status(Status.OK).entity(responseJson).build();
+	}
+	
 	
 	@POST
 	@Path("/add")
@@ -185,6 +256,10 @@ public class AddressService {
 
 		return Response.status(Status.OK).entity(responseJson).build();
 	}
+	
+	
+	
+	
 	
 	
 	private List<Address> getUserAddressList(int id) throws ClassNotFoundException, SQLException{
