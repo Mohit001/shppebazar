@@ -8,19 +8,19 @@ public enum ApiResponseStatus {
 	
 	
 	
-	// common error
-	OUT_OF_SERVICE(101, "Server out of service"),
-	INVALID_REQUEST(102, "Invalid request"),
-	REQUEST_PARSING_ERROR(103, "Error in parsing request. Please contact to administrator"),
+	// common error 2001-2099 
+	OUT_OF_SERVICE(2001, "Server out of service"),
+	INVALID_REQUEST(2002, "Invalid request"),
+	REQUEST_PARSING_ERROR(2003, "Error in parsing request. Please contact to administrator"),
 	
-	//User related enums
+	//User related enums 101-199
 	LOGIN_FAIL(0, "Please provide valid username and password"),
 	LOGIN_SUCCESS(1, "User login successfully"),
-	MULTIPLE_USER_FOUND(3, "Multiple user record found with same credentials. Please contact to administrator"),
+	MULTIPLE_USER_FOUND(101, "Multiple user record found with same credentials. Please contact to administrator"),
 	FORGOT_PASSWORD_FAIL(0, "User not fount with provided email."),
 	FORGOT_PASSWORD_SUCCESS(1, "Reset password link sent. Please check your email id"),
-	INVALID_USER_ID(4, "Please provide valid user id"),
-	PROFILE_FATCH_SUCCESS(0, "User profile fatch successfully"),
+	INVALID_USER_ID(102, "Please provide valid user id"),
+	PROFILE_FATCH_SUCCESS(1, "User profile fatch successfully"),
 	REGISTRATION_FAIL(0, "User already register with same email id. Please try with different one."),
 	REGISTRATION_SUCCESS(1, "User register Successfully"),
 	

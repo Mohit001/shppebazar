@@ -8,8 +8,10 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 import javax.ws.rs.Consumes;
+import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -99,9 +101,6 @@ public class UserService {
 				resultSet.last();
 				
 				if(resultSet.getRow() == 0) {
-
-					System.out.println(resultSet.getInt(0));
-					System.out.println(resultSet.getString(1));
 					apiResponseStatus = ApiResponseStatus.LOGIN_FAIL;
 				} else if(resultSet.getRow() > 1){
 					apiResponseStatus = ApiResponseStatus.MULTIPLE_USER_FOUND;
@@ -257,9 +256,9 @@ public class UserService {
 	 * @throws SQLException 
 	 */
 	
-	@POST
-	@Path("/userProfile")
-	public Response userProfile(String requestJson) throws JsonProcessingException, SQLException {
+	@GET
+	@Path("/userProfile/{id}")
+	public Response userProfile(@PathParam("id") int id) throws JsonProcessingException, SQLException {
 		String responseJson = "";
 		ApiResponseStatus apiResponseStatus = ApiResponseStatus.OUT_OF_SERVICE;
 		BaseResponse<Person> response = new BaseResponse<>();
@@ -268,10 +267,9 @@ public class UserService {
 		Person user = new Person();
 		Connection connection = null;
 		try {
-			if(requestJson.isEmpty()) {
+			if(id == 0) {
 				apiResponseStatus = ApiResponseStatus.INVALID_REQUEST;
 			} else {
-				user = mapper.readValue(requestJson, Person.class);
 				DatabaseConnector connector = new DatabaseConnector();
 				connection = connector.getConnection();
 				connection.setAutoCommit(false);
@@ -298,7 +296,7 @@ public class UserService {
 						+Database.Login.TABLE_NAME+"."+Database.Login.USER_ID+" = ?";
 				
 				PreparedStatement statement = connection.prepareStatement(query);
-				statement.setInt(1, user.getUser_id());
+				statement.setInt(1, id);
 				ResultSet resultSet = statement.executeQuery();
 				
 				resultSet.last();
@@ -335,11 +333,6 @@ public class UserService {
 				statement.close();
 				connection.close();
 			}
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			apiResponseStatus = ApiResponseStatus.REQUEST_PARSING_ERROR;
-			
 		} catch (ClassNotFoundException e) {
 			// TODO Auto-generated catch block
 			connection.rollback();
