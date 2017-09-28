@@ -184,10 +184,10 @@ public class UserService {
 	 * 
 	 */
 	
-	@POST
-	@Path("/forgotPassowrd")
+	@GET
+	@Path("/forgotPassowrd/{email}")
 //	@Consumes(MediaType.APPLICATION_JSON)
-	public Response forgotPassword(String requestJson) throws JsonProcessingException {
+	public Response forgotPassword(@PathParam("email") String email) throws JsonProcessingException {
 		String responseJson = "";
 		ApiResponseStatus apiResponseStatus = ApiResponseStatus.OUT_OF_SERVICE;
 		BaseResponse<Person> response = new BaseResponse<>();
@@ -196,10 +196,9 @@ public class UserService {
 		Person user = new Person();
 		
 		try {
-			if(requestJson.isEmpty()) {
+			if(email.isEmpty()) {
 				apiResponseStatus = ApiResponseStatus.INVALID_REQUEST;
 			}else {
-				user = mapper.readValue(requestJson, Person.class);
 				DatabaseConnector connector = new DatabaseConnector();
 				Connection connection = connector.getConnection();
 				String query = "Select "
@@ -207,7 +206,7 @@ public class UserService {
 						+" from login where "
 						+Database.Login.EMAIL+"=?";
 				PreparedStatement statement = connection.prepareStatement(query);
-				statement.setString(1, user.getEmail());
+				statement.setString(1, email);
 				
 				ResultSet resultSet = statement.executeQuery();
 				resultSet.last();
