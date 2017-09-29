@@ -276,6 +276,7 @@ public class UserService {
 				String query = "SELECT "
 						+ Database.Login.TABLE_NAME + "." + Database.Login.USER_ID
 						+ ", "+Database.Login.TABLE_NAME + "."+Database.Login.EMAIL
+						+ ", "+Database.Login.TABLE_NAME + "."+Database.Login.PASSWORD
 						+ ", "+Database.Profile.TABLE_NAME + "."+Database.Profile.COMPANY_NAME
 						+ ", "+Database.Profile.TABLE_NAME+"."+Database.Profile.FIRST_NAME
 						+ ", "+Database.Profile.TABLE_NAME+"."+Database.Profile.LAST_NAME
@@ -320,6 +321,7 @@ public class UserService {
 
 					user.setUser_id(resultSet.getInt(Database.Login.USER_ID));
 					user.setEmail(resultSet.getString(Database.Login.EMAIL));
+					user.setPassword(resultSet.getString(Database.Login.PASSWORD));
 					user.setProfile(profile);
 					
 					response.setInfo(user);
@@ -494,6 +496,7 @@ public class UserService {
 						
 						if(afftectedRow == 0) {
 							//rollback transaction
+							connection.rollback();
 						} else {
 							user.setUser_id(lastInsertedID);
 							profile.setUser_id(lastInsertedID);
@@ -503,6 +506,170 @@ public class UserService {
 						
 						apiResponseStatus = ApiResponseStatus.REGISTRATION_SUCCESS;
 						
+					}
+					
+					System.out.println(statement.toString());
+					
+				}
+				
+				connection.commit();
+				statement.close();
+				resultSet.close();
+				connection.close();
+			}
+			
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			apiResponseStatus = ApiResponseStatus.REQUEST_PARSING_ERROR;
+		
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			connection.rollback();
+			e.printStackTrace();
+			apiResponseStatus = ApiResponseStatus.DATABASE_CONNECTINO_ERROR;
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			connection.rollback();
+			e.printStackTrace();
+			apiResponseStatus = ApiResponseStatus.MYSQL_EXCEPTION;
+		}finally {
+			
+			response.setStatus(apiResponseStatus.getStatus_code());
+			response.setMessage(apiResponseStatus.getStatus_message());
+			response.setInfo(user);
+			responseJson = mapper.writeValueAsString(response);
+			
+			if(connection != null && !connection.isClosed()) {
+				connection.close();
+			}
+			
+		}
+	
+		return Response.status(Status.OK).entity(responseJson).build();
+	}
+	
+	
+	
+	/**
+	 * 
+	 * @param requestJson user object json 
+	 * </br>
+	 * <i>{
+		  "user_id": 0,
+		  "reffrence_id": 0,
+		  "email": "test6@gmail.com",
+		  "name": "",
+		  "password": "",
+		  "is_enable": 0,
+		  "profile": {
+		    "profie_id": 0,
+		    "user_id": 0,
+		    "account_type": 0,
+		    "compnay_name": "test",
+		    "fname": "Pinank",
+		    "lname": "Soni",
+		    "state": "Gujrat",
+		    "country": "India",
+		    "city": "Ankleshwar",
+		    "street_address": "navidivi",
+		    "alternet_mobile": "0264652535",
+		    "mobile": "8000059755"
+		  	}
+		}</i>
+	 * @return {@link Person}
+	 * @throws JsonProcessingException
+	 * @throws SQLException
+	 */
+
+	@POST
+	@Path("/updateUser")
+	public Response updateUser(String requestJson) throws JsonProcessingException, SQLException {
+		String responseJson = "";
+		ApiResponseStatus apiResponseStatus = ApiResponseStatus.OUT_OF_SERVICE;
+		BaseResponse<Person> response = new BaseResponse<>();
+		response.setStatus(apiResponseStatus.getStatus_code());
+		response.setMessage(apiResponseStatus.getStatus_message());
+		Person user = new Person();
+		Connection connection = null;
+		try {
+			if(requestJson.isEmpty()) {
+				apiResponseStatus = ApiResponseStatus.INVALID_REQUEST;
+			} else {
+				user = mapper.readValue(requestJson, Person.class);
+				
+				// init database connection
+				DatabaseConnector connector = new DatabaseConnector();
+				connection = connector.getConnection();
+				connection.setAutoCommit(false);
+				
+				// check user is already available with same email or not.
+				String query = "SELECT "
+						+Database.Login.EMAIL
+						+" FROM "
+						+Database.Login.TABLE_NAME
+						+" WHERE "
+						+Database.Login.USER_ID+"=?";
+				PreparedStatement statement = connection.prepareStatement(query);
+				statement.setInt(1, user.getUser_id());
+				ResultSet resultSet = statement.executeQuery();
+				
+				resultSet.last();
+				if(resultSet.getRow() == 0) {
+					apiResponseStatus = ApiResponseStatus.UPDATE_PROFILE_FAIL;
+				} else {
+										
+					// no user is register with same email address so continue with registration
+					query = "UPDATE "
+							+Database.Login.TABLE_NAME
+							+" SET "
+							+Database.Login.PASSWORD+"=?"
+							+" WHERE "
+							+Database.Login.USER_ID+"=?";
+					
+					statement = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
+					statement.setString(1, user.getPassword());
+					statement.setInt(2, user.getUser_id());
+					int afftectedRow = statement.executeUpdate();
+						
+					Profile profile = user.getProfile();
+					
+					// insert data into profile table
+					query = "UPDATE "
+							+Database.Profile.TABLE_NAME
+							+" SET "
+							+Database.Profile.COMPANY_NAME+"=?"
+							+"," +Database.Profile.FIRST_NAME+"=?"
+							+"," +Database.Profile.LAST_NAME+"=?"
+							+"," +Database.Profile.STATE+"=?"
+							+"," +Database.Profile.COUNTRY+"=?"
+							+"," +Database.Profile.CITY+"=?"
+							+"," +Database.Profile.STREET_ADDRESS+"=?"
+							+"," +Database.Profile.ALTERNET_MOBILE+"=?"
+							+"," +Database.Profile.MOBILE+"=?"
+							+" WHERE "
+							+Database.Profile.USER_ID+"=?";
+					
+					statement = connection.prepareStatement(query);
+					statement.setString(1, UtilsString.getStirng(profile.getCompnay_name()));
+					statement.setString(2, UtilsString.getStirng(profile.getFname()));
+					statement.setString(3, UtilsString.getStirng(profile.getLname()));
+					statement.setString(4, UtilsString.getStirng(profile.getState()));
+					statement.setString(5, UtilsString.getStirng(profile.getCountry()));
+					statement.setString(6, UtilsString.getStirng(profile.getCity()));
+					statement.setString(7, UtilsString.getStirng(profile.getStreet_address()));
+					statement.setString(8, UtilsString.getStirng(profile.getAlternet_mobile()));
+					statement.setString(9, UtilsString.getStirng(profile.getMobile()));
+					statement.setInt(10, user.getUser_id());
+					
+					afftectedRow = statement.executeUpdate();
+					
+					if(afftectedRow == 0) {
+						//rollback transaction
+						connection.rollback();
+						apiResponseStatus = ApiResponseStatus.UPDATE_PROFILE_FAIL;
+					} else {
+						apiResponseStatus = ApiResponseStatus.UPDATE_PROFILE_SUCCESS;	
 					}
 					
 					System.out.println(statement.toString());

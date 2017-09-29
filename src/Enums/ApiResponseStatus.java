@@ -23,6 +23,8 @@ public enum ApiResponseStatus {
 	PROFILE_FATCH_SUCCESS(1, "User profile fatch successfully"),
 	REGISTRATION_FAIL(0, "User already register with same email id. Please try with different one."),
 	REGISTRATION_SUCCESS(1, "User register Successfully"),
+	UPDATE_PROFILE_FAIL(0, "Fail to update profile please pass valid data"),
+	UPDATE_PROFILE_SUCCESS(1, "Profile update Successfully"),
 	
 	
 	//Category-Subcategory related
