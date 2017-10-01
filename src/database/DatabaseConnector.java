@@ -25,7 +25,8 @@ public class DatabaseConnector {
 		
 		// new way to connect database port is optional if you run MySQL on 3306 or set port value
 		MysqlDataSource dataSource = new MysqlDataSource();
-		dataSource.setServerName("192.168.0.209");
+//		dataSource.setServerName("192.168.0.209");
+		dataSource.setServerName("localhost");
 //		dataSource.setPort(3306);
 		dataSource.setDatabaseName("shopebazar");
 		dataSource.setUser("msp");
