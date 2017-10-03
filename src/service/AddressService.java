@@ -190,10 +190,11 @@ public class AddressService {
 						+", "+Database.UserAddress.IS_ENABLE
 						+", "+Database.UserAddress.FULL_NAME
 						+", "+Database.UserAddress.EMAIL
+						+", "+Database.UserAddress.CONTACT_NUMBER
 						+", "+Database.UserAddress.DEFAULT_VALUE
 						+")"
 						+ " VALUES "
-						+"(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+						+"(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 				
 				PreparedStatement statement = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
 				statement.setString(1, address.getAddress1());
@@ -206,7 +207,8 @@ public class AddressService {
 				statement.setInt(8, 1); // set is_enable value 1 to default enable
 				statement.setString(9, address.getFull_name());
 				statement.setString(10, address.getEmail());
-				statement.setInt(11, 0); // set default value 0
+				statement.setString(11, address.getContact_number());
+				statement.setInt(12, 0); // set default value 0
 				
 				
 				int affectedRaw = statement.executeUpdate();
@@ -288,6 +290,7 @@ public class AddressService {
 						+", "+Database.UserAddress.ADDITIONAL_DETIALS+"=?"
 						+", "+Database.UserAddress.FULL_NAME+"=?"
 						+", "+Database.UserAddress.EMAIL+"=?"
+						+", "+Database.UserAddress.CONTACT_NUMBER+"=?"
 						+", "+Database.UserAddress.DEFAULT_VALUE+"=?"
 						+""
 						+" WHERE "
@@ -302,8 +305,9 @@ public class AddressService {
 				statement.setString(6, address.getAddition_detail());
 				statement.setString(7, address.getFull_name());
 				statement.setString(8, address.getEmail());
-				statement.setInt(9, address.getDefault_value());
-				statement.setInt(10, address.getAddress_id());
+				statement.setString(9, address.getContact_number());
+				statement.setInt(10, address.getDefault_value());
+				statement.setInt(11, address.getAddress_id());
 				
 				int affectedRaw = statement.executeUpdate();
 				if(affectedRaw == 0) {
@@ -371,6 +375,7 @@ public class AddressService {
 				+", "+Database.UserAddress.USER_ID
 				+", "+Database.UserAddress.FULL_NAME
 				+", "+Database.UserAddress.EMAIL
+				+", "+Database.UserAddress.CONTACT_NUMBER
 				+", "+Database.UserAddress.DEFAULT_VALUE
 				+" FROM "
 				+Database.UserAddress.TABLE_NAME
@@ -403,6 +408,7 @@ public class AddressService {
 				address.setUser_id(UtilsString.getStirng(resultSet.getString(Database.UserAddress.USER_ID)));
 				address.setFull_name(UtilsString.getStirng(resultSet.getString(Database.UserAddress.FULL_NAME)));
 				address.setEmail(UtilsString.getStirng(resultSet.getString(Database.UserAddress.EMAIL)));
+				address.setContact_number(UtilsString.getStirng(resultSet.getString(Database.UserAddress.CONTACT_NUMBER)));
 				address.setDefault_value(resultSet.getInt(Database.UserAddress.DEFAULT_VALUE));
 				
 				list.add(address);

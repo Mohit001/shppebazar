@@ -96,5 +96,6 @@ public class Database {
 		public static final String CREATE_DATE = "create_date";
 		public static final String FULL_NAME = "full_name";
 		public static final String EMAIL = "email";
+		public static final String CONTACT_NUMBER = "contact_number";
 	}
 }

@@ -318,7 +318,7 @@ public class UserService {
 					profile.setAlternet_mobile(resultSet.getString(Database.Profile.ALTERNET_MOBILE));
 					profile.setMobile(resultSet.getString(Database.Profile.MOBILE));
 					
-
+						
 					user.setUser_id(resultSet.getInt(Database.Login.USER_ID));
 					user.setEmail(resultSet.getString(Database.Login.EMAIL));
 					user.setPassword(resultSet.getString(Database.Login.PASSWORD));
