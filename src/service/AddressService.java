@@ -56,7 +56,7 @@ public class AddressService {
 				addressList.clear();
 				addressList.addAll(getUserAddressList(id));
 				if(addressList.size() == 0) {
-					apiResponseStatus = ApiResponseStatus.ADDRESS_ADD_FAIL;
+					apiResponseStatus = ApiResponseStatus.ADDRESS_FAIL;
 				} else {
 					apiResponseStatus = apiResponseStatus.ADDRESS_SUCCESS;
 				}
@@ -124,12 +124,12 @@ public class AddressService {
 					addressList.clear();
 					addressList.addAll(getUserAddressList(id));
 					
-						response.setInfo(addressList);
-						
-						statement.close();
-						connection.close();
-						
-						apiResponseStatus = ApiResponseStatus.ADDRESS_DELETE_SUCCESS;
+					response.setInfo(addressList);
+					
+					statement.close();
+					connection.close();
+					
+					apiResponseStatus = ApiResponseStatus.ADDRESS_DELETE_SUCCESS;
 					
 				}
 			}
@@ -380,13 +380,11 @@ public class AddressService {
 				+" FROM "
 				+Database.UserAddress.TABLE_NAME
 				+" WHERE "
-				+Database.UserAddress.USER_ID+"=?"
-				+" AND "
-				+Database.UserAddress.IS_ENABLE+"=?";
+				+Database.UserAddress.USER_ID+"=?";
+
 		
 		PreparedStatement statement = connection.prepareStatement(query);
 		statement.setInt(1, id);
-		statement.setInt(2, 1);
 		
 		ResultSet resultSet = statement.executeQuery();
 		connection.commit();
