@@ -51,6 +51,20 @@ public enum ApiResponseStatus {
 	ADDRESS_INVALID_USER_ID(201, "Please provide valid userid"),
 	ADDRESS_INVALID_ADDRESS_ID(202, "Please provide valid addressid"),
 	
+	// cart related enums 3001 - 3099 
+	CART_PRODUCT_ADD_FAIL(0, "Fail to add product in cart"),
+	CART_PRODUCT_ADD_SUCCESS(1, "Product added successfully"),
+	CART_PRODUCT_UPDATE_FAIL(0, "Fail to update product infromation"),
+	CART_PRODUCT_UPDATE_SUCCESS(1, "Product information updated successfully"),
+	CART_PRODUCT_REMOVE_FAIL(0, "Fail to remove product from cart"),
+	CART_PRODUCT_REMOVE_SUCCESS(1, "Product remove successfully"),
+	CART_PRODUCT_OUT_OF_STOCK(3001, "Sorry!!! Selected product is out of stock"),
+	CART_MULTIPLE_INSTANCE(3002, "Multiple instance retrive for cart please contact to support team"),
+	CART_QUENTITY_EXCEED(3003, "You can not add more than 10 quentity for any product in cart"),
+	CART_PRODUCT_MISSING(3004, "Invalid request. Product missing in request"),
+	
+	
+	
 	
 	//database related enums range 1001 - 1099
 	DATABASE_CONNECTINO_ERROR(1001, "Server encounter issue to connect database."),

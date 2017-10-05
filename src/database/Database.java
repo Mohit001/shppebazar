@@ -98,4 +98,38 @@ public class Database {
 		public static final String EMAIL = "email";
 		public static final String CONTACT_NUMBER = "contact_number";
 	}
+	
+	public static class UserCartTable{
+		public static final String TABLE_NAME = "user_cart";
+		public static final String CART_ID = "cart_id";
+		public static final String CREATE_DATE = "create_date";
+		public static final String IP_ADDRESS = "ip_address";
+		public static final String USER_ID = "user_id";
+		public static final String GST_TYPE = "gst_type";
+		public static final String GST = "gst";
+		public static final String CART_STATUS = "cart_status";
+		public static final String CART_TOKEN = "token";
+		public static final String CART_SHIPPING_ID = "shipping_address_id";
+		public static final String CART_BILLING_ID = "billing_address_id";
+		public static final String PAYMENT_TYPE_ID = "payment_type_id";
+		public static final String SALT = "salt";
+	}
+	
+	
+	public static class UserCartProductTable{
+		public static final String TABLE_NAME = "user_cart_product";
+		public static final String USER_CART_PRODUCT_ID = "user_cart_product_id";
+		public static final String CART_ID = "cart_id";
+		public static final String PRODUCT_ID = "product_id";
+		public static final String PRODUCT_NAME = "product_name";
+		public static final String PRODUCT_QTY = "product_qty";
+		public static final String PRODUCT_PRICE = "product_price";
+		public static final String PRODUCT_CODE = "product_code";
+		public static final String SHIPPING_CHARGE = "shipping_charge";
+		public static final String STATUS = "status";
+	}
+	
+	
+	
+	
 }
