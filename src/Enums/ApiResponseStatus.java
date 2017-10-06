@@ -14,6 +14,7 @@ public enum ApiResponseStatus {
 	REQUEST_PARSING_ERROR(2003, "Error in parsing request. Please contact to administrator"),
 	
 	//User related enums 101-199
+	ENVIRONMENT_SUCCESS(1, "Environment retrive successfully"),
 	LOGIN_FAIL(0, "Please provide valid username and password"),
 	LOGIN_SUCCESS(1, "User login successfully"),
 	MULTIPLE_USER_FOUND(101, "Multiple user record found with same credentials. Please contact to administrator"),
@@ -25,6 +26,7 @@ public enum ApiResponseStatus {
 	REGISTRATION_SUCCESS(1, "User register Successfully"),
 	UPDATE_PROFILE_FAIL(0, "Fail to update profile please pass valid data"),
 	UPDATE_PROFILE_SUCCESS(1, "Profile update Successfully"),
+
 	
 	
 	//Category-Subcategory related

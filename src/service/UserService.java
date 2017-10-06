@@ -6,6 +6,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -26,6 +27,8 @@ import Utils.UtilsString;
 import basemodel.BaseResponse;
 import database.Database;
 import database.DatabaseConnector;
+import model.BasicCMS;
+import model.Environment;
 import model.Person;
 import model.Profile;
 
@@ -35,6 +38,87 @@ import model.Profile;
 public class UserService {
 
 	private ObjectMapper mapper = new ObjectMapper();
+	
+	
+	@GET
+	@Path("/environment/{user_id}")
+	public Response environment(@PathParam("user_id") int user_id) throws JsonProcessingException, SQLException {
+		String responseJson = "";
+		ApiResponseStatus apiResponseStatus = ApiResponseStatus.OUT_OF_SERVICE;
+		BaseResponse<Environment> response = new BaseResponse<>();
+		response.setStatus(apiResponseStatus.getStatus_code());
+		response.setMessage(apiResponseStatus.getStatus_message());
+		Environment environment = new Environment();
+		
+		Connection connection = null;
+		try {
+			environment.setCurrency_sign("₹");
+			environment.setCurrency_multiplier(1.0);
+			environment.setCurrency_id(1);
+			environment.setBasicCMSPage(new ArrayList<BasicCMS>());
+			if(user_id == 0) {
+				environment.setUser_id(0);
+				environment.setToken("");
+			} else {
+				String tokenQuery = "SELECT "
+						+Database.UserCartTable.CART_ID
+						+", "+Database.UserCartTable.CART_TOKEN
+						+" FROM  "
+						+Database.UserCartTable.TABLE_NAME
+						+" WHERE "
+						+Database.UserCartTable.USER_ID+"=?";
+				
+				DatabaseConnector connector = new DatabaseConnector();
+				connection = connector.getConnection();
+				connection.setAutoCommit(false);
+				PreparedStatement statement = connection.prepareStatement(tokenQuery);
+				statement.setInt(1, user_id);
+				ResultSet resultSet = statement.executeQuery();
+				
+				resultSet.last();
+				if(resultSet.getRow() != 0) {
+					environment.setUser_id(user_id);
+					environment.setCart_id(resultSet.getInt(Database.UserCartTable.CART_ID));
+					environment.setToken(resultSet.getString(Database.UserCartTable.CART_TOKEN));	
+				} else {
+					environment.setUser_id(user_id);
+					environment.setToken("");
+				}
+				
+			}
+			
+			apiResponseStatus = ApiResponseStatus.ENVIRONMENT_SUCCESS;
+			
+			
+		}catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			environment = new Environment();
+			apiResponseStatus = ApiResponseStatus.DATABASE_CONNECTINO_ERROR;
+			
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			environment = new Environment();
+			apiResponseStatus = ApiResponseStatus.MYSQL_EXCEPTION;
+		} finally {
+			
+			response.setStatus(apiResponseStatus.getStatus_code());
+			response.setMessage(apiResponseStatus.getStatus_message());
+			response.setInfo(environment);
+			responseJson = mapper.writeValueAsString(response);
+			
+			if(connection != null && !connection.isClosed()) {
+				
+				connection.commit();
+				connection.close();
+			}
+
+		}
+		
+		
+		return Response.status(Status.OK).entity(responseJson).build();
+	}
 	
 	
 	/**

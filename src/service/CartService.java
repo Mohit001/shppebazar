@@ -615,12 +615,13 @@ public class CartService {
 			statement.setInt(2, cart_id);
 			int affectedRow = statement.executeUpdate();
 			
-			if(affectedRow == 0) {
+			apiResponseStatus = ApiResponseStatus.CART_SHIPPING_ADDRESS_UPDATE_SUCCESS;
+			
+			/*if(affectedRow == 0) {
 				apiResponseStatus = ApiResponseStatus.CART_SHIPPING_ADDRESS_UPDATE_FAIL;
 			} else {
-				apiResponseStatus = ApiResponseStatus.CART_SHIPPING_ADDRESS_UPDATE_SUCCESS;
-				
-			}
+				apiResponseStatus = ApiResponseStatus.CART_SHIPPING_ADDRESS_UPDATE_SUCCESS;	
+			}*/
 			
 		}catch (ClassNotFoundException e) {
 			e.printStackTrace();
@@ -679,12 +680,13 @@ public class CartService {
 			statement.setInt(2, cart_id);
 			int affectedRow = statement.executeUpdate();
 			
-			if(affectedRow == 0) {
+			apiResponseStatus = ApiResponseStatus.CART_BILLING_ADDRESS_UPDATE_SUCCESS;
+			
+			/*if(affectedRow == 0) {
 				apiResponseStatus = ApiResponseStatus.CART_BILLING_ADDRESS_UPDATE_FAIL;
 			} else {
-				apiResponseStatus = ApiResponseStatus.CART_BILLING_ADDRESS_UPDATE_SUCCESS;
-				
-			}
+				apiResponseStatus = ApiResponseStatus.CART_BILLING_ADDRESS_UPDATE_SUCCESS;	
+			}*/
 			
 		}catch (ClassNotFoundException e) {
 			e.printStackTrace();
