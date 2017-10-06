@@ -2,11 +2,11 @@ package Enums;
 
 public enum CartStatusEnum {
 
-	OPEN("Open"),
-	INPROGRESS("Inprogress"), 
-	SHIPPED("Shipped"),
-	OUTOFDELIVERY("Out of delivery"),
-	DELIVERED("Delivered");
+	OPEN("open"),
+	INPROGRESS("inprogress"), 
+	SHIPPED("shipped"),
+	OUTOFDELIVERY("out_of_delivery"),
+	DELIVERED("delivered");
 	
 	
 	private String cartStatus;

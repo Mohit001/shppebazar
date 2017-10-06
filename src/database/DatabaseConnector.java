@@ -11,7 +11,7 @@ public class DatabaseConnector {
 	
 	
 	public Connection getConnection() throws ClassNotFoundException, SQLException {
-		if(connection == null)
+		if(connection == null || connection.isClosed())
 			connection = getDatabseConnection();
 
 		return connection;

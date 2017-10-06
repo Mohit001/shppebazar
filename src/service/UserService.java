@@ -411,7 +411,7 @@ public class UserService {
 				DatabaseConnector connector = new DatabaseConnector();
 				connection = connector.getConnection();
 				connection.setAutoCommit(false);
-				
+				  
 				// check user is already available with same email or not.
 				String query = "SELECT "
 						+Database.Login.EMAIL

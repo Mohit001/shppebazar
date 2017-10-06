@@ -105,13 +105,11 @@ public class Database {
 		public static final String CREATE_DATE = "create_date";
 		public static final String IP_ADDRESS = "ip_address";
 		public static final String USER_ID = "user_id";
-		public static final String GST_TYPE = "gst_type";
-		public static final String GST = "gst";
 		public static final String CART_STATUS = "cart_status";
 		public static final String CART_TOKEN = "token";
 		public static final String CART_SHIPPING_ID = "shipping_address_id";
 		public static final String CART_BILLING_ID = "billing_address_id";
-		public static final String PAYMENT_TYPE_ID = "payment_type_id";
+		public static final String CART_PAYMENT_TYPE_ID = "payment_type_id";
 		public static final String SALT = "salt";
 	}
 	
@@ -127,6 +125,8 @@ public class Database {
 		public static final String PRODUCT_CODE = "product_code";
 		public static final String SHIPPING_CHARGE = "shipping_charge";
 		public static final String STATUS = "status";
+		public static final String GST_TYPE = "gst_type";
+		public static final String GST = "gst";
 	}
 	
 	

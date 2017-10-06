@@ -56,12 +56,21 @@ public enum ApiResponseStatus {
 	CART_PRODUCT_ADD_SUCCESS(1, "Product added successfully"),
 	CART_PRODUCT_UPDATE_FAIL(0, "Fail to update product infromation"),
 	CART_PRODUCT_UPDATE_SUCCESS(1, "Product information updated successfully"),
-	CART_PRODUCT_REMOVE_FAIL(0, "Fail to remove product from cart"),
+	CART_PRODUCT_REMOVE_FAIL(0, "Fail to remove product from cart. Please provide valid cart_id and product_id"),
 	CART_PRODUCT_REMOVE_SUCCESS(1, "Product remove successfully"),
 	CART_PRODUCT_OUT_OF_STOCK(3001, "Sorry!!! Selected product is out of stock"),
 	CART_MULTIPLE_INSTANCE(3002, "Multiple instance retrive for cart please contact to support team"),
 	CART_QUENTITY_EXCEED(3003, "You can not add more than 10 quentity for any product in cart"),
 	CART_PRODUCT_MISSING(3004, "Invalid request. Product missing in request"),
+	CART_SHIPPING_ADDRESS_UPDATE_FAIL(0, "Fail to set shipping address"),
+	CART_SHIPPING_ADDRESS_UPDATE_SUCCESS(1, "Shipping address set successfully"),
+	CART_BILLING_ADDRESS_UPDATE_FAIL(0, "Fail to set billing address"),
+	CART_BILLING_ADDRESS_UPDATE_SUCCESS(1, "Billing address set successfully"),
+	CART_PAYMENT_TYPE_UPDATE_FAIL(0, "Fail to set payment type"),
+	CART_PAYMENT_TYPE_UPDATE_SUCCESS(1, "Payment type set successfully"),
+	ORDER_PLACE_FAIL(0, "Fail to place order"),
+	ORDER_PLACE_SUCCESS(1, "Order placed successfully"),
+	
 	
 	
 	
