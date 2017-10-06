@@ -10,6 +10,9 @@ public class Environment {
 	private String token;
 	private int user_id;
 	private int cart_id;
+	private String imagePrefix;
+	private String thumbPrefix;
+	private PaymentInfo paymentInfo;
 	private List<BasicCMS> basicCMSPage;
 	
 	
@@ -54,6 +57,24 @@ public class Environment {
 	}
 	public void setCart_id(int cart_id) {
 		this.cart_id = cart_id;
+	}
+	public String getImagePrefix() {
+		return imagePrefix;
+	}
+	public void setImagePrefix(String imagePrefix) {
+		this.imagePrefix = imagePrefix;
+	}
+	public String getThumbPrefix() {
+		return thumbPrefix;
+	}
+	public void setThumbPrefix(String thumbPrefix) {
+		this.thumbPrefix = thumbPrefix;
+	}
+	public PaymentInfo getPaymentInfo() {
+		return paymentInfo;
+	}
+	public void setPaymentInfo(PaymentInfo paymentInfo) {
+		this.paymentInfo = paymentInfo;
 	}
 	
 	

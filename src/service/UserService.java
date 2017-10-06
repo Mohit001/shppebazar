@@ -29,6 +29,7 @@ import database.Database;
 import database.DatabaseConnector;
 import model.BasicCMS;
 import model.Environment;
+import model.PaymentInfo;
 import model.Person;
 import model.Profile;
 
@@ -56,6 +57,17 @@ public class UserService {
 			environment.setCurrency_multiplier(1.0);
 			environment.setCurrency_id(1);
 			environment.setBasicCMSPage(new ArrayList<BasicCMS>());
+			environment.setImagePrefix("");
+			environment.setThumbPrefix("");
+			
+			PaymentInfo paymentInfo = new PaymentInfo();
+			paymentInfo.setIs_live_mode(0);
+			paymentInfo.setKey("");
+			paymentInfo.setSalt("");
+			paymentInfo.setStatus("");
+			paymentInfo.setTitle("");
+			environment.setPaymentInfo(paymentInfo);
+	
 			if(user_id == 0) {
 				environment.setUser_id(0);
 				environment.setToken("");
