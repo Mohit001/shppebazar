@@ -89,7 +89,7 @@ public class CartService {
 				
 				for(int i=0; i< userCart.getUserCartProduct().size(); i++) {
 					UserCartProduct product = userCart.getUserCartProduct().get(i);
-				apiResponseStatus = insertItemIntoCart(userCart, product, connection, apiResponseStatus);
+				apiResponseStatus = createAndInsertItemIntoCart(connection, userCart, product, apiResponseStatus);
 				}
 				
 				
@@ -124,10 +124,10 @@ public class CartService {
 						UserCartProduct product = list.get(i);
 						if(rowCount == 0) {
 							// execute insert
-							apiResponseStatus = insertItemIntoCart(userCart, product, connection, apiResponseStatus);
+							apiResponseStatus = insertItemIntoCart(connection, userCart, product, apiResponseStatus);
 						} else {
 							userCart.setCart_id(usercartid);
-							apiResponseStatus = updateCartItem(userCart, product, connection, apiResponseStatus);
+							apiResponseStatus = updateCartItem(connection, userCart, product, apiResponseStatus);
 						}
 						
 					}
@@ -313,7 +313,7 @@ public class CartService {
 				PreparedStatement cartProductStatement = connection.prepareStatement(getUserCartProductQuery);
 				cartProductStatement.setInt(1, cart_id);
 				ResultSet userCartProductResultSet = cartProductStatement.executeQuery();
-				resultSet.last();
+				userCartProductResultSet.last();
 				if(userCartProductResultSet.getRow() != 0) {
 					userCartProductResultSet.first();
 					do {
@@ -322,7 +322,7 @@ public class CartService {
 						product.setProduct_id(userCartProductResultSet.getInt(Database.UserCartProductTable.PRODUCT_ID));
 						product.setProduct_name(userCartProductResultSet.getString(Database.UserCartProductTable.PRODUCT_NAME));
 						product.setProduct_qty(userCartProductResultSet.getInt(Database.UserCartProductTable.PRODUCT_QTY));
-						product.setProduct_price(userCartProductResultSet.getDouble(Database.UserCartProductTable.PRODUCT_PRICE));
+						product.setProduct_price(userCartProductResultSet.getString(Database.UserCartProductTable.PRODUCT_PRICE));
 						product.setProduct_code(userCartProductResultSet.getString(Database.UserCartProductTable.PRODUCT_CODE));
 						product.setShipping_charge(userCartProductResultSet.getInt(Database.UserCartProductTable.SHIPPING_CHARGE));
 						product.setStatus(userCartProductResultSet.getString(Database.UserCartProductTable.STATUS));
@@ -333,11 +333,12 @@ public class CartService {
 					}while(!userCartProductResultSet.isAfterLast());
 				}
 				userCart.setUserCartProduct(list);
+				userCart.setCartCount(list.size());
 			}
 		}
 		return userCart;
 	}
-	private ApiResponseStatus insertItemIntoCart(UserCart userCart,UserCartProduct userCartProduct, Connection connection, ApiResponseStatus apiResponseStatus) throws ClassNotFoundException, SQLException {
+	private ApiResponseStatus createAndInsertItemIntoCart(Connection connection, UserCart userCart,UserCartProduct userCartProduct, ApiResponseStatus apiResponseStatus) throws ClassNotFoundException, SQLException {
 		// generate salt and than create new token
 		String salt, token;
 		if(userCart.getToken() == null || userCart.getToken().isEmpty()) {
@@ -363,9 +364,6 @@ public class CartService {
 				+" VALUES "
 				+"(?, ?, ?, ?, ?, ?, ?)";
 		
-		DatabaseConnector connector = new DatabaseConnector();
-		connection = connector.getConnection();
-		connection.setAutoCommit(false);
 		PreparedStatement statement = connection.prepareStatement(insertQuery, Statement.RETURN_GENERATED_KEYS);
 		statement.setInt(1, userCart.getUser_id());
 		statement.setString(2, CartStatusEnum.OPEN.getStatus());
@@ -408,7 +406,7 @@ public class CartService {
 			cartProductStatement.setInt(2, userCartProduct.getProduct_id());
 			cartProductStatement.setString(3, userCartProduct.getProduct_name());
 			cartProductStatement.setInt(4, userCartProduct.getProduct_qty());
-			cartProductStatement.setDouble(5, userCartProduct.getProduct_price());
+			cartProductStatement.setString(5, userCartProduct.getProduct_price());
 			cartProductStatement.setString(6, userCartProduct.getProduct_code());
 			cartProductStatement.setInt(7, userCartProduct.getShipping_charge());
 			cartProductStatement.setString(8, CartStatusEnum.OPEN.getStatus());
@@ -422,7 +420,7 @@ public class CartService {
 			} else {
 				apiResponseStatus = ApiResponseStatus.CART_PRODUCT_ADD_SUCCESS;
 				userCart.setCart_id(lastInsertedID);
-				
+				userCart.setCartCount(getCartItemCount(connection, lastInsertedID));
 				
 			}
 		}
@@ -431,7 +429,54 @@ public class CartService {
 	}
 	
 	
-	private ApiResponseStatus updateCartItem(UserCart userCart, UserCartProduct cartProduct, Connection connection, ApiResponseStatus apiResponseStatus) throws ClassNotFoundException, SQLException {
+	private ApiResponseStatus insertItemIntoCart(Connection connection, UserCart userCart,UserCartProduct userCartProduct, ApiResponseStatus apiResponseStatus) throws ClassNotFoundException, SQLException {
+		// generate salt and than create new token
+		
+			
+			String productInsertQuery = "INSERT INTO "
+					+Database.UserCartProductTable.TABLE_NAME
+					+"("
+					+Database.UserCartProductTable.CART_ID
+					+", "+Database.UserCartProductTable.PRODUCT_ID
+					+", "+Database.UserCartProductTable.PRODUCT_NAME
+					+", "+Database.UserCartProductTable.PRODUCT_QTY
+					+", "+Database.UserCartProductTable.PRODUCT_PRICE
+					+", "+Database.UserCartProductTable.PRODUCT_CODE
+					+", "+Database.UserCartProductTable.SHIPPING_CHARGE
+					+", "+Database.UserCartProductTable.STATUS
+					+", "+Database.UserCartProductTable.GST_TYPE
+					+", "+Database.UserCartProductTable.GST
+					+")"
+					+" VALUES "
+					+"(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+			
+			PreparedStatement cartProductStatement = connection.prepareStatement(productInsertQuery);
+			cartProductStatement.setInt(1, userCart.getCart_id());
+			cartProductStatement.setInt(2, userCartProduct.getProduct_id());
+			cartProductStatement.setString(3, userCartProduct.getProduct_name());
+			cartProductStatement.setInt(4, userCartProduct.getProduct_qty());
+			cartProductStatement.setString(5, userCartProduct.getProduct_price());
+			cartProductStatement.setString(6, userCartProduct.getProduct_code());
+			cartProductStatement.setInt(7, userCartProduct.getShipping_charge());
+			cartProductStatement.setString(8, CartStatusEnum.OPEN.getStatus());
+			cartProductStatement.setString(9, userCartProduct.getGst_type());
+			cartProductStatement.setDouble(10, userCartProduct.getGst());
+			
+			int cartProductAffectedRow = cartProductStatement.executeUpdate();
+			if(cartProductAffectedRow == 0) {
+				apiResponseStatus = ApiResponseStatus.CART_PRODUCT_ADD_FAIL;
+				connection.rollback();
+			} else {
+				apiResponseStatus = ApiResponseStatus.CART_PRODUCT_ADD_SUCCESS;
+				userCart.setCartCount(getCartItemCount(connection, userCart.getCart_id()));
+				
+			}
+		
+		return apiResponseStatus;
+	}
+	
+	
+	private ApiResponseStatus updateCartItem(Connection connection, UserCart userCart, UserCartProduct cartProduct, ApiResponseStatus apiResponseStatus) throws ClassNotFoundException, SQLException {
 		// generate salt and than create new token
 		String salt, token;
 		if(userCart.getToken() == null || userCart.getToken().isEmpty()) {
@@ -452,9 +497,7 @@ public class CartService {
 				+" AND "
 				+Database.UserCartProductTable.PRODUCT_ID+"=?";
 		
-//		DatabaseConnector connector = new DatabaseConnector();
-//		connection = connector.getConnection();
-//		connection.setAutoCommit(false);
+
 		PreparedStatement statement = connection.prepareStatement(insertQuery);
 		statement.setInt(1, userCart.getCart_id());
 		statement.setInt(2, cartProduct.getProduct_id());
@@ -489,7 +532,7 @@ public class CartService {
 				userCart.setSalt(salt);
 				userCart.getUserCartProduct().get(0).setProduct_qty(newQTY);
 				apiResponseStatus = ApiResponseStatus.CART_PRODUCT_UPDATE_SUCCESS;
-				
+				userCart.setCartCount(getCartItemCount(connection, userCart.getCart_id()));
 				
 			}
 		}
@@ -775,5 +818,17 @@ public class CartService {
 		return Response.status(Status.OK).entity(responseJson).build();
 	}
 	
-	
+	private int getCartItemCount(Connection connection, int cart_id) throws SQLException {
+		String productQuery = "SELECT COUNT(*) AS count FROM "
+				+Database.UserCartProductTable.TABLE_NAME
+				+" WHERE "
+				+Database.UserCartProductTable.CART_ID+"=?";
+		PreparedStatement productStatement = connection.prepareStatement(productQuery);
+		productStatement.setInt(1, cart_id);
+		ResultSet productResultset = productStatement.executeQuery();
+		productResultset.last();
+		int productCount = productResultset.getInt("count");
+		
+		return productCount;
+	}
 }
