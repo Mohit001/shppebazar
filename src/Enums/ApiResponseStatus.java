@@ -69,6 +69,8 @@ public enum ApiResponseStatus {
 	CART_SHIPPING_ADDRESS_UPDATE_SUCCESS(1, "Shipping address set successfully"),
 	CART_BILLING_ADDRESS_UPDATE_FAIL(0, "Fail to set billing address"),
 	CART_BILLING_ADDRESS_UPDATE_SUCCESS(1, "Billing address set successfully"),
+	CART_PAYMENT_TYPE_LIST_FAIL(0, "Fail to get payment type"),
+	CART_PAYMENT_TYPE_LIST_SUCCESS(1, "Payment types fetch successfully"),
 	CART_PAYMENT_TYPE_UPDATE_FAIL(0, "Fail to set payment type"),
 	CART_PAYMENT_TYPE_UPDATE_SUCCESS(1, "Payment type set successfully"),
 	ORDER_PLACE_FAIL(0, "Fail to place order"),

@@ -53,13 +53,17 @@ public class AddressService {
 			if(id == 0) {
 				apiResponseStatus = ApiResponseStatus.ADDRESS_INVALID_USER_ID;
 			}  else {
+				DatabaseConnector connector = new DatabaseConnector();
+				connection = connector.getConnection();
+				connection.setAutoCommit(false);
 				addressList.clear();
-				addressList.addAll(getUserAddressList(id));
+				addressList.addAll(getUserAddressList(connection, id));
 				if(addressList.size() == 0) {
 					apiResponseStatus = ApiResponseStatus.ADDRESS_FAIL;
 				} else {
 					apiResponseStatus = apiResponseStatus.ADDRESS_SUCCESS;
 				}
+				
 			}
 		}catch (ClassNotFoundException e) {
 			// TODO Auto-generated catch block
@@ -79,6 +83,7 @@ public class AddressService {
 			responseJson = mapper.writeValueAsString(response);
 			
 			if(connection != null && !connection.isClosed()) {
+				connection.commit();
 				connection.close();
 			}
 		}
@@ -122,7 +127,7 @@ public class AddressService {
 					
 					connection.commit();
 					addressList.clear();
-					addressList.addAll(getUserAddressList(id));
+					addressList.addAll(getUserAddressList(connection, id));
 					
 					response.setInfo(addressList);
 					
@@ -221,7 +226,7 @@ public class AddressService {
 					int insertedNewID = resultSet.getInt(1);
 					connection.commit();
 					addressList.clear();
-					addressList.addAll(getUserAddressList(Integer.parseInt(address.getUser_id())));
+					addressList.addAll(getUserAddressList(connection, Integer.parseInt(address.getUser_id())));
 					response.setInfo(addressList);
 					resultSet.close();
 					
@@ -358,11 +363,8 @@ public class AddressService {
 	}
 	
 	
-	private List<Address> getUserAddressList(int id) throws ClassNotFoundException, SQLException{
+	private List<Address> getUserAddressList(Connection connection, int id) throws ClassNotFoundException, SQLException{
 		List<Address> list = new ArrayList<>();
-		DatabaseConnector connector = new DatabaseConnector();
-		Connection connection = connector.getConnection();
-		connection.setAutoCommit(false);
 		
 		String query = "SELECT "
 				+Database.UserAddress.ADDRESS_ID
@@ -419,7 +421,7 @@ public class AddressService {
 		
 		resultSet.close();
 		statement.close();
-		connection.close();
+		
 		return list;
 	}
 }

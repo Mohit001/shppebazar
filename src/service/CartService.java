@@ -40,6 +40,8 @@ import basemodel.BaseResponse;
 import database.Database;
 
 import database.DatabaseConnector;
+import model.Address;
+import model.PaymentMethod;
 import model.UserCart;
 import model.UserCartProduct;
 
@@ -748,7 +750,7 @@ public class CartService {
 	
 		String responseJson = "";
 		ApiResponseStatus apiResponseStatus = ApiResponseStatus.OUT_OF_SERVICE;
-		BaseResponse<UserCart> response = new BaseResponse<>();
+		BaseResponse<List<Address>> response = new BaseResponse<>();
 		response.setStatus(apiResponseStatus.getStatus_code());
 		response.setMessage(apiResponseStatus.getStatus_message());
 		userCart = null;
@@ -791,7 +793,7 @@ public class CartService {
 
 			response.setStatus(apiResponseStatus.getStatus_code());
 			response.setMessage(apiResponseStatus.getStatus_message());
-			response.setInfo(userCart);
+			response.setInfo(new ArrayList<>());
 			responseJson = mapper.writeValueAsString(response);
 			
 			if(connection != null && !connection.isClosed()) {
@@ -870,16 +872,69 @@ public class CartService {
 	}
 	
 	@GET
+	@Path("/getPaymentMethod")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response getPaymentType() throws SQLException, JsonProcessingException {
+		
+		String responseJson = "";
+		ApiResponseStatus apiResponseStatus = ApiResponseStatus.OUT_OF_SERVICE;
+		BaseResponse<List<PaymentMethod>> response = new BaseResponse<>();
+		response.setStatus(apiResponseStatus.getStatus_code());
+		response.setMessage(apiResponseStatus.getStatus_message());
+		List<PaymentMethod> paymentMethodList = new ArrayList<>();
+		
+		
+		Connection connection = null;
+		try {
+			DatabaseConnector connector = new DatabaseConnector();
+			connection = connector.getConnection();
+			connection.setAutoCommit(false);
+			
+			PaymentMethod paymentMethod = new PaymentMethod();
+			paymentMethod.setId(1);
+			paymentMethod.setTitle("Cash On Delivery");
+			paymentMethod.setCode("COD");
+			paymentMethod.setSelected(true);
+			paymentMethod.setCc_types(new ArrayList<>());
+			
+			paymentMethodList.add(paymentMethod);
+			
+			
+		}catch (ClassNotFoundException e) {
+			e.printStackTrace();
+			apiResponseStatus = ApiResponseStatus.DATABASE_CONNECTINO_ERROR;
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			connection.rollback();
+			e.printStackTrace();
+			apiResponseStatus = ApiResponseStatus.MYSQL_EXCEPTION;
+		} finally {
+
+			response.setStatus(apiResponseStatus.getStatus_code());
+			response.setMessage(apiResponseStatus.getStatus_message());
+			response.setInfo(paymentMethodList);
+			responseJson = mapper.writeValueAsString(response);
+			
+			if(connection != null && !connection.isClosed()) {
+				connection.commit();
+				connection.close();
+			}
+		}
+
+		
+		return Response.status(Status.OK).entity(responseJson).build();
+	}
+	
+	@GET
 	@Path("/setPaymentType/{cart_id}/{payment_type_id}")
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response setPaymentTypeTocart(@PathParam("cart_id") int cart_id, @PathParam("payment_type_id") int payment_type_id) throws SQLException, JsonProcessingException {
 	
 		String responseJson = "";
 		ApiResponseStatus apiResponseStatus = ApiResponseStatus.OUT_OF_SERVICE;
-		BaseResponse<UserCart> response = new BaseResponse<>();
+		BaseResponse<List<PaymentMethod>> response = new BaseResponse<>();
 		response.setStatus(apiResponseStatus.getStatus_code());
 		response.setMessage(apiResponseStatus.getStatus_message());
-		userCart = null;
 		
 		Connection connection = null;
 		try {
@@ -918,7 +973,7 @@ public class CartService {
 
 			response.setStatus(apiResponseStatus.getStatus_code());
 			response.setMessage(apiResponseStatus.getStatus_message());
-			response.setInfo(userCart);
+			response.setInfo(new ArrayList<>());
 			responseJson = mapper.writeValueAsString(response);
 			
 			if(connection != null && !connection.isClosed()) {
