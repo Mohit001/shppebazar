@@ -4,18 +4,26 @@ import java.util.List;
 
 public class Environment {
 
+	private boolean loginCompalsory;
 	private String currency_sign;
 	private int currency_id;
 	private double currency_multiplier;
 	private String token;
 	private int user_id;
 	private int cart_id;
+	private int cartCount;
 	private String imagePrefix;
 	private String thumbPrefix;
 	private PaymentInfo paymentInfo;
 	private List<BasicCMS> basicCMSPage;
+		
 	
-	
+	public boolean isLoginCompalsory() {
+		return loginCompalsory;
+	}
+	public void setLoginCompalsory(boolean loginCompalsory) {
+		this.loginCompalsory = loginCompalsory;
+	}
 	public String getCurrency_sign() {
 		return currency_sign;
 	}
@@ -75,6 +83,12 @@ public class Environment {
 	}
 	public void setPaymentInfo(PaymentInfo paymentInfo) {
 		this.paymentInfo = paymentInfo;
+	}
+	public int getCartCount() {
+		return cartCount;
+	}
+	public void setCartCount(int cartCount) {
+		this.cartCount = cartCount;
 	}
 	
 	

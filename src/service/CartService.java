@@ -27,6 +27,8 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
+import org.apache.jasper.tagplugins.jstl.core.ForEach;
+
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
@@ -89,7 +91,7 @@ public class CartService {
 				
 				for(int i=0; i< userCart.getUserCartProduct().size(); i++) {
 					UserCartProduct product = userCart.getUserCartProduct().get(i);
-				apiResponseStatus = insertItemIntoCart(userCart, product, connection, apiResponseStatus);
+				apiResponseStatus = createAndInsertItemIntoCart(connection, userCart, product, apiResponseStatus);
 				}
 				
 				
@@ -124,10 +126,10 @@ public class CartService {
 						UserCartProduct product = list.get(i);
 						if(rowCount == 0) {
 							// execute insert
-							apiResponseStatus = insertItemIntoCart(userCart, product, connection, apiResponseStatus);
+							apiResponseStatus = insertItemIntoCart(connection, userCart, product, apiResponseStatus);
 						} else {
 							userCart.setCart_id(usercartid);
-							apiResponseStatus = updateCartItem(userCart, product, connection, apiResponseStatus);
+							apiResponseStatus = updateCartItem(connection, userCart, product, i, apiResponseStatus);
 						}
 						
 					}
@@ -139,6 +141,91 @@ public class CartService {
 
 			
 			
+			
+			
+		}catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			connection.rollback();
+			e.printStackTrace();
+			apiResponseStatus = ApiResponseStatus.DATABASE_CONNECTINO_ERROR;
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			connection.rollback();
+			e.printStackTrace();
+			apiResponseStatus = ApiResponseStatus.MYSQL_EXCEPTION;
+		} finally {
+
+			response.setStatus(apiResponseStatus.getStatus_code());
+			response.setMessage(apiResponseStatus.getStatus_message());
+			response.setInfo(userCart);
+			responseJson = mapper.writeValueAsString(response);
+			
+			if(connection != null && !connection.isClosed()) {
+				connection.commit();
+				connection.close();
+			}
+		}
+
+		
+		
+		
+		return Response.status(Status.OK).entity(responseJson).build();
+	}
+	
+	
+	@Path("/updateCart")
+	@POST
+	@Consumes(MediaType.APPLICATION_JSON)
+	public Response updateCart(String jsonRequest) throws JsonParseException, JsonMappingException, IOException, SQLException {
+		
+		String responseJson = "";
+		ApiResponseStatus apiResponseStatus = ApiResponseStatus.OUT_OF_SERVICE;
+		BaseResponse<UserCart> response = new BaseResponse<>();
+		response.setStatus(apiResponseStatus.getStatus_code());
+		response.setMessage(apiResponseStatus.getStatus_message());
+		userCart = null;
+		
+		Connection connection = null;
+		try {
+			DatabaseConnector connector = new DatabaseConnector();
+			connection = connector.getConnection();
+			connection.setAutoCommit(false);
+			
+			userCart = mapper.readValue(jsonRequest, UserCart.class);
+			
+			List<UserCartProduct> list = userCart.getUserCartProduct();
+			
+			for(int i=0; i<list.size(); i++) {
+				UserCartProduct product = list.get(i);
+				
+				double subtotal = (Double.parseDouble(product.getProduct_price()) * product.getProduct_qty())
+						+ (product.getShipping_charge() * product.getProduct_qty());
+				
+				String productUpdateQuery = "UPDATE "
+						+Database.UserCartProductTable.TABLE_NAME
+						+" SET "
+						+Database.UserCartProductTable.PRODUCT_QTY+"=?"
+						+", "+Database.UserCartProductTable.SUBTOTAL+"=?"
+						+" WHERE "
+						+Database.UserCartProductTable.CART_ID+"=?"
+						+" AND "
+						+Database.UserCartProductTable.PRODUCT_ID+"=?";
+				
+				PreparedStatement cartProductStatement = connection.prepareStatement(productUpdateQuery);
+				cartProductStatement.setInt(1, product.getProduct_qty());
+				cartProductStatement.setString(2, String.valueOf(subtotal));
+				cartProductStatement.setInt(3, userCart.getCart_id());
+				cartProductStatement.setInt(4, product.getProduct_id());
+				
+				int cartProductAffectedRow = cartProductStatement.executeUpdate();
+				if(cartProductAffectedRow == 0) {
+					apiResponseStatus = ApiResponseStatus.CART_PRODUCT_UPDATE_FAIL;
+					connection.rollback();
+				} else {
+					userCart.getUserCartProduct().set(i, product);
+				}
+				
+			}
 			
 			
 		}catch (ClassNotFoundException e) {
@@ -252,7 +339,7 @@ public class CartService {
 			connection.setAutoCommit(false);
 			
 			userCart = getUserCart(connection, cart_id);
-			
+			apiResponseStatus = ApiResponseStatus.CART_LIST_SUCCESS;
 		}catch (ClassNotFoundException e) {
 			// TODO Auto-generated catch block
 			connection.rollback();
@@ -313,7 +400,7 @@ public class CartService {
 				PreparedStatement cartProductStatement = connection.prepareStatement(getUserCartProductQuery);
 				cartProductStatement.setInt(1, cart_id);
 				ResultSet userCartProductResultSet = cartProductStatement.executeQuery();
-				resultSet.last();
+				userCartProductResultSet.last();
 				if(userCartProductResultSet.getRow() != 0) {
 					userCartProductResultSet.first();
 					do {
@@ -322,22 +409,24 @@ public class CartService {
 						product.setProduct_id(userCartProductResultSet.getInt(Database.UserCartProductTable.PRODUCT_ID));
 						product.setProduct_name(userCartProductResultSet.getString(Database.UserCartProductTable.PRODUCT_NAME));
 						product.setProduct_qty(userCartProductResultSet.getInt(Database.UserCartProductTable.PRODUCT_QTY));
-						product.setProduct_price(userCartProductResultSet.getDouble(Database.UserCartProductTable.PRODUCT_PRICE));
+						product.setProduct_price(userCartProductResultSet.getString(Database.UserCartProductTable.PRODUCT_PRICE));
 						product.setProduct_code(userCartProductResultSet.getString(Database.UserCartProductTable.PRODUCT_CODE));
 						product.setShipping_charge(userCartProductResultSet.getInt(Database.UserCartProductTable.SHIPPING_CHARGE));
 						product.setStatus(userCartProductResultSet.getString(Database.UserCartProductTable.STATUS));
 						product.setGst_type(userCartProductResultSet.getString(Database.UserCartProductTable.GST_TYPE));
 						product.setGst(userCartProductResultSet.getDouble(Database.UserCartProductTable.GST));
+						product.setSubtotal(userCartProductResultSet.getString(Database.UserCartProductTable.SUBTOTAL));
 						list.add(product);
 						userCartProductResultSet.next();
 					}while(!userCartProductResultSet.isAfterLast());
 				}
 				userCart.setUserCartProduct(list);
+				userCart.setCartCount(list.size());
 			}
 		}
 		return userCart;
 	}
-	private ApiResponseStatus insertItemIntoCart(UserCart userCart,UserCartProduct userCartProduct, Connection connection, ApiResponseStatus apiResponseStatus) throws ClassNotFoundException, SQLException {
+	private ApiResponseStatus createAndInsertItemIntoCart(Connection connection, UserCart userCart,UserCartProduct userCartProduct, ApiResponseStatus apiResponseStatus) throws ClassNotFoundException, SQLException {
 		// generate salt and than create new token
 		String salt, token;
 		if(userCart.getToken() == null || userCart.getToken().isEmpty()) {
@@ -363,9 +452,6 @@ public class CartService {
 				+" VALUES "
 				+"(?, ?, ?, ?, ?, ?, ?)";
 		
-		DatabaseConnector connector = new DatabaseConnector();
-		connection = connector.getConnection();
-		connection.setAutoCommit(false);
 		PreparedStatement statement = connection.prepareStatement(insertQuery, Statement.RETURN_GENERATED_KEYS);
 		statement.setInt(1, userCart.getUser_id());
 		statement.setString(2, CartStatusEnum.OPEN.getStatus());
@@ -399,30 +485,40 @@ public class CartService {
 					+", "+Database.UserCartProductTable.STATUS
 					+", "+Database.UserCartProductTable.GST_TYPE
 					+", "+Database.UserCartProductTable.GST
+					+", "+Database.UserCartProductTable.SUBTOTAL
 					+")"
 					+" VALUES "
-					+"(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+					+"(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 			
 			PreparedStatement cartProductStatement = connection.prepareStatement(productInsertQuery);
 			cartProductStatement.setInt(1, lastInsertedID);
 			cartProductStatement.setInt(2, userCartProduct.getProduct_id());
 			cartProductStatement.setString(3, userCartProduct.getProduct_name());
 			cartProductStatement.setInt(4, userCartProduct.getProduct_qty());
-			cartProductStatement.setDouble(5, userCartProduct.getProduct_price());
+			cartProductStatement.setString(5, userCartProduct.getProduct_price());
 			cartProductStatement.setString(6, userCartProduct.getProduct_code());
 			cartProductStatement.setInt(7, userCartProduct.getShipping_charge());
 			cartProductStatement.setString(8, CartStatusEnum.OPEN.getStatus());
 			cartProductStatement.setString(9, userCartProduct.getGst_type());
 			cartProductStatement.setDouble(10, userCartProduct.getGst());
 			
+			double subtotal = (Double.parseDouble(userCartProduct.getProduct_price()) * userCartProduct.getProduct_qty())
+								+ (userCartProduct.getShipping_charge() * userCartProduct.getProduct_qty());
+			cartProductStatement.setString(11, String.valueOf(subtotal));
+			
+			
 			int cartProductAffectedRow = cartProductStatement.executeUpdate();
 			if(cartProductAffectedRow == 0) {
 				apiResponseStatus = ApiResponseStatus.CART_PRODUCT_ADD_FAIL;
 				connection.rollback();
 			} else {
-				apiResponseStatus = ApiResponseStatus.CART_PRODUCT_ADD_SUCCESS;
-				userCart.setCart_id(lastInsertedID);
 				
+				userCart.setCart_id(lastInsertedID);
+				userCart.setCartCount(getCartItemCount(connection, lastInsertedID));
+				
+				
+				
+				apiResponseStatus = ApiResponseStatus.CART_PRODUCT_ADD_SUCCESS;
 				
 			}
 		}
@@ -431,7 +527,59 @@ public class CartService {
 	}
 	
 	
-	private ApiResponseStatus updateCartItem(UserCart userCart, UserCartProduct cartProduct, Connection connection, ApiResponseStatus apiResponseStatus) throws ClassNotFoundException, SQLException {
+	private ApiResponseStatus insertItemIntoCart(Connection connection, UserCart userCart,UserCartProduct userCartProduct, ApiResponseStatus apiResponseStatus) throws ClassNotFoundException, SQLException {
+		// generate salt and than create new token
+		
+			
+			String productInsertQuery = "INSERT INTO "
+					+Database.UserCartProductTable.TABLE_NAME
+					+"("
+					+Database.UserCartProductTable.CART_ID
+					+", "+Database.UserCartProductTable.PRODUCT_ID
+					+", "+Database.UserCartProductTable.PRODUCT_NAME
+					+", "+Database.UserCartProductTable.PRODUCT_QTY
+					+", "+Database.UserCartProductTable.PRODUCT_PRICE
+					+", "+Database.UserCartProductTable.PRODUCT_CODE
+					+", "+Database.UserCartProductTable.SHIPPING_CHARGE
+					+", "+Database.UserCartProductTable.STATUS
+					+", "+Database.UserCartProductTable.GST_TYPE
+					+", "+Database.UserCartProductTable.GST
+					+", "+Database.UserCartProductTable.SUBTOTAL
+					+")"
+					+" VALUES "
+					+"(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+			
+			PreparedStatement cartProductStatement = connection.prepareStatement(productInsertQuery);
+			cartProductStatement.setInt(1, userCart.getCart_id());
+			cartProductStatement.setInt(2, userCartProduct.getProduct_id());
+			cartProductStatement.setString(3, userCartProduct.getProduct_name());
+			cartProductStatement.setInt(4, userCartProduct.getProduct_qty());
+			cartProductStatement.setString(5, userCartProduct.getProduct_price());
+			cartProductStatement.setString(6, userCartProduct.getProduct_code());
+			cartProductStatement.setInt(7, userCartProduct.getShipping_charge());
+			cartProductStatement.setString(8, CartStatusEnum.OPEN.getStatus());
+			cartProductStatement.setString(9, userCartProduct.getGst_type());
+			cartProductStatement.setDouble(10, userCartProduct.getGst());
+			
+			double subtotal = (Double.parseDouble(userCartProduct.getProduct_price()) * userCartProduct.getProduct_qty())
+					+ (userCartProduct.getShipping_charge() * userCartProduct.getProduct_qty());
+			cartProductStatement.setString(11, String.valueOf(subtotal));
+
+			int cartProductAffectedRow = cartProductStatement.executeUpdate();
+			if(cartProductAffectedRow == 0) {
+				apiResponseStatus = ApiResponseStatus.CART_PRODUCT_ADD_FAIL;
+				connection.rollback();
+			} else {
+				apiResponseStatus = ApiResponseStatus.CART_PRODUCT_ADD_SUCCESS;
+				userCart.setCartCount(getCartItemCount(connection, userCart.getCart_id()));
+				
+			}
+		
+		return apiResponseStatus;
+	}
+	
+	
+	private ApiResponseStatus updateCartItem(Connection connection, UserCart userCart, UserCartProduct cartProduct, int index, ApiResponseStatus apiResponseStatus) throws ClassNotFoundException, SQLException {
 		// generate salt and than create new token
 		String salt, token;
 		if(userCart.getToken() == null || userCart.getToken().isEmpty()) {
@@ -444,7 +592,9 @@ public class CartService {
 		
 		//now create new cart for user or guest user;
 		String insertQuery = "SELECT "
-				+Database.UserCartProductTable.PRODUCT_QTY
+				+Database.UserCartProductTable.PRODUCT_PRICE
+				+", "+Database.UserCartProductTable.PRODUCT_QTY
+				+", "+Database.UserCartProductTable.SHIPPING_CHARGE
 				+" FROM "
 				+Database.UserCartProductTable.TABLE_NAME
 				+" WHERE "
@@ -452,25 +602,28 @@ public class CartService {
 				+" AND "
 				+Database.UserCartProductTable.PRODUCT_ID+"=?";
 		
-//		DatabaseConnector connector = new DatabaseConnector();
-//		connection = connector.getConnection();
-//		connection.setAutoCommit(false);
+
 		PreparedStatement statement = connection.prepareStatement(insertQuery);
 		statement.setInt(1, userCart.getCart_id());
 		statement.setInt(2, cartProduct.getProduct_id());
 		ResultSet resultSet = statement.executeQuery();
 		resultSet.first();
 		
+		double productPrice = Double.parseDouble(resultSet.getString(Database.UserCartProductTable.PRODUCT_PRICE));
+		int shippingCharge = resultSet.getInt(Database.UserCartProductTable.SHIPPING_CHARGE);
 		int oldQTY = resultSet.getInt(Database.UserCartProductTable.PRODUCT_QTY);
 		int newQTY = oldQTY + cartProduct.getProduct_qty();
 		if(newQTY > 10) {
 			apiResponseStatus = ApiResponseStatus.CART_QUENTITY_EXCEED;
 		} else {
 			
+			double subtotal = (productPrice * newQTY)+ (shippingCharge * newQTY);
+			
 			String productUpdateQuery = "UPDATE "
 					+Database.UserCartProductTable.TABLE_NAME
 					+" SET "
 					+Database.UserCartProductTable.PRODUCT_QTY+"=?"
+					+", "+Database.UserCartProductTable.SUBTOTAL+"=?"
 					+" WHERE "
 					+Database.UserCartProductTable.CART_ID+"=?"
 					+" AND "
@@ -478,8 +631,10 @@ public class CartService {
 			
 			PreparedStatement cartProductStatement = connection.prepareStatement(productUpdateQuery);
 			cartProductStatement.setInt(1, newQTY);
-			cartProductStatement.setInt(2, userCart.getCart_id());
-			cartProductStatement.setInt(3, cartProduct.getProduct_id());
+			cartProductStatement.setString(2, String.valueOf(subtotal));
+			cartProductStatement.setInt(3, userCart.getCart_id());
+			cartProductStatement.setInt(4, cartProduct.getProduct_id());
+			
 			int cartProductAffectedRow = cartProductStatement.executeUpdate();
 			if(cartProductAffectedRow == 0) {
 				apiResponseStatus = ApiResponseStatus.CART_PRODUCT_UPDATE_FAIL;
@@ -489,8 +644,9 @@ public class CartService {
 				userCart.setSalt(salt);
 				userCart.getUserCartProduct().get(0).setProduct_qty(newQTY);
 				apiResponseStatus = ApiResponseStatus.CART_PRODUCT_UPDATE_SUCCESS;
-				
-				
+				userCart.setCartCount(getCartItemCount(connection, userCart.getCart_id()));
+				cartProduct.setSubtotal(String.valueOf(subtotal));
+				userCart.getUserCartProduct().set(index, cartProduct);
 			}
 		}
 	
@@ -775,5 +931,17 @@ public class CartService {
 		return Response.status(Status.OK).entity(responseJson).build();
 	}
 	
-	
+	private int getCartItemCount(Connection connection, int cart_id) throws SQLException {
+		String productQuery = "SELECT COUNT(*) AS count FROM "
+				+Database.UserCartProductTable.TABLE_NAME
+				+" WHERE "
+				+Database.UserCartProductTable.CART_ID+"=?";
+		PreparedStatement productStatement = connection.prepareStatement(productQuery);
+		productStatement.setInt(1, cart_id);
+		ResultSet productResultset = productStatement.executeQuery();
+		productResultset.last();
+		int productCount = productResultset.getInt("count");
+		
+		return productCount;
+	}
 }

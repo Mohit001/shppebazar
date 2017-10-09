@@ -42,8 +42,8 @@ public class UserService {
 	
 	
 	@GET
-	@Path("/environment/{user_id}")
-	public Response environment(@PathParam("user_id") int user_id) throws JsonProcessingException, SQLException {
+	@Path("/environment/{unique_pararm}")
+	public Response environment(@PathParam("unique_pararm") String unique_pararm) throws JsonProcessingException, SQLException {
 		String responseJson = "";
 		ApiResponseStatus apiResponseStatus = ApiResponseStatus.OUT_OF_SERVICE;
 		BaseResponse<Environment> response = new BaseResponse<>();
@@ -53,6 +53,7 @@ public class UserService {
 		
 		Connection connection = null;
 		try {
+			environment.setLoginCompalsory(true);	
 			environment.setCurrency_sign("₹");
 			environment.setCurrency_multiplier(1.0);
 			environment.setCurrency_id(1);
@@ -67,8 +68,10 @@ public class UserService {
 			paymentInfo.setStatus("");
 			paymentInfo.setTitle("");
 			environment.setPaymentInfo(paymentInfo);
-	
-			if(user_id == 0) {
+			
+//			System.out.println("Length:"+unique_pararm.length()+" : "+unique_pararm);
+			
+			if(unique_pararm == "0") {
 				environment.setUser_id(0);
 				environment.setToken("");
 			} else {
@@ -77,23 +80,47 @@ public class UserService {
 						+", "+Database.UserCartTable.CART_TOKEN
 						+" FROM  "
 						+Database.UserCartTable.TABLE_NAME
-						+" WHERE "
-						+Database.UserCartTable.USER_ID+"=?";
+						+" WHERE ";
+						if(unique_pararm.length() == 128) {
+							tokenQuery = tokenQuery+Database.UserCartTable.CART_TOKEN+"=?";	
+						} else {
+							tokenQuery = tokenQuery+Database.UserCartTable.USER_ID+"=?";
+						}
+						
 				
 				DatabaseConnector connector = new DatabaseConnector();
 				connection = connector.getConnection();
 				connection.setAutoCommit(false);
 				PreparedStatement statement = connection.prepareStatement(tokenQuery);
-				statement.setInt(1, user_id);
+				statement.setString(1, unique_pararm);
 				ResultSet resultSet = statement.executeQuery();
 				
 				resultSet.last();
+				
 				if(resultSet.getRow() != 0) {
-					environment.setUser_id(user_id);
-					environment.setCart_id(resultSet.getInt(Database.UserCartTable.CART_ID));
-					environment.setToken(resultSet.getString(Database.UserCartTable.CART_TOKEN));	
+					String productQuery = "SELECT COUNT(*) AS count FROM "
+							+Database.UserCartProductTable.TABLE_NAME
+							+" WHERE "
+							+Database.UserCartProductTable.CART_ID+"=?";
+					PreparedStatement productStatement = connection.prepareStatement(productQuery);
+					productStatement.setInt(1, resultSet.getInt(Database.UserCartTable.CART_ID));
+					ResultSet productResultset = productStatement.executeQuery();
+					productResultset.last();
+					int productCount = productResultset.getInt("count");
+					environment.setCartCount(productCount);
+					
+					if(unique_pararm.length() == 128) {
+						environment.setUser_id(0);
+						environment.setToken(unique_pararm);
+						environment.setCart_id(resultSet.getInt(Database.UserCartTable.CART_ID));
+					} else {
+						environment.setUser_id(Integer.parseInt(unique_pararm));
+						environment.setCart_id(resultSet.getInt(Database.UserCartTable.CART_ID));
+						environment.setToken(resultSet.getString(Database.UserCartTable.CART_TOKEN));	
+					}
+						
 				} else {
-					environment.setUser_id(user_id);
+					environment.setUser_id(Integer.parseInt(unique_pararm));
 					environment.setToken("");
 				}
 				
@@ -808,4 +835,6 @@ public class UserService {
 	
 		return Response.status(Status.OK).entity(responseJson).build();
 	}
+	
+	
 }

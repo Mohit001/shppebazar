@@ -127,6 +127,7 @@ public class Database {
 		public static final String STATUS = "status";
 		public static final String GST_TYPE = "gst_type";
 		public static final String GST = "gst";
+		public static final String SUBTOTAL = "subtotal";
 	}
 	
 	
