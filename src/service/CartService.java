@@ -392,41 +392,49 @@ public class CartService {
 				userCart.setPayment_type_id(resultSet.getInt(Database.UserCartTable.CART_PAYMENT_TYPE_ID));
 				userCart.setSalt(resultSet.getString(Database.UserCartTable.SALT));
 				
-				List<UserCartProduct> list = new ArrayList<>();
-				
-				String getUserCartProductQuery = "SELECT * FROM "
-						+Database.UserCartProductTable.TABLE_NAME
-						+" WHERE "
-						+Database.UserCartProductTable.CART_ID+"=?";
-				
-				PreparedStatement cartProductStatement = connection.prepareStatement(getUserCartProductQuery);
-				cartProductStatement.setInt(1, cart_id);
-				ResultSet userCartProductResultSet = cartProductStatement.executeQuery();
-				userCartProductResultSet.last();
-				if(userCartProductResultSet.getRow() != 0) {
-					userCartProductResultSet.first();
-					do {
-						UserCartProduct product = new UserCartProduct();
-						product.setCart_id(userCartProductResultSet.getInt(Database.UserCartProductTable.CART_ID));
-						product.setProduct_id(userCartProductResultSet.getInt(Database.UserCartProductTable.PRODUCT_ID));
-						product.setProduct_name(userCartProductResultSet.getString(Database.UserCartProductTable.PRODUCT_NAME));
-						product.setProduct_qty(userCartProductResultSet.getInt(Database.UserCartProductTable.PRODUCT_QTY));
-						product.setProduct_price(userCartProductResultSet.getString(Database.UserCartProductTable.PRODUCT_PRICE));
-						product.setProduct_code(userCartProductResultSet.getString(Database.UserCartProductTable.PRODUCT_CODE));
-						product.setShipping_charge(userCartProductResultSet.getInt(Database.UserCartProductTable.SHIPPING_CHARGE));
-						product.setStatus(userCartProductResultSet.getString(Database.UserCartProductTable.STATUS));
-						product.setGst_type(userCartProductResultSet.getString(Database.UserCartProductTable.GST_TYPE));
-						product.setGst(userCartProductResultSet.getDouble(Database.UserCartProductTable.GST));
-						product.setSubtotal(userCartProductResultSet.getString(Database.UserCartProductTable.SUBTOTAL));
-						list.add(product);
-						userCartProductResultSet.next();
-					}while(!userCartProductResultSet.isAfterLast());
-				}
+				List<UserCartProduct> list = getUserCartProducts(connection, userCart.getCart_id());
 				userCart.setUserCartProduct(list);
 				userCart.setCartCount(list.size());
 			}
 		}
 		return userCart;
+	}
+	
+	private List<UserCartProduct> getUserCartProducts(Connection connection, int cart_id) throws SQLException{
+		
+		List<UserCartProduct> list = new ArrayList<>();
+		
+		String getUserCartProductQuery = "SELECT * FROM "
+				+Database.UserCartProductTable.TABLE_NAME
+				+" WHERE "
+				+Database.UserCartProductTable.CART_ID+"=?";
+		
+		PreparedStatement cartProductStatement = connection.prepareStatement(getUserCartProductQuery);
+		cartProductStatement.setInt(1, cart_id);
+		ResultSet userCartProductResultSet = cartProductStatement.executeQuery();
+		userCartProductResultSet.last();
+		if(userCartProductResultSet.getRow() != 0) {
+			userCartProductResultSet.first();
+			do {
+				UserCartProduct product = new UserCartProduct();
+				product.setCart_id(userCartProductResultSet.getInt(Database.UserCartProductTable.CART_ID));
+				product.setProduct_id(userCartProductResultSet.getInt(Database.UserCartProductTable.PRODUCT_ID));
+				product.setProduct_name(userCartProductResultSet.getString(Database.UserCartProductTable.PRODUCT_NAME));
+				product.setProduct_qty(userCartProductResultSet.getInt(Database.UserCartProductTable.PRODUCT_QTY));
+				product.setProduct_price(userCartProductResultSet.getString(Database.UserCartProductTable.PRODUCT_PRICE));
+				product.setProduct_code(userCartProductResultSet.getString(Database.UserCartProductTable.PRODUCT_CODE));
+				product.setShipping_charge(userCartProductResultSet.getInt(Database.UserCartProductTable.SHIPPING_CHARGE));
+				product.setStatus(userCartProductResultSet.getString(Database.UserCartProductTable.STATUS));
+				product.setGst_type(userCartProductResultSet.getString(Database.UserCartProductTable.GST_TYPE));
+				product.setGst(userCartProductResultSet.getDouble(Database.UserCartProductTable.GST));
+				product.setSubtotal(userCartProductResultSet.getString(Database.UserCartProductTable.SUBTOTAL));
+				list.add(product);
+				userCartProductResultSet.next();
+			}while(!userCartProductResultSet.isAfterLast());
+		}
+		
+		return list;
+		
 	}
 	private ApiResponseStatus createAndInsertItemIntoCart(Connection connection, UserCart userCart,UserCartProduct userCartProduct, ApiResponseStatus apiResponseStatus) throws ClassNotFoundException, SQLException {
 		// generate salt and than create new token
@@ -996,5 +1004,106 @@ public class CartService {
 		int productCount = productResultset.getInt("count");
 		
 		return productCount;
+	}
+	
+	@GET
+	@Path("/orderReview/{cart_id}")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response orderReview(@PathParam("cart_id") int cart_id) throws SQLException, JsonProcessingException {
+	
+		String responseJson = "";
+		ApiResponseStatus apiResponseStatus = ApiResponseStatus.OUT_OF_SERVICE;
+		BaseResponse<UserCart> response = new BaseResponse<>();
+		response.setStatus(apiResponseStatus.getStatus_code());
+		response.setMessage(apiResponseStatus.getStatus_message());
+		userCart = new UserCart();
+		Connection connection = null;
+		try {
+			DatabaseConnector connector = new DatabaseConnector();
+			connection = connector.getConnection();
+			connection.setAutoCommit(false);
+			
+			String cartSelectQuery = "SELECT * FROM "
+					+Database.UserCartTable.TABLE_NAME
+					+" WHERE "
+					+Database.UserCartTable.CART_ID+"=?";
+			
+			PreparedStatement statement = connection.prepareStatement(cartSelectQuery);
+			statement.setInt(1, cart_id);
+			ResultSet resultSet = statement.executeQuery();
+			resultSet.last();
+			if(resultSet.getRow() == 1) {
+				// set details to userCart
+				
+				userCart.setCart_id(resultSet.getInt(Database.UserCartTable.CART_ID));
+				userCart.setUser_id(resultSet.getInt(Database.UserCartTable.USER_ID));
+				userCart.setShipping_address_id(resultSet.getInt(Database.UserCartTable.CART_SHIPPING_ID));
+				userCart.setShippingAddress(getSelectedAddress(connection, userCart.getShipping_address_id()));
+				userCart.setBilling_address_id(resultSet.getInt(Database.UserCartTable.CART_BILLING_ID));
+				userCart.setBillingAddress(getSelectedAddress(connection, userCart.getBilling_address_id()));
+				userCart.setPayment_type_id(resultSet.getInt(Database.UserCartTable.CART_PAYMENT_TYPE_ID));
+				userCart.setUserCartProduct(getUserCartProducts(connection, userCart.getCart_id()));
+				
+				apiResponseStatus = ApiResponseStatus.CART_GET_DETAILS_SUCCESS;
+			} else {
+				apiResponseStatus = ApiResponseStatus.CART_GET_DETAILS_FAIL;
+			}
+			
+		}catch (ClassNotFoundException e) {
+			e.printStackTrace();
+			apiResponseStatus = ApiResponseStatus.DATABASE_CONNECTINO_ERROR;
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			connection.rollback();
+			e.printStackTrace();
+			apiResponseStatus = ApiResponseStatus.MYSQL_EXCEPTION;
+		} finally {
+
+			response.setStatus(apiResponseStatus.getStatus_code());
+			response.setMessage(apiResponseStatus.getStatus_message());
+			response.setInfo(userCart);
+			responseJson = mapper.writeValueAsString(response);
+			
+			if(connection != null && !connection.isClosed()) {
+				connection.commit();
+				connection.close();
+			}
+		}
+
+		
+		return Response.status(Status.OK).entity(responseJson).build();
+	}
+	
+	private Address getSelectedAddress(Connection connection, int address_id) throws SQLException {
+		Address address = new Address();
+		
+		String getAddressQuery = "SELECT * FROM "
+				+Database.UserAddress.TABLE_NAME
+				+" WHERE "
+				+Database.UserAddress.ADDRESS_ID+"=?";
+		
+		PreparedStatement statement = connection.prepareStatement(getAddressQuery);
+		statement.setInt(1, address_id);
+		ResultSet resultSet = statement.executeQuery();
+		resultSet.last();
+		if(resultSet.getRow() == 1) {
+			address.setAddress_id(resultSet.getInt(Database.UserAddress.ADDRESS_ID));
+			address.setAddress1(resultSet.getString(Database.UserAddress.ADDRESS1));
+			address.setAddress2(resultSet.getString(Database.UserAddress.ADDRESS2));
+			address.setState(resultSet.getString(Database.UserAddress.STATE));
+			address.setCity(resultSet.getString(Database.UserAddress.CITY));
+			address.setPostcode(resultSet.getString(Database.UserAddress.POSTCODE));
+			address.setAddition_detail(resultSet.getString(Database.UserAddress.ADDITIONAL_DETIALS));
+			address.setUser_id(resultSet.getString(Database.UserAddress.USER_ID));
+			address.setFull_name(resultSet.getString(Database.UserAddress.FULL_NAME));
+			address.setEmail(resultSet.getString(Database.UserAddress.EMAIL));
+			address.setContact_number(resultSet.getString(Database.UserAddress.CONTACT_NUMBER));	
+			
+			return address;
+		} else {
+			return null;
+		}
+		
+
 	}
 }

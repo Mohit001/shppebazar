@@ -11,7 +11,9 @@ public class UserCart {
 	private String cart_status;
 	private String token;
 	private int shipping_address_id;
+	private Address shippingAddress;
 	private int billing_address_id;
+	private Address billingAddress;
 	private int payment_type_id;
 	private String salt;
 	private int cartCount;
@@ -90,7 +92,17 @@ public class UserCart {
 	public void setUserCartProduct(List<UserCartProduct> userCartProduct) {
 		this.userCartProduct = userCartProduct;
 	}
-	
-	
+	public Address getShippingAddress() {
+		return shippingAddress;
+	}
+	public void setShippingAddress(Address shippingAddress) {
+		this.shippingAddress = shippingAddress;
+	}
+	public Address getBillingAddress() {
+		return billingAddress;
+	}
+	public void setBillingAddress(Address billingAddress) {
+		this.billingAddress = billingAddress;
+	}
 	
 }

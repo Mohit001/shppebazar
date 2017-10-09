@@ -73,6 +73,8 @@ public enum ApiResponseStatus {
 	CART_PAYMENT_TYPE_LIST_SUCCESS(1, "Payment types fetch successfully"),
 	CART_PAYMENT_TYPE_UPDATE_FAIL(0, "Fail to set payment type"),
 	CART_PAYMENT_TYPE_UPDATE_SUCCESS(1, "Payment type set successfully"),
+	CART_GET_DETAILS_FAIL(0, "Fail to get cart information"),
+	CART_GET_DETAILS_SUCCESS(1, "Cart information retrive successfully"),
 	ORDER_PLACE_FAIL(0, "Fail to place order"),
 	ORDER_PLACE_SUCCESS(1, "Order placed successfully"),
 	
