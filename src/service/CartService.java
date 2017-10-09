@@ -518,8 +518,6 @@ public class CartService {
 				userCart.setCart_id(lastInsertedID);
 				userCart.setCartCount(getCartItemCount(connection, lastInsertedID));
 				
-				
-				
 				apiResponseStatus = ApiResponseStatus.CART_PRODUCT_ADD_SUCCESS;
 				
 			}
@@ -899,7 +897,7 @@ public class CartService {
 			
 			paymentMethodList.add(paymentMethod);
 			
-			
+			apiResponseStatus = ApiResponseStatus.CART_PAYMENT_TYPE_LIST_SUCCESS;
 		}catch (ClassNotFoundException e) {
 			e.printStackTrace();
 			apiResponseStatus = ApiResponseStatus.DATABASE_CONNECTINO_ERROR;
