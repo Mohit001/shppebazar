@@ -38,8 +38,8 @@ public class AddressService {
 	private ObjectMapper mapper = new ObjectMapper();
 	
 	@GET
-	@Path("/get/{id}")
-	public Response getUserAddress(@PathParam("id") int id) throws SQLException, JsonProcessingException {
+	@Path("/get/{user_id}")
+	public Response getUserAddress(@PathParam("user_id") int id) throws SQLException, JsonProcessingException {
 		String responseJson = "";
 		ApiResponseStatus apiResponseStatus = ApiResponseStatus.OUT_OF_SERVICE;
 		BaseResponse<List<Address>> response = new BaseResponse<>();
