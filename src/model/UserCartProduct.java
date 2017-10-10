@@ -15,6 +15,13 @@ public class UserCartProduct {
 	private double gst;
 	private String subtotal;
 	private String imagePath;
+	private String description;
+	private int cat_id;
+	private int brand_id;	
+	private String discount_price;
+	private String image_name;
+	private String category_name;
+	private String brand_name;
 	
 	public String getImagePath() {
 		return imagePath;
@@ -93,6 +100,48 @@ public class UserCartProduct {
 	}
 	public void setSubtotal(String subtotal) {
 		this.subtotal = subtotal;
+	}
+	public String getDescription() {
+		return description;
+	}
+	public void setDescription(String description) {
+		this.description = description;
+	}
+	public int getCat_id() {
+		return cat_id;
+	}
+	public void setCat_id(int cat_id) {
+		this.cat_id = cat_id;
+	}
+	public int getBrand_id() {
+		return brand_id;
+	}
+	public void setBrand_id(int brand_id) {
+		this.brand_id = brand_id;
+	}
+	public String getDiscount_price() {
+		return discount_price;
+	}
+	public void setDiscount_price(String discount_price) {
+		this.discount_price = discount_price;
+	}
+	public String getImage_name() {
+		return image_name;
+	}
+	public void setImage_name(String image_name) {
+		this.image_name = image_name;
+	}
+	public String getCategory_name() {
+		return category_name;
+	}
+	public void setCategory_name(String category_name) {
+		this.category_name = category_name;
+	}
+	public String getBrand_name() {
+		return brand_name;
+	}
+	public void setBrand_name(String brand_name) {
+		this.brand_name = brand_name;
 	}
 	
 	
