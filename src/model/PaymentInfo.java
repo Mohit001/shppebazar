@@ -1,10 +1,12 @@
 package model;
 
+import java.io.Serializable;
+
 /**
  * Created by msp on 7/9/17.
  */
 
-public class PaymentInfo {
+public class PaymentInfo implements Serializable{
 
     private String status;
     private String title;

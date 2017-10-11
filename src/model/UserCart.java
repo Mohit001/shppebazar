@@ -1,8 +1,9 @@
 package model;
 
+import java.io.Serializable;
 import java.util.List;
 
-public class UserCart {
+public class UserCart implements Serializable{
 	
 	private int cart_id;
 	private String create_date;
@@ -15,6 +16,7 @@ public class UserCart {
 	private int billing_address_id;
 	private Address billingAddress;
 	private int payment_type_id;
+	private String payment_type_code;
 	private String salt;
 	private int cartCount;
 	private List<UserCartProduct> userCartProduct;
@@ -103,6 +105,12 @@ public class UserCart {
 	}
 	public void setBillingAddress(Address billingAddress) {
 		this.billingAddress = billingAddress;
+	}
+	public String getPayment_type_code() {
+		return payment_type_code;
+	}
+	public void setPayment_type_code(String payment_type_code) {
+		this.payment_type_code = payment_type_code;
 	}
 	
 }

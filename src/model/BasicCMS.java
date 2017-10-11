@@ -1,9 +1,11 @@
 package model;
 
+import java.io.Serializable;
+
 /**
  * Created by msp on 17/8/16.
  */
-public class BasicCMS {
+public class BasicCMS implements Serializable{
 
     private String pageid;
     private String page_title;

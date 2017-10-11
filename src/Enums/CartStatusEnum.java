@@ -3,6 +3,8 @@ package Enums;
 public enum CartStatusEnum {
 
 	OPEN("open"),
+	PLACED("placed"),
+	PENDING("Pending"),
 	INPROGRESS("inprogress"), 
 	SHIPPED("shipped"),
 	OUTOFDELIVERY("out_of_delivery"),

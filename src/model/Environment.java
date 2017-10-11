@@ -1,8 +1,9 @@
 package model;
 
+import java.io.Serializable;
 import java.util.List;
 
-public class Environment {
+public class Environment implements Serializable{
 
 	private boolean loginCompalsory;
 	private String currency_sign;

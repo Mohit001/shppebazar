@@ -1,6 +1,8 @@
 package model;
 
-public class InvoiceDetails {
+import java.io.Serializable;
+
+public class InvoiceDetails implements Serializable{
 	private int invoice_details_id;
 	private int invoice_id;
 	private int product_id;

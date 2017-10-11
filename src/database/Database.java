@@ -46,6 +46,18 @@ public class Database {
 		public static final String CREATE_DATE = "create_date";
 		public static final String PARENT_ID = "parent_id";
 	}
+	
+	public static class BrandMaster {
+		public static final String TABLE_NAME = "brand_master";
+		public static final String BRAND_ID = "brand_id";
+		public static final String BRAND_NAME = "brand_name";
+		public static final String BRAND_DESCRIPTION = "brand_description";
+		public static final String IS_ENABLE = "is_enable";
+		public static final String USER_ID = "user_id";
+		public static final String CREATE_DATE = "create_date";
+	}
+	
+	
 
 	public static class ProductMaster {
 		public static final String TABLE_NAME = "product_master";
@@ -107,6 +119,7 @@ public class Database {
 		public static final String CART_SHIPPING_ID = "shipping_address_id";
 		public static final String CART_BILLING_ID = "billing_address_id";
 		public static final String CART_PAYMENT_TYPE_ID = "payment_type_id";
+		public static final String CART_PAYMENT_TYPE_CODE = "payment_type_code";
 		public static final String SALT = "salt";
 	}
 
@@ -116,6 +129,7 @@ public class Database {
 		public static final String CART_ID = "cart_id";
 		public static final String PRODUCT_ID = "product_id";
 		public static final String PRODUCT_NAME = "product_name";
+		public static final String PRO_DESCRIPTION = "pro_description";		
 		public static final String PRODUCT_QTY = "product_qty";
 		public static final String PRODUCT_PRICE = "product_price";
 		public static final String PRODUCT_CODE = "product_code";
@@ -134,6 +148,7 @@ public class Database {
 	}
 
 	public static class InvoiceMaster {
+		public static final String TABLE_NAME = "invoice_master";
 		public static final String INVOICE_ID = "invoice_id";
 		public static final String USER_ID = "user_id";
 		public static final String ORDER_TYPE = "order_type";
@@ -169,6 +184,7 @@ public class Database {
 	}
 	
 	public static class InvoiceDetails{
+		public static final String TABLE_NAME = "invoice_details";
 		public static final String INVOICE_DETAILS_ID= "invoice_details_id";
 		public static final String INVOICE_ID= "invoice_id";
 		public static final String PRODUCT_ID= "product_id";
@@ -180,7 +196,7 @@ public class Database {
 		public static final String PRODUCT_BRAND_ID= "product_brand_id";
 		public static final String PRODUCT_GST_TYPE= "product_gst_type";
 		public static final String PRODUCT_GST= "product_gst";
-		public static final String PRDUCT_DISCOUNT_PRICE= "product_discount_price";
+		public static final String PRODUCT_DISCOUNT_PRICE= "product_discount_price";
 		public static final String CREATE_DATE= "create_date";
 		public static final String PRODUCT_IMAGE_NAME= "product_image_name";
 		public static final String PRODUCT_CATEGORY_NAME= "product_category_name";

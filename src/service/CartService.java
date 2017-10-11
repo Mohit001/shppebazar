@@ -36,11 +36,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import Enums.ApiResponseStatus;
 import Enums.CartStatusEnum;
+import Utils.UtilsString;
 import basemodel.BaseResponse;
 import database.Database;
 
 import database.DatabaseConnector;
 import model.Address;
+import model.InvoiceMaster;
 import model.PaymentMethod;
 import model.UserCart;
 import model.UserCartProduct;
@@ -428,6 +430,13 @@ public class CartService {
 				product.setGst_type(userCartProductResultSet.getString(Database.UserCartProductTable.GST_TYPE));
 				product.setGst(userCartProductResultSet.getDouble(Database.UserCartProductTable.GST));
 				product.setSubtotal(userCartProductResultSet.getString(Database.UserCartProductTable.SUBTOTAL));
+				product.setDescription(userCartProductResultSet.getString(Database.UserCartProductTable.DESCRIPTION));
+				product.setCat_id(userCartProductResultSet.getInt(Database.UserCartProductTable.CART_ID));
+				product.setCategory_name(userCartProductResultSet.getString(Database.UserCartProductTable.CATEGORY_NAME));
+				product.setBrand_id(userCartProductResultSet.getInt(Database.UserCartProductTable.BRAND_ID));
+				product.setBrand_name(userCartProductResultSet.getString(Database.UserCartProductTable.BRAND_NAME));
+				product.setImage_name(UtilsString.getStirng(userCartProductResultSet.getString(Database.UserCartProductTable.IMAGE_NAME)));
+				product.setDiscount_price(userCartProductResultSet.getString(Database.UserCartProductTable.DISCOUNT_PRICE));
 				list.add(product);
 				userCartProductResultSet.next();
 			}while(!userCartProductResultSet.isAfterLast());
@@ -481,6 +490,7 @@ public class CartService {
 			ResultSet resultSet = statement.getGeneratedKeys();
 			resultSet.first();
 			int lastInsertedID = resultSet.getInt(1);
+			userCart.setCart_id(lastInsertedID);
 			
 			String productInsertQuery = "INSERT INTO "
 					+Database.UserCartProductTable.TABLE_NAME
@@ -488,6 +498,7 @@ public class CartService {
 					+Database.UserCartProductTable.CART_ID
 					+", "+Database.UserCartProductTable.PRODUCT_ID
 					+", "+Database.UserCartProductTable.PRODUCT_NAME
+					+", "+Database.UserCartProductTable.DESCRIPTION
 					+", "+Database.UserCartProductTable.PRODUCT_QTY
 					+", "+Database.UserCartProductTable.PRODUCT_PRICE
 					+", "+Database.UserCartProductTable.PRODUCT_CODE
@@ -496,25 +507,40 @@ public class CartService {
 					+", "+Database.UserCartProductTable.GST_TYPE
 					+", "+Database.UserCartProductTable.GST
 					+", "+Database.UserCartProductTable.SUBTOTAL
+					+", "+Database.UserCartProductTable.CATEGORY_ID
+					+", "+Database.UserCartProductTable.CATEGORY_NAME
+					+", "+Database.UserCartProductTable.BRAND_ID
+					+", "+Database.UserCartProductTable.BRAND_NAME
+					+", "+Database.UserCartProductTable.DISCOUNT_PRICE
+					+", "+Database.UserCartProductTable.IMAGE_NAME
 					+")"
 					+" VALUES "
-					+"(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-			
-			PreparedStatement cartProductStatement = connection.prepareStatement(productInsertQuery);
-			cartProductStatement.setInt(1, lastInsertedID);
-			cartProductStatement.setInt(2, userCartProduct.getProduct_id());
-			cartProductStatement.setString(3, userCartProduct.getProduct_name());
-			cartProductStatement.setInt(4, userCartProduct.getProduct_qty());
-			cartProductStatement.setString(5, userCartProduct.getProduct_price());
-			cartProductStatement.setString(6, userCartProduct.getProduct_code());
-			cartProductStatement.setInt(7, userCartProduct.getShipping_charge());
-			cartProductStatement.setString(8, CartStatusEnum.OPEN.getStatus());
-			cartProductStatement.setString(9, userCartProduct.getGst_type());
-			cartProductStatement.setDouble(10, userCartProduct.getGst());
+					+"(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 			
 			double subtotal = (Double.parseDouble(userCartProduct.getProduct_price()) * userCartProduct.getProduct_qty())
-								+ (userCartProduct.getShipping_charge() * userCartProduct.getProduct_qty());
-			cartProductStatement.setString(11, String.valueOf(subtotal));
+					+ (userCartProduct.getShipping_charge() * userCartProduct.getProduct_qty());
+			
+			
+			PreparedStatement cartProductStatement = connection.prepareStatement(productInsertQuery);
+			cartProductStatement.setInt(1, userCart.getCart_id());
+			cartProductStatement.setInt(2, userCartProduct.getProduct_id());
+			cartProductStatement.setString(3, userCartProduct.getProduct_name());
+			cartProductStatement.setString(4, userCartProduct.getDescription());
+			cartProductStatement.setInt(5, userCartProduct.getProduct_qty());
+			cartProductStatement.setString(6, userCartProduct.getProduct_price());
+			cartProductStatement.setString(7, userCartProduct.getProduct_code());
+			cartProductStatement.setInt(8, userCartProduct.getShipping_charge());
+			cartProductStatement.setString(9, CartStatusEnum.OPEN.getStatus());
+			cartProductStatement.setString(10, userCartProduct.getGst_type());
+			cartProductStatement.setDouble(11, userCartProduct.getGst());
+			cartProductStatement.setString(12, String.valueOf(subtotal));
+			cartProductStatement.setInt(13, userCartProduct.getCat_id());
+			cartProductStatement.setString(14, userCartProduct.getCategory_name());
+			cartProductStatement.setInt(15, userCartProduct.getBrand_id());
+			cartProductStatement.setString(16, userCartProduct.getBrand_name());
+			cartProductStatement.setString(17, userCartProduct.getDiscount_price());
+			cartProductStatement.setString(18, userCartProduct.getImage_name());
+			
 			
 			
 			int cartProductAffectedRow = cartProductStatement.executeUpdate();
@@ -539,39 +565,55 @@ public class CartService {
 		// generate salt and than create new token
 		
 			
-			String productInsertQuery = "INSERT INTO "
-					+Database.UserCartProductTable.TABLE_NAME
-					+"("
-					+Database.UserCartProductTable.CART_ID
-					+", "+Database.UserCartProductTable.PRODUCT_ID
-					+", "+Database.UserCartProductTable.PRODUCT_NAME
-					+", "+Database.UserCartProductTable.PRODUCT_QTY
-					+", "+Database.UserCartProductTable.PRODUCT_PRICE
-					+", "+Database.UserCartProductTable.PRODUCT_CODE
-					+", "+Database.UserCartProductTable.SHIPPING_CHARGE
-					+", "+Database.UserCartProductTable.STATUS
-					+", "+Database.UserCartProductTable.GST_TYPE
-					+", "+Database.UserCartProductTable.GST
-					+", "+Database.UserCartProductTable.SUBTOTAL
-					+")"
-					+" VALUES "
-					+"(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-			
-			PreparedStatement cartProductStatement = connection.prepareStatement(productInsertQuery);
-			cartProductStatement.setInt(1, userCart.getCart_id());
-			cartProductStatement.setInt(2, userCartProduct.getProduct_id());
-			cartProductStatement.setString(3, userCartProduct.getProduct_name());
-			cartProductStatement.setInt(4, userCartProduct.getProduct_qty());
-			cartProductStatement.setString(5, userCartProduct.getProduct_price());
-			cartProductStatement.setString(6, userCartProduct.getProduct_code());
-			cartProductStatement.setInt(7, userCartProduct.getShipping_charge());
-			cartProductStatement.setString(8, CartStatusEnum.OPEN.getStatus());
-			cartProductStatement.setString(9, userCartProduct.getGst_type());
-			cartProductStatement.setDouble(10, userCartProduct.getGst());
-			
-			double subtotal = (Double.parseDouble(userCartProduct.getProduct_price()) * userCartProduct.getProduct_qty())
-					+ (userCartProduct.getShipping_charge() * userCartProduct.getProduct_qty());
-			cartProductStatement.setString(11, String.valueOf(subtotal));
+		String productInsertQuery = "INSERT INTO "
+				+Database.UserCartProductTable.TABLE_NAME
+				+"("
+				+Database.UserCartProductTable.CART_ID
+				+", "+Database.UserCartProductTable.PRODUCT_ID
+				+", "+Database.UserCartProductTable.PRODUCT_NAME
+				+", "+Database.UserCartProductTable.DESCRIPTION
+				+", "+Database.UserCartProductTable.PRODUCT_QTY
+				+", "+Database.UserCartProductTable.PRODUCT_PRICE
+				+", "+Database.UserCartProductTable.PRODUCT_CODE
+				+", "+Database.UserCartProductTable.SHIPPING_CHARGE
+				+", "+Database.UserCartProductTable.STATUS
+				+", "+Database.UserCartProductTable.GST_TYPE
+				+", "+Database.UserCartProductTable.GST
+				+", "+Database.UserCartProductTable.SUBTOTAL
+				+", "+Database.UserCartProductTable.CATEGORY_ID
+				+", "+Database.UserCartProductTable.CATEGORY_NAME
+				+", "+Database.UserCartProductTable.BRAND_ID
+				+", "+Database.UserCartProductTable.BRAND_NAME
+				+", "+Database.UserCartProductTable.DISCOUNT_PRICE
+				+", "+Database.UserCartProductTable.IMAGE_NAME
+				+")"
+				+" VALUES "
+				+"(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+		
+		double subtotal = (Double.parseDouble(userCartProduct.getProduct_price()) * userCartProduct.getProduct_qty())
+				+ (userCartProduct.getShipping_charge() * userCartProduct.getProduct_qty());
+		
+		
+		PreparedStatement cartProductStatement = connection.prepareStatement(productInsertQuery);
+		cartProductStatement.setInt(1, userCart.getCart_id());
+		cartProductStatement.setInt(2, userCartProduct.getProduct_id());
+		cartProductStatement.setString(3, userCartProduct.getProduct_name());
+		cartProductStatement.setString(4, userCartProduct.getDescription());
+		cartProductStatement.setInt(5, userCartProduct.getProduct_qty());
+		cartProductStatement.setString(6, userCartProduct.getProduct_price());
+		cartProductStatement.setString(7, userCartProduct.getProduct_code());
+		cartProductStatement.setInt(8, userCartProduct.getShipping_charge());
+		cartProductStatement.setString(9, CartStatusEnum.OPEN.getStatus());
+		cartProductStatement.setString(10, userCartProduct.getGst_type());
+		cartProductStatement.setDouble(11, userCartProduct.getGst());
+		cartProductStatement.setString(12, String.valueOf(subtotal));
+		cartProductStatement.setInt(13, userCartProduct.getCat_id());
+		cartProductStatement.setString(14, userCartProduct.getCategory_name());
+		cartProductStatement.setInt(15, userCartProduct.getBrand_id());
+		cartProductStatement.setString(16, userCartProduct.getBrand_name());
+		cartProductStatement.setString(17, userCartProduct.getDiscount_price());
+		cartProductStatement.setString(18, userCartProduct.getImage_name());
+		
 
 			int cartProductAffectedRow = cartProductStatement.executeUpdate();
 			if(cartProductAffectedRow == 0) {
@@ -952,12 +994,18 @@ public class CartService {
 					+Database.UserCartTable.TABLE_NAME
 					+" SET "
 					+Database.UserCartTable.CART_PAYMENT_TYPE_ID+"=?"
+					+", "+Database.UserCartTable.CART_PAYMENT_TYPE_CODE+"=?"
 					+" WHERE "
 					+Database.UserCartTable.CART_ID+"=?";
 			
 			PreparedStatement statement = connection.prepareStatement(deleteQuery);
 			statement.setInt(1, payment_type_id);
-			statement.setInt(2, cart_id);
+			if(payment_type_id == 1) {
+				statement.setString(2, "COD");
+			} else {
+				statement.setString(2, "ONLINE");
+			}
+			statement.setInt(3, cart_id);
 			int affectedRow = statement.executeUpdate();
 			
 			if(affectedRow == 0) {
@@ -1042,8 +1090,12 @@ public class CartService {
 				userCart.setBilling_address_id(resultSet.getInt(Database.UserCartTable.CART_BILLING_ID));
 				userCart.setBillingAddress(getSelectedAddress(connection, userCart.getBilling_address_id()));
 				userCart.setPayment_type_id(resultSet.getInt(Database.UserCartTable.CART_PAYMENT_TYPE_ID));
+				userCart.setPayment_type_code(UtilsString.getStirng(resultSet.getString(Database.UserCartTable.CART_PAYMENT_TYPE_CODE)));
 				userCart.setUserCartProduct(getUserCartProducts(connection, userCart.getCart_id()));
-				
+				userCart.setCart_status(UtilsString.getStirng(resultSet.getString(Database.UserCartTable.CART_STATUS)));
+				userCart.setToken(resultSet.getString(Database.UserCartTable.CART_TOKEN));
+				userCart.setSalt(resultSet.getString(Database.UserCartTable.SALT));
+				userCart.setCartCount(userCart.getUserCartProduct().size());
 				apiResponseStatus = ApiResponseStatus.CART_GET_DETAILS_SUCCESS;
 			} else {
 				apiResponseStatus = ApiResponseStatus.CART_GET_DETAILS_FAIL;
@@ -1104,6 +1156,262 @@ public class CartService {
 			return null;
 		}
 		
-
 	}
+	
+	
+	@POST
+	@Path("/placeOrder")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response placeOrder(String jsonRequest) throws SQLException, JsonProcessingException {
+	
+		
+		String responseJson = "";
+		ApiResponseStatus apiResponseStatus = ApiResponseStatus.OUT_OF_SERVICE;
+		BaseResponse<String> response = new BaseResponse<>();
+		response.setStatus(apiResponseStatus.getStatus_code());
+		response.setMessage(apiResponseStatus.getStatus_message());
+		InvoiceMaster invoiceMaster = new InvoiceMaster();
+		Connection connection = null;
+		try {
+			DatabaseConnector connector = new DatabaseConnector();
+			connection = connector.getConnection();
+			connection.setAutoCommit(false);
+			
+			userCart = mapper.readValue(jsonRequest, UserCart.class);
+			
+			String insertInvoiceMasterQuery = 
+					"INSERT INTO "
+					+Database.InvoiceMaster.TABLE_NAME
+					+"("
+					+Database.InvoiceMaster.USER_ID
+					+", "+Database.InvoiceMaster.ORDER_TYPE
+					+", "+Database.InvoiceMaster.USER_TYPE
+					+", "+Database.InvoiceMaster.SHIPPING_ADDRESS1
+					+", "+Database.InvoiceMaster.SHIPPING_ADDRESS2
+					+", "+Database.InvoiceMaster.SHIPPING_STATE
+					+", "+Database.InvoiceMaster.SHIPPING_CITY
+					+", "+Database.InvoiceMaster.SHIPPING_POSTCODE
+					+", "+Database.InvoiceMaster.SHIPPING_ADDITIONAL_DETAILS
+					+", "+Database.InvoiceMaster.BILLING_ADDRESS1
+					+", "+Database.InvoiceMaster.BILLING_ADDRESS2
+					+", "+Database.InvoiceMaster.BILLING_STATE
+					+", "+Database.InvoiceMaster.BILLING_CITY
+					+", "+Database.InvoiceMaster.BILLING_POSTCODE
+					+", "+Database.InvoiceMaster.BILLING_ADDITIONAL_DETAILS
+					+", "+Database.InvoiceMaster.SHIPPING_FULL_NAME
+					+", "+Database.InvoiceMaster.SHIPPING_EMAIL
+					+", "+Database.InvoiceMaster.BILLING_FULL_NAME
+					+", "+Database.InvoiceMaster.BILLING_EMAIL
+					+", "+Database.InvoiceMaster.TOTAL_AMOUNT
+					+", "+Database.InvoiceMaster.GRAND_TOTAL
+					+", "+Database.InvoiceMaster.SHIPPING_CHARGE
+					+", "+Database.InvoiceMaster.ORDER_STATUS
+					+", "+Database.InvoiceMaster.CART_ID
+					+", "+Database.InvoiceMaster.TOKEN
+					+", "+Database.InvoiceMaster.SALT
+					+")"
+					+" VALUES"
+					+"(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+			
+			PreparedStatement preparedStatement = connection.prepareStatement(insertInvoiceMasterQuery, Statement.RETURN_GENERATED_KEYS);
+			preparedStatement.setInt(1, userCart.getUser_id());
+			preparedStatement.setString(2, userCart.getPayment_type_code());
+			preparedStatement.setString(3, "RegisterUser");
+			
+			Address shippingAddress = userCart.getShippingAddress();
+			preparedStatement.setString(4, shippingAddress.getAddress1());
+			preparedStatement.setString(5, shippingAddress.getAddress2());
+			preparedStatement.setString(6, shippingAddress.getState());
+			preparedStatement.setString(7, shippingAddress.getCity());
+			preparedStatement.setString(8, shippingAddress.getPostcode());
+			preparedStatement.setString(9, UtilsString.getStirng(shippingAddress.getAddition_detail()));
+			
+			Address billingAddress = userCart.getBillingAddress();
+			preparedStatement.setString(10, billingAddress.getAddress1());
+			preparedStatement.setString(11, billingAddress.getAddress2());
+			preparedStatement.setString(12, billingAddress.getState());
+			preparedStatement.setString(13, billingAddress.getCity());
+			preparedStatement.setString(14, billingAddress.getPostcode());
+			preparedStatement.setString(15, UtilsString.getStirng(billingAddress.getAddition_detail()));
+			preparedStatement.setString(16, shippingAddress.getFull_name());
+			preparedStatement.setString(17, shippingAddress.getEmail());
+			preparedStatement.setString(18, billingAddress.getFull_name());
+			preparedStatement.setString(19, billingAddress.getEmail());
+			
+			preparedStatement.setString(20, String.valueOf(getTotalWithoutShippingCharge(userCart.getUserCartProduct())));
+			preparedStatement.setString(21, String.valueOf(getGrandTotal(userCart.getUserCartProduct())));
+			preparedStatement.setString(22, String.valueOf(getTotalShippingCharge(userCart.getUserCartProduct())));
+			preparedStatement.setString(23, CartStatusEnum.PENDING.getStatus());
+			preparedStatement.setInt(24, userCart.getCart_id());
+			preparedStatement.setString(25, userCart.getToken());
+			preparedStatement.setString(26, userCart.getSalt());
+			
+			int invoiceMasterAffectedRows = preparedStatement.executeUpdate();
+			if(invoiceMasterAffectedRows == 0) {
+				apiResponseStatus = ApiResponseStatus.ORDER_PLACE_FAIL;
+			} else {
+				
+				// insert products into invoice details table
+				ResultSet resultSet = preparedStatement.getGeneratedKeys();
+				resultSet.first();
+				int invoiceid = resultSet.getInt(1);
+				invoiceMaster.setInvoice_id(invoiceid);
+				
+				List<UserCartProduct> list = userCart.getUserCartProduct();
+				UserCartProduct userCartProduct = null;
+				for(int i=0; i<list.size(); i++) {
+					userCartProduct = list.get(i);
+					
+					String insertInvoiceDetailsQuery = 
+							"INSERT INTO "
+							+Database.InvoiceDetails.TABLE_NAME
+							+"("
+							+Database.InvoiceDetails.INVOICE_ID
+							+", "+Database.InvoiceDetails.PRODUCT_ID
+							+", "+Database.InvoiceDetails.PRODUCT_NAME
+							+", "+Database.InvoiceDetails.PRODUCT_CODE
+							+", "+Database.InvoiceDetails.PRODUCT_DESCRIPTION
+							+", "+Database.InvoiceDetails.PRODUCT_PRICE
+							+", "+Database.InvoiceDetails.PRODUCT_CAT_ID
+							+", "+Database.InvoiceDetails.PRODUCT_BRAND_ID
+							+", "+Database.InvoiceDetails.PRODUCT_GST_TYPE
+							+", "+Database.InvoiceDetails.PRODUCT_GST
+							+", "+Database.InvoiceDetails.PRODUCT_DISCOUNT_PRICE
+							+", "+Database.InvoiceDetails.PRODUCT_IMAGE_NAME
+							+", "+Database.InvoiceDetails.PRODUCT_CATEGORY_NAME
+							+", "+Database.InvoiceDetails.PRODUCT_BRAND_NAME
+							+", "+Database.InvoiceDetails.PRODUCT_QTY
+							+")"
+							+" VALUES "
+							+"(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+					
+					PreparedStatement invoiceDetailsPreparedStatement = connection.prepareStatement(insertInvoiceDetailsQuery);
+					invoiceDetailsPreparedStatement.setInt(1, invoiceid);
+					invoiceDetailsPreparedStatement.setInt(2, userCartProduct.getProduct_id());
+					invoiceDetailsPreparedStatement.setString(3, userCartProduct.getProduct_name());
+					invoiceDetailsPreparedStatement.setString(4, userCartProduct.getProduct_code());
+					invoiceDetailsPreparedStatement.setString(5, userCartProduct.getDescription());
+					invoiceDetailsPreparedStatement.setString(6, userCartProduct.getProduct_price());
+					invoiceDetailsPreparedStatement.setString(7, String.valueOf(userCartProduct.getCat_id()));
+					invoiceDetailsPreparedStatement.setString(8, String.valueOf(userCartProduct.getBrand_id()));
+					invoiceDetailsPreparedStatement.setString(9, userCartProduct.getGst_type());
+					invoiceDetailsPreparedStatement.setString(10, String.valueOf(userCartProduct.getGst()));
+					invoiceDetailsPreparedStatement.setString(11, userCartProduct.getDiscount_price());
+					invoiceDetailsPreparedStatement.setString(12, userCartProduct.getImage_name());
+					invoiceDetailsPreparedStatement.setString(13, userCartProduct.getCategory_name());
+					invoiceDetailsPreparedStatement.setString(14, userCartProduct.getBrand_name());
+					invoiceDetailsPreparedStatement.setInt(15, userCartProduct.getProduct_qty());
+					
+					int invoiceDetailsAffectedRows = invoiceDetailsPreparedStatement.executeUpdate();
+					if(invoiceDetailsAffectedRows == 0) {
+						apiResponseStatus = ApiResponseStatus.ORDER_PLACE_FAIL;
+						break;
+					} 
+				}
+				
+				
+				if(apiResponseStatus != ApiResponseStatus.ORDER_PLACE_FAIL)
+				{
+					// now update cart status to placed
+					
+					String updateCartStatus = "UPDATE "
+							+Database.UserCartTable.TABLE_NAME
+							+" SET "
+							+Database.UserCartTable.CART_STATUS+"=?"
+							+" WHERE "
+							+Database.UserCartTable.CART_ID+"=?";
+					
+					PreparedStatement updateCartStatusPreparedStatement = connection.prepareStatement(updateCartStatus);
+					updateCartStatusPreparedStatement.setString(1, CartStatusEnum.PLACED.getStatus());
+					updateCartStatusPreparedStatement.setInt(2, userCart.getCart_id());
+					
+					int updatedRows = updateCartStatusPreparedStatement.executeUpdate();
+					if(updatedRows == 0) {
+						apiResponseStatus = ApiResponseStatus.ORDER_PLACE_FAIL;
+					} else {
+						apiResponseStatus = ApiResponseStatus.ORDER_PLACE_SUCCESS;
+					}
+					
+				}
+				
+			}
+			
+			
+			
+		}catch (ClassNotFoundException e) {
+			e.printStackTrace();
+			apiResponseStatus = ApiResponseStatus.DATABASE_CONNECTINO_ERROR;
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			connection.rollback();
+			e.printStackTrace();
+			apiResponseStatus = ApiResponseStatus.MYSQL_EXCEPTION;
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally {
+
+			response.setStatus(apiResponseStatus.getStatus_code());
+			response.setMessage(apiResponseStatus.getStatus_message());
+			response.setInfo("");
+			responseJson = mapper.writeValueAsString(response);
+			
+			if(connection != null && !connection.isClosed()) {
+				connection.commit();
+				connection.close();
+			}
+		}
+
+		
+		return Response.status(Status.OK).entity(responseJson).build();
+	}
+	
+	private double getTotalWithoutShippingCharge(List<UserCartProduct> list) {
+		double total=0;
+		for(int i=0; i<list.size(); i++) {
+			UserCartProduct cartProduct = list.get(i);
+			if(Double.parseDouble(cartProduct.getDiscount_price()) == 0) {
+				total += (Double.parseDouble(cartProduct.getProduct_price()) 
+							* cartProduct.getProduct_qty());
+			} else {
+				total += (Double.parseDouble(cartProduct.getDiscount_price())
+							* cartProduct.getProduct_qty());
+			}
+		}
+		
+		return total;
+	}
+	
+	private double getTotalShippingCharge(List<UserCartProduct> list) {
+		double total=0;
+		for(int i=0; i<list.size(); i++) {
+			UserCartProduct cartProduct = list.get(i);
+			total += (cartProduct.getShipping_charge() * cartProduct.getProduct_qty());
+			
+		}
+		
+		return total;
+	}
+
+	private double getGrandTotal(List<UserCartProduct> list) {
+		double grandtotal=0;
+		for(int i=0; i<list.size(); i++) {
+			UserCartProduct cartProduct = list.get(i);
+			double productTotal=0;
+			if(Double.parseDouble(cartProduct.getDiscount_price()) == 0) {
+				productTotal = (Double.parseDouble(cartProduct.getProduct_price()) * cartProduct.getProduct_qty());
+			} else {
+				productTotal = (Double.parseDouble(cartProduct.getDiscount_price()) * cartProduct.getProduct_qty());
+			}
+			
+			double shippingtotal = (cartProduct.getShipping_charge() * cartProduct.getProduct_qty());
+			
+			grandtotal = grandtotal + productTotal + shippingtotal;
+		}
+		
+		return grandtotal;
+	}
+
+	
+	
 }

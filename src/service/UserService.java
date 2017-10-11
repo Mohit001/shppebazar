@@ -23,6 +23,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import Enums.ApiResponseStatus;
+import Enums.CartStatusEnum;
 import Utils.UtilsString;
 import basemodel.BaseResponse;
 import database.Database;
@@ -80,7 +81,9 @@ public class UserService {
 						+", "+Database.UserCartTable.CART_TOKEN
 						+" FROM  "
 						+Database.UserCartTable.TABLE_NAME
-						+" WHERE ";
+						+" WHERE "
+						+Database.UserCartTable.CART_STATUS+" LIKE ?"
+						+" AND ";
 						if(unique_pararm.length() == 128) {
 							tokenQuery = tokenQuery+Database.UserCartTable.CART_TOKEN+"=?";	
 						} else {
@@ -92,7 +95,8 @@ public class UserService {
 				connection = connector.getConnection();
 				connection.setAutoCommit(false);
 				PreparedStatement statement = connection.prepareStatement(tokenQuery);
-				statement.setString(1, unique_pararm);
+				statement.setString(1, CartStatusEnum.OPEN.getStatus());
+				statement.setString(2, unique_pararm);
 				ResultSet resultSet = statement.executeQuery();
 				
 				resultSet.last();

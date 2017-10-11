@@ -97,6 +97,10 @@ public class ProductServices {
 				product.setPro_image(UtilsString.getStirng(resultSet.getString(Database.ProductMaster.PRO_IMAGE)));
 				product.setProductImage(getProductImageGallery(id));
 				
+				// get category name
+//				String catNameQuery = "SELECT "
+				
+				
 				apiResponseStatus = ApiResponseStatus.PRODUCT_FOUND;
 			}
 			

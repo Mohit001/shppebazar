@@ -1,8 +1,9 @@
 package model;
 
+import java.io.Serializable;
 import java.util.List;
 
-public class InvoiceMaster {
+public class InvoiceMaster implements Serializable{
 
 	private int invoice_id;
 	private int user_id;

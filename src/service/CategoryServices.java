@@ -220,6 +220,11 @@ public class CategoryServices {
 					+", "+Database.ProductMaster.GST
 					+", "+Database.ProductMaster.DISCOUNT_PRICE
 					+", "+Database.ProductMaster.PRO_IMAGE
+					+", "+Database.ProductMaster.PRO_IMAGE
+					+", "+Database.ProductMaster.PRO_IMAGE
+					+", "+Database.ProductMaster.PRO_IMAGE
+					+", "+Database.ProductMaster.PRO_IMAGE
+					+", "+Database.ProductMaster.PRO_IMAGE
 					+" FROM "
 					+Database.ProductMaster.TABLE_NAME
 					+" WHERE "
@@ -251,6 +256,36 @@ public class CategoryServices {
 					product.setPro_image(UtilsString.getStirng(resultSet.getString(Database.ProductMaster.PRO_IMAGE)));
 					product.setProductImage(getProductImageGallery(product.getPro_mst_id()));
 					
+					// set cat name
+					String catNameQuery = "SELECT "
+							+Database.CategoryMaster.CAT_NAME
+							+" FROM "
+							+Database.CategoryMaster.TABLE_NAME
+							+" WHERE "
+							+Database.CategoryMaster.CAT_ID+"=?";
+					
+					PreparedStatement catNameStatement = connection.prepareStatement(catNameQuery);
+					catNameStatement.setInt(1, category_id);
+					ResultSet catNameResultSet = catNameStatement.executeQuery();
+					catNameResultSet.first();
+					product.setCat_name(UtilsString.getStirng(catNameResultSet.getString(Database.CategoryMaster.CAT_NAME)));
+					
+					
+					//set brand name
+					
+					String brandNameQuery = "SELECT "
+							+Database.BrandMaster.BRAND_NAME
+							+" FROM "
+							+Database.BrandMaster.TABLE_NAME
+							+" WHERE "
+							+Database.BrandMaster.BRAND_ID+"=?";
+					
+					PreparedStatement brandNameStatement = connection.prepareStatement(brandNameQuery);
+					brandNameStatement.setInt(1, product.getBrand_id());
+					ResultSet brandNameResultSet = brandNameStatement.executeQuery();
+					brandNameResultSet.first();
+					product.setBrand_name(UtilsString.getStirng(brandNameResultSet.getString(Database.BrandMaster.BRAND_NAME)));
+										
 					// add product to list
 					productList.add(product);
 					
