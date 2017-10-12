@@ -765,29 +765,31 @@ public class UserService {
 					query = "UPDATE "
 							+Database.Profile.TABLE_NAME
 							+" SET "
-							+Database.Profile.COMPANY_NAME+"=?"
-							+"," +Database.Profile.FIRST_NAME+"=?"
+							+Database.Profile.FIRST_NAME+"=?"
 							+"," +Database.Profile.LAST_NAME+"=?"
-							+"," +Database.Profile.STATE+"=?"
-							+"," +Database.Profile.COUNTRY+"=?"
-							+"," +Database.Profile.CITY+"=?"
-							+"," +Database.Profile.STREET_ADDRESS+"=?"
-							+"," +Database.Profile.ALTERNET_MOBILE+"=?"
 							+"," +Database.Profile.MOBILE+"=?"
+//							+"," +Database.Profile.COMPANY_NAME+"=?"
+//							+"," +Database.Profile.STATE+"=?"
+//							+"," +Database.Profile.COUNTRY+"=?"
+//							+"," +Database.Profile.CITY+"=?"
+//							+"," +Database.Profile.STREET_ADDRESS+"=?"
+//							+"," +Database.Profile.ALTERNET_MOBILE+"=?"
 							+" WHERE "
 							+Database.Profile.USER_ID+"=?";
 					
 					statement = connection.prepareStatement(query);
-					statement.setString(1, UtilsString.getStirng(profile.getCompnay_name()));
-					statement.setString(2, UtilsString.getStirng(profile.getFname()));
-					statement.setString(3, UtilsString.getStirng(profile.getLname()));
-					statement.setString(4, UtilsString.getStirng(profile.getState()));
-					statement.setString(5, UtilsString.getStirng(profile.getCountry()));
-					statement.setString(6, UtilsString.getStirng(profile.getCity()));
-					statement.setString(7, UtilsString.getStirng(profile.getStreet_address()));
-					statement.setString(8, UtilsString.getStirng(profile.getAlternet_mobile()));
-					statement.setString(9, UtilsString.getStirng(profile.getMobile()));
-					statement.setInt(10, user.getUser_id());
+					statement.setString(1, UtilsString.getStirng(profile.getFname()));
+					statement.setString(2, UtilsString.getStirng(profile.getLname()));
+					statement.setString(3, UtilsString.getStirng(profile.getMobile()));
+//					statement.setString(4, UtilsString.getStirng(profile.getCompnay_name()));
+//					statement.setString(5, UtilsString.getStirng(profile.getState()));
+//					statement.setString(6, UtilsString.getStirng(profile.getCountry()));
+//					statement.setString(7, UtilsString.getStirng(profile.getCity()));
+//					statement.setString(8, UtilsString.getStirng(profile.getStreet_address()));
+//					statement.setString(9, UtilsString.getStirng(profile.getAlternet_mobile()));
+					
+					statement.setInt(4, user.getUser_id());
+//					statement.setInt(10, user.getUser_id());
 					
 					afftectedRow = statement.executeUpdate();
 					
@@ -799,7 +801,7 @@ public class UserService {
 						apiResponseStatus = ApiResponseStatus.UPDATE_PROFILE_SUCCESS;	
 					}
 					
-					System.out.println(statement.toString());
+//					System.out.println(statement.toString());
 					
 				}
 				

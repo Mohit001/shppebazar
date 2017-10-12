@@ -14,6 +14,7 @@ import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
@@ -1209,9 +1210,10 @@ public class CartService {
 					+", "+Database.InvoiceMaster.CART_ID
 					+", "+Database.InvoiceMaster.TOKEN
 					+", "+Database.InvoiceMaster.SALT
+					+", "+Database.InvoiceMaster.CREATE_DATE
 					+")"
 					+" VALUES"
-					+"(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+					+"(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 			
 			PreparedStatement preparedStatement = connection.prepareStatement(insertInvoiceMasterQuery, Statement.RETURN_GENERATED_KEYS);
 			preparedStatement.setInt(1, userCart.getUser_id());
@@ -1245,6 +1247,12 @@ public class CartService {
 			preparedStatement.setInt(24, userCart.getCart_id());
 			preparedStatement.setString(25, userCart.getToken());
 			preparedStatement.setString(26, userCart.getSalt());
+			
+			Date date = Calendar.getInstance().getTime();
+			SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+			String createDate = simpleDateFormat.format(date);
+			
+			preparedStatement.setString(27, createDate);
 			
 			int invoiceMasterAffectedRows = preparedStatement.executeUpdate();
 			if(invoiceMasterAffectedRows == 0) {

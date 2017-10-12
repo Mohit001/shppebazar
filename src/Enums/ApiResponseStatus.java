@@ -79,7 +79,11 @@ public enum ApiResponseStatus {
 	ORDER_PLACE_SUCCESS(1, "Order placed successfully"),
 	
 	
-	
+	// order history
+	ORDER_HISTORY_LIST_FAIL(0, "Sorry!!! No order history found"),
+	ORDER_HISTORY_LIST_SUCCESS(1, "Order history fatch successfully"),
+	ORDER_HISTORY_DETAILS_FAIL(0, "Please provide valid order id"),
+	ORDER_HISTORY_DETAILS_SUCCESS(1, "Order "),
 	
 	
 	//database related enums range 1001 - 1099
