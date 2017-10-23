@@ -56,6 +56,7 @@ public enum ApiResponseStatus {
 	
 	// cart related enums 3001 - 3099 
 	CART_LIST_SUCCESS(1, "All cart items"),
+	CART_UPDATE_SUCCESS(1, "Cart information update successfully"),
 	CART_PRODUCT_ADD_FAIL(0, "Fail to add product in cart"),
 	CART_PRODUCT_ADD_SUCCESS(1, "Product added successfully"),
 	CART_PRODUCT_UPDATE_FAIL(0, "Fail to update product infromation"),

@@ -15,7 +15,6 @@ public class Address implements Serializable{
 	private String user_id;
 	private int is_enable;
 	private int default_value;
-	private Date create_date;
 	private String full_name;
 	private String email;
 	private String contact_number;
@@ -25,7 +24,29 @@ public class Address implements Serializable{
 	private String state_name;
 	private String city_name;
 
+	
 
+	public Address() {
+		super();
+		this.address_id = 0;
+		this.address1 = "";
+		this.address2 = "";
+		this.state = "";
+		this.city = "";
+		this.postcode = "";
+		this.addition_detail = "";
+		this.user_id = "";
+		this.is_enable = 1;
+		this.default_value = 0;
+		this.full_name = "";
+		this.email = "";
+		this.contact_number = "";
+		this.selected = false;
+		this.country = "";
+		this.country_name = "";
+		this.state_name = "";
+		this.city_name = "";
+	}
 	public boolean getSelected() {
 		return selected;
 	}
@@ -92,12 +113,7 @@ public class Address implements Serializable{
 	public void setDefault_value(int default_value) {
 		this.default_value = default_value;
 	}
-	public Date getCreate_date() {
-		return create_date;
-	}
-	public void setCreate_date(Date create_date) {
-		this.create_date = create_date;
-	}
+
 	public String getFull_name() {
 		return full_name;
 	}

@@ -127,6 +127,7 @@ public class Database {
 		public static final String CART_PAYMENT_TYPE_ID = "payment_type_id";
 		public static final String CART_PAYMENT_TYPE_CODE = "payment_type_code";
 		public static final String SALT = "salt";
+		public static final String SHIPPING_CHARGE = "shipping_charge";
 	}
 
 	public static class UserCartProductTable {

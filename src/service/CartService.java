@@ -199,40 +199,63 @@ public class CartService {
 			
 			userCart = mapper.readValue(jsonRequest, UserCart.class);
 			
+			String cartUpdateQuery = "UPDATE "
+					+Database.UserCartTable.TABLE_NAME
+					+" SET "
+					+Database.UserCartTable.USER_ID+"=?"
+					+", "+Database.UserCartTable.SHIPPING_CHARGE+"=?"
+					+" WHERE "
+					+Database.UserCartProductTable.CART_ID+"=?";
+			
+			PreparedStatement cartUpdateStatement = connection.prepareStatement(cartUpdateQuery);
+			cartUpdateStatement.setInt(1, userCart.getUser_id());
+			cartUpdateStatement.setString(2, userCart.getShipping_charge());
+			cartUpdateStatement.setInt(3, userCart.getCart_id());
+			
+			
+			int cartUpdateAffectedRow = cartUpdateStatement.executeUpdate();
+			
 			List<UserCartProduct> list = userCart.getUserCartProduct();
 			
-			for(int i=0; i<list.size(); i++) {
-				UserCartProduct product = list.get(i);
-				
-				double subtotal = (Double.parseDouble(product.getProduct_price()) * product.getProduct_qty())
-						+ (product.getShipping_charge() * product.getProduct_qty());
-				
-				String productUpdateQuery = "UPDATE "
-						+Database.UserCartProductTable.TABLE_NAME
-						+" SET "
-						+Database.UserCartProductTable.PRODUCT_QTY+"=?"
-						+", "+Database.UserCartProductTable.SUBTOTAL+"=?"
-						+" WHERE "
-						+Database.UserCartProductTable.CART_ID+"=?"
-						+" AND "
-						+Database.UserCartProductTable.PRODUCT_ID+"=?";
-				
-				PreparedStatement cartProductStatement = connection.prepareStatement(productUpdateQuery);
-				cartProductStatement.setInt(1, product.getProduct_qty());
-				cartProductStatement.setString(2, String.valueOf(subtotal));
-				cartProductStatement.setInt(3, userCart.getCart_id());
-				cartProductStatement.setInt(4, product.getProduct_id());
-				
-				int cartProductAffectedRow = cartProductStatement.executeUpdate();
-				if(cartProductAffectedRow == 0) {
-					apiResponseStatus = ApiResponseStatus.CART_PRODUCT_UPDATE_FAIL;
-					connection.rollback();
-				} else {
-					userCart.getUserCartProduct().set(i, product);
+			if(list != null && list.size() > 0) {
+			
+				for(int i=0; i<list.size(); i++) {
+					UserCartProduct product = list.get(i);
+					
+					double subtotal = (Double.parseDouble(product.getProduct_price()) * product.getProduct_qty())
+							+ (product.getShipping_charge() * product.getProduct_qty());
+					
+					String productUpdateQuery = "UPDATE "
+							+Database.UserCartProductTable.TABLE_NAME
+							+" SET "
+							+Database.UserCartProductTable.PRODUCT_QTY+"=?"
+							+", "+Database.UserCartProductTable.SUBTOTAL+"=?"
+							+" WHERE "
+							+Database.UserCartProductTable.CART_ID+"=?"
+							+" AND "
+							+Database.UserCartProductTable.PRODUCT_ID+"=?";
+					
+					PreparedStatement cartProductStatement = connection.prepareStatement(productUpdateQuery);
+					cartProductStatement.setInt(1, product.getProduct_qty());
+					cartProductStatement.setString(2, String.valueOf(subtotal));
+					cartProductStatement.setInt(3, userCart.getCart_id());
+					cartProductStatement.setInt(4, product.getProduct_id());
+					
+					int cartProductAffectedRow = cartProductStatement.executeUpdate();
+					if(cartProductAffectedRow == 0) {
+						apiResponseStatus = ApiResponseStatus.CART_PRODUCT_UPDATE_FAIL;
+						connection.rollback();
+						break;
+					} else {
+						userCart.getUserCartProduct().set(i, product);
+					}
+					
 				}
 				
 			}
 			
+			
+			apiResponseStatus = ApiResponseStatus.CART_UPDATE_SUCCESS;
 			
 		}catch (ClassNotFoundException e) {
 			// TODO Auto-generated catch block
@@ -389,13 +412,18 @@ public class CartService {
 			if(resultSet.getRow() != 0) {
 				userCart.setCart_id(resultSet.getInt(Database.UserCartTable.CART_ID));
 				userCart.setUser_id(resultSet.getInt(Database.UserCartTable.USER_ID));
-				userCart.setCart_status(resultSet.getString(Database.UserCartTable.CART_STATUS));
-				userCart.setToken(resultSet.getString(Database.UserCartTable.CART_TOKEN));
+				userCart.setCart_status(UtilsString.getStirng(resultSet.getString(Database.UserCartTable.CART_STATUS)));
+				userCart.setToken(UtilsString.getStirng(resultSet.getString(Database.UserCartTable.CART_TOKEN)));
 				userCart.setShipping_address_id(resultSet.getInt(Database.UserCartTable.CART_SHIPPING_ID));
 				userCart.setBilling_address_id(resultSet.getInt(Database.UserCartTable.CART_BILLING_ID));
 				userCart.setPayment_type_id(resultSet.getInt(Database.UserCartTable.CART_PAYMENT_TYPE_ID));
-				userCart.setSalt(resultSet.getString(Database.UserCartTable.SALT));
-				
+				userCart.setSalt(UtilsString.getStirng(resultSet.getString(Database.UserCartTable.SALT)));
+				userCart.setShipping_charge(UtilsString.getStirng(resultSet.getString(Database.UserCartTable.SHIPPING_CHARGE)));
+				userCart.setCreate_date("");
+				userCart.setIp_address("");
+				userCart.setShippingAddress(new Address());
+				userCart.setBillingAddress(new Address());
+				userCart.setPayment_type_code("COD");
 				List<UserCartProduct> list = getUserCartProducts(connection, userCart.getCart_id());
 				userCart.setUserCartProduct(list);
 				userCart.setCartCount(list.size());

@@ -167,7 +167,6 @@ public class UserService {
 					
 					
 				} else {
-					environment.setUser_id(Integer.parseInt(unique_pararm));
 					environment.setToken("");
 				}
 				

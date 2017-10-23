@@ -20,6 +20,7 @@ public class UserCart implements Serializable{
 	private String salt;
 	private int cartCount;
 	private List<UserCartProduct> userCartProduct;
+	private String shipping_charge;
 	
 	public int getCart_id() {
 		return cart_id;
@@ -112,5 +113,13 @@ public class UserCart implements Serializable{
 	public void setPayment_type_code(String payment_type_code) {
 		this.payment_type_code = payment_type_code;
 	}
+	public String getShipping_charge() {
+		return shipping_charge;
+	}
+	public void setShipping_charge(String shipping_charge) {
+		this.shipping_charge = shipping_charge;
+	}
+	
+	
 	
 }
