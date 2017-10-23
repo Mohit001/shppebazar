@@ -14,6 +14,7 @@ public enum ApiResponseStatus {
 	REQUEST_PARSING_ERROR(2003, "Error in parsing request. Please contact to administrator"),
 	
 	//User related enums 101-199
+	ENVIRONMENT_FAIL(0, "please pass valid unique id"),
 	ENVIRONMENT_SUCCESS(1, "Environment retrive successfully"),
 	LOGIN_FAIL(0, "Please provide valid username and password"),
 	LOGIN_SUCCESS(1, "User login successfully"),

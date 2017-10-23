@@ -1040,7 +1040,7 @@ public class CartService {
 				connection.close();
 			}
 		}
-
+		
 		
 		return Response.status(Status.OK).entity(responseJson).build();
 	}

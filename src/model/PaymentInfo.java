@@ -14,7 +14,17 @@ public class PaymentInfo implements Serializable{
     private String salt;
     private int is_live_mode;
 
-    public String getStatus() {
+    
+    public PaymentInfo() {
+		super();
+		status = "";
+		title = "";
+		key = "";
+		salt= "";
+		is_live_mode = 0;
+	}
+
+	public String getStatus() {
         return status;
     }
 

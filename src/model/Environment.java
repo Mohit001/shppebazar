@@ -13,6 +13,7 @@ public class Environment implements Serializable{
 	private int user_id;
 	private int cart_id;
 	private int cartCount;
+	private List<UserCartProduct> cartProductList;
 	private String imagePrefix;
 	private String thumbPrefix;
 	private PaymentInfo paymentInfo;
@@ -90,6 +91,12 @@ public class Environment implements Serializable{
 	}
 	public void setCartCount(int cartCount) {
 		this.cartCount = cartCount;
+	}
+	public List<UserCartProduct> getCartProductList() {
+		return cartProductList;
+	}
+	public void setCartProductList(List<UserCartProduct> cartProductList) {
+		this.cartProductList = cartProductList;
 	}
 	
 	

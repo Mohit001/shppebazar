@@ -121,6 +121,7 @@ public class Database {
 		public static final String USER_ID = "user_id";
 		public static final String CART_STATUS = "cart_status";
 		public static final String CART_TOKEN = "token";
+		public static final String UNIQUE_ID = "unique_id";
 		public static final String CART_SHIPPING_ID = "shipping_address_id";
 		public static final String CART_BILLING_ID = "billing_address_id";
 		public static final String CART_PAYMENT_TYPE_ID = "payment_type_id";

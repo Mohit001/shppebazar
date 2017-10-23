@@ -7,6 +7,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -33,6 +34,7 @@ import model.Environment;
 import model.PaymentInfo;
 import model.Person;
 import model.Profile;
+import model.UserCartProduct;
 
 @Path("/user")
 @Produces(MediaType.APPLICATION_JSON)
@@ -63,20 +65,24 @@ public class UserService {
 			environment.setThumbPrefix("");
 			
 			PaymentInfo paymentInfo = new PaymentInfo();
-			paymentInfo.setIs_live_mode(0);
+			/*paymentInfo.setIs_live_mode(0);
 			paymentInfo.setKey("");
 			paymentInfo.setSalt("");
 			paymentInfo.setStatus("");
-			paymentInfo.setTitle("");
+			paymentInfo.setTitle("");*/
 			environment.setPaymentInfo(paymentInfo);
 			
 //			System.out.println("Length:"+unique_pararm.length()+" : "+unique_pararm);
 			
-			if(unique_pararm == "0") {
+			List<UserCartProduct> cartProductList = new ArrayList<>();
+			
+			if(unique_pararm.length() == 0) {
 				environment.setUser_id(0);
 				environment.setToken("");
+				
+				apiResponseStatus = ApiResponseStatus.ENVIRONMENT_FAIL;
 			} else {
-				String tokenQuery = "SELECT "
+				/*String tokenQuery = "SELECT "
 						+Database.UserCartTable.CART_ID
 						+", "+Database.UserCartTable.CART_TOKEN
 						+" FROM  "
@@ -88,7 +94,19 @@ public class UserService {
 							tokenQuery = tokenQuery+Database.UserCartTable.CART_TOKEN+"=?";	
 						} else {
 							tokenQuery = tokenQuery+Database.UserCartTable.USER_ID+"=?";
-						}
+						}*/
+						
+				
+				String tokenQuery = "SELECT "
+						+Database.UserCartTable.CART_ID
+						+", "+Database.UserCartTable.USER_ID
+						+", "+Database.UserCartTable.CART_TOKEN
+						+" FROM  "
+						+Database.UserCartTable.TABLE_NAME
+						+" WHERE "
+						+Database.UserCartTable.CART_STATUS+" LIKE ?"
+						+" AND "
+						+Database.UserCartTable.UNIQUE_ID+"=?";	
 						
 				
 				DatabaseConnector connector = new DatabaseConnector();
@@ -101,8 +119,10 @@ public class UserService {
 				
 				resultSet.last();
 				
+				
+				
 				if(resultSet.getRow() != 0) {
-					String productQuery = "SELECT COUNT(*) AS count FROM "
+					String productQuery = "SELECT * FROM "
 							+Database.UserCartProductTable.TABLE_NAME
 							+" WHERE "
 							+Database.UserCartProductTable.CART_ID+"=?";
@@ -110,27 +130,55 @@ public class UserService {
 					productStatement.setInt(1, resultSet.getInt(Database.UserCartTable.CART_ID));
 					ResultSet productResultset = productStatement.executeQuery();
 					productResultset.last();
-					int productCount = productResultset.getInt("count");
-					environment.setCartCount(productCount);
+					/*int productCount = productResultset.getInt("count");
+					environment.setCartCount(productCount);*/
 					
-					if(unique_pararm.length() == 128) {
-						environment.setUser_id(0);
-						environment.setToken(unique_pararm);
-						environment.setCart_id(resultSet.getInt(Database.UserCartTable.CART_ID));
-					} else {
-						environment.setUser_id(Integer.parseInt(unique_pararm));
-						environment.setCart_id(resultSet.getInt(Database.UserCartTable.CART_ID));
-						environment.setToken(resultSet.getString(Database.UserCartTable.CART_TOKEN));	
+					if(productResultset.getRow() != 0) {
+						productResultset.first();
+						do {
+							UserCartProduct product = new UserCartProduct();
+							product.setCart_id(productResultset.getInt(Database.UserCartProductTable.CART_ID));
+							product.setProduct_id(productResultset.getInt(Database.UserCartProductTable.PRODUCT_ID));
+							product.setProduct_name(UtilsString.getStirng(productResultset.getString(Database.UserCartProductTable.PRODUCT_NAME)));
+							product.setProduct_qty(productResultset.getInt(Database.UserCartProductTable.PRODUCT_QTY));
+							product.setProduct_price(String.valueOf(productResultset.getDouble(Database.UserCartProductTable.PRODUCT_PRICE)));
+							product.setProduct_code(UtilsString.getStirng(productResultset.getString(Database.UserCartProductTable.PRODUCT_CODE)));
+							product.setShipping_charge(productResultset.getInt(Database.UserCartProductTable.SHIPPING_CHARGE));
+							product.setStatus(UtilsString.getStirng(productResultset.getString(Database.UserCartProductTable.STATUS)));
+							product.setGst_type(UtilsString.getStirng(productResultset.getString(Database.UserCartProductTable.GST_TYPE)));
+							product.setGst(productResultset.getInt(Database.UserCartProductTable.GST));
+							product.setSubtotal(UtilsString.getStirng(productResultset.getString(Database.UserCartProductTable.SUBTOTAL)));
+							product.setDescription(UtilsString.getStirng(productResultset.getString(Database.UserCartProductTable.DESCRIPTION)));
+							product.setCat_id(productResultset.getInt(Database.UserCartProductTable.CATEGORY_ID));
+							product.setBrand_id(productResultset.getInt(Database.UserCartProductTable.BRAND_ID));
+							product.setDiscount_price(UtilsString.getStirng(productResultset.getString(Database.UserCartProductTable.DISCOUNT_PRICE)));
+							product.setImage_name(UtilsString.getStirng(productResultset.getString(Database.UserCartProductTable.IMAGE_NAME)));
+							product.setCategory_name(UtilsString.getStirng(productResultset.getString(Database.UserCartProductTable.CATEGORY_NAME)));
+							product.setBrand_name(UtilsString.getStirng(productResultset.getString(Database.UserCartProductTable.BRAND_NAME)));
+							
+							cartProductList.add(product);
+							productResultset.next();
+						}while(!productResultset.isAfterLast());	
 					}
-						
+					
+					environment.setUser_id(resultSet.getInt(Database.UserCartTable.USER_ID));
+					environment.setCart_id(resultSet.getInt(Database.UserCartTable.CART_ID));
+					environment.setToken(resultSet.getString(Database.UserCartTable.CART_TOKEN));
+					
+					
 				} else {
 					environment.setUser_id(Integer.parseInt(unique_pararm));
 					environment.setToken("");
 				}
 				
+				apiResponseStatus = ApiResponseStatus.ENVIRONMENT_SUCCESS;
+				
 			}
 			
-			apiResponseStatus = ApiResponseStatus.ENVIRONMENT_SUCCESS;
+			environment.setCartProductList(cartProductList);
+			environment.setCartCount(cartProductList.size());
+			
+			
 			
 			
 		}catch (ClassNotFoundException e) {
