@@ -44,6 +44,7 @@ import database.Database;
 import database.DatabaseConnector;
 import model.Address;
 import model.InvoiceMaster;
+import model.PaymentCCTypes;
 import model.PaymentMethod;
 import model.UserCart;
 import model.UserCartProduct;
@@ -842,7 +843,8 @@ public class CartService {
 
 			response.setStatus(apiResponseStatus.getStatus_code());
 			response.setMessage(apiResponseStatus.getStatus_message());
-			response.setInfo(new ArrayList<>());
+			List<Address> list = new ArrayList<>();
+			response.setInfo(list);
 			responseJson = mapper.writeValueAsString(response);
 			
 			if(connection != null && !connection.isClosed()) {
@@ -944,7 +946,8 @@ public class CartService {
 			paymentMethod.setTitle("Cash On Delivery");
 			paymentMethod.setCode("COD");
 			paymentMethod.setSelected(true);
-			paymentMethod.setCc_types(new ArrayList<>());
+			ArrayList<PaymentCCTypes> ccTypeList = new ArrayList<>();
+			paymentMethod.setCc_types(ccTypeList);
 			
 			paymentMethodList.add(paymentMethod);
 			
@@ -1028,7 +1031,8 @@ public class CartService {
 
 			response.setStatus(apiResponseStatus.getStatus_code());
 			response.setMessage(apiResponseStatus.getStatus_message());
-			response.setInfo(new ArrayList<>());
+			List<PaymentMethod> list = new ArrayList<>();
+			response.setInfo(list);
 			responseJson = mapper.writeValueAsString(response);
 			
 			if(connection != null && !connection.isClosed()) {

@@ -106,6 +106,11 @@ public class Database {
 		public static final String FULL_NAME = "full_name";
 		public static final String EMAIL = "email";
 		public static final String CONTACT_NUMBER = "contact_number";
+		public static final String COUNTRY = "country";
+		public static final String COUNTRY_NAME = "country_name";
+		public static final String STATE_NAME="state_name";
+		public static final String CITY_NAME="city_name";
+		
 	}
 
 	public static class UserCartTable {

@@ -20,6 +20,10 @@ public class Address implements Serializable{
 	private String email;
 	private String contact_number;
 	private boolean selected;
+	private String country;
+	private String country_name;
+	private String state_name;
+	private String city_name;
 
 
 	public boolean getSelected() {
@@ -112,24 +116,30 @@ public class Address implements Serializable{
 	public void setContact_number(String contact_number) {
 		this.contact_number = contact_number;
 	}
-
-	@Override
-	public String toString() {
-		return "Address{" +
-				"address_id=" + address_id +
-				", address1='" + address1 + '\'' +
-				", address2='" + address2 + '\'' +
-				", state='" + state + '\'' +
-				", city='" + city + '\'' +
-				", postcode='" + postcode + '\'' +
-				", addition_detail='" + addition_detail + '\'' +
-				", user_id='" + user_id + '\'' +
-				", is_enable=" + is_enable +
-				", default_value=" + default_value +
-				", create_date=" + create_date +
-				", full_name='" + full_name + '\'' +
-				", email='" + email + '\'' +
-				", contact_number='" + contact_number + '\'' +
-				'}';
+	public String getCountry() {
+		return country;
 	}
+	public void setCountry(String country) {
+		this.country = country;
+	}
+	public String getCountry_name() {
+		return country_name;
+	}
+	public void setCountry_name(String country_name) {
+		this.country_name = country_name;
+	}
+	public String getState_name() {
+		return state_name;
+	}
+	public void setState_name(String state_name) {
+		this.state_name = state_name;
+	}
+	public String getCity_name() {
+		return city_name;
+	}
+	public void setCity_name(String city_name) {
+		this.city_name = city_name;
+	}
+
+	
 }

@@ -197,9 +197,13 @@ public class AddressService {
 						+", "+Database.UserAddress.EMAIL
 						+", "+Database.UserAddress.CONTACT_NUMBER
 						+", "+Database.UserAddress.DEFAULT_VALUE
+						+", "+Database.UserAddress.COUNTRY
+						+", "+Database.UserAddress.COUNTRY_NAME
+						+", "+Database.UserAddress.STATE_NAME
+						+", "+Database.UserAddress.CITY_NAME
 						+")"
 						+ " VALUES "
-						+"(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+						+"(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 				
 				PreparedStatement statement = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
 				statement.setString(1, address.getAddress1());
@@ -214,6 +218,10 @@ public class AddressService {
 				statement.setString(10, address.getEmail());
 				statement.setString(11, address.getContact_number());
 				statement.setInt(12, 0); // set default value 0
+				statement.setString(13, address.getCountry());
+				statement.setString(14, address.getCountry_name());
+				statement.setString(15, address.getState_name());
+				statement.setString(16, address.getCity_name());
 				
 				
 				int affectedRaw = statement.executeUpdate();
@@ -297,6 +305,10 @@ public class AddressService {
 						+", "+Database.UserAddress.EMAIL+"=?"
 						+", "+Database.UserAddress.CONTACT_NUMBER+"=?"
 						+", "+Database.UserAddress.DEFAULT_VALUE+"=?"
+						+", "+Database.UserAddress.COUNTRY+"=?"
+						+", "+Database.UserAddress.COUNTRY_NAME+"=?"
+						+", "+Database.UserAddress.STATE_NAME+"=?"
+						+", "+Database.UserAddress.CITY_NAME+"=?"
 						+""
 						+" WHERE "
 						+Database.UserAddress.ADDRESS_ID+"=?";
@@ -312,7 +324,11 @@ public class AddressService {
 				statement.setString(8, address.getEmail());
 				statement.setString(9, address.getContact_number());
 				statement.setInt(10, address.getDefault_value());
-				statement.setInt(11, address.getAddress_id());
+				statement.setString(11, address.getCountry());
+				statement.setString(12, address.getCountry_name());
+				statement.setString(13, address.getState_name());
+				statement.setString(14, address.getCity_name());
+				statement.setInt(15, address.getAddress_id());
 				
 				int affectedRaw = statement.executeUpdate();
 				if(affectedRaw == 0) {
@@ -379,6 +395,10 @@ public class AddressService {
 				+", "+Database.UserAddress.EMAIL
 				+", "+Database.UserAddress.CONTACT_NUMBER
 				+", "+Database.UserAddress.DEFAULT_VALUE
+				+", "+Database.UserAddress.COUNTRY
+				+", "+Database.UserAddress.COUNTRY_NAME
+				+", "+Database.UserAddress.STATE_NAME
+				+", "+Database.UserAddress.CITY_NAME
 				+" FROM "
 				+Database.UserAddress.TABLE_NAME
 				+" WHERE "
@@ -410,6 +430,10 @@ public class AddressService {
 				address.setEmail(UtilsString.getStirng(resultSet.getString(Database.UserAddress.EMAIL)));
 				address.setContact_number(UtilsString.getStirng(resultSet.getString(Database.UserAddress.CONTACT_NUMBER)));
 				address.setDefault_value(resultSet.getInt(Database.UserAddress.DEFAULT_VALUE));
+				address.setCountry(UtilsString.getStirng(resultSet.getString(Database.UserAddress.COUNTRY)));
+				address.setCountry_name(UtilsString.getStirng(resultSet.getString(Database.UserAddress.COUNTRY_NAME)));
+				address.setState_name(UtilsString.getStirng(resultSet.getString(Database.UserAddress.STATE_NAME)));
+				address.setCity_name(UtilsString.getStirng(resultSet.getString(Database.UserAddress.CITY_NAME)));
 				
 				list.add(address);
 				
