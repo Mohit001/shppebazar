@@ -154,7 +154,7 @@ public class Database {
 		public static final String BRAND_NAME = "brand_name";
 	}
 
-	public static class InvoiceMaster {
+	public static class InvoiceMasterTable {
 		public static final String TABLE_NAME = "invoice_master";
 		public static final String INVOICE_ID = "invoice_id";
 		public static final String USER_ID = "user_id";
@@ -190,7 +190,7 @@ public class Database {
 		public static final String CART_ID = "cart_id";
 	}
 	
-	public static class InvoiceDetails{
+	public static class InvoiceDetailsTable{
 		public static final String TABLE_NAME = "invoice_details";
 		public static final String INVOICE_DETAILS_ID= "invoice_details_id";
 		public static final String INVOICE_ID= "invoice_id";

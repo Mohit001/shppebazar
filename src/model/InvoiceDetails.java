@@ -20,6 +20,25 @@ public class InvoiceDetails implements Serializable{
 	private String product_category_name;
 	private String product_brand_name;
 	private int product_qty;
+	
+	
+	
+	public InvoiceDetails() {
+		super();
+		this.product_name = "";
+		this.product_code = "";
+		this.product_description = "";
+		this.product_price = "";
+		this.product_cat_id = "";
+		this.product_brand_id = "";
+		this.product_gst_type = "";
+		this.product_gst = "";
+		this.product_discount_price = "";
+		this.create_date = "";
+		this.product_image_name = "";
+		this.product_category_name = "";
+		this.product_brand_name = "";
+	}
 	public int getInvoice_details_id() {
 		return invoice_details_id;
 	}

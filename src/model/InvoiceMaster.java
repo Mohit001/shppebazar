@@ -1,6 +1,7 @@
 package model;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 public class InvoiceMaster implements Serializable{
@@ -39,6 +40,42 @@ public class InvoiceMaster implements Serializable{
 	private String billing_contact_no;
 	private List<InvoiceDetails> invoiceProductList;
 	
+	
+	
+	public InvoiceMaster() {
+		super();
+		this.order_type = "";
+		this.user_type = "";
+		this.shiping_address1 = "";
+		this.shiping_address2 = "";
+		this.shiping_state = "";
+		this.shiping_city = "";
+		this.shiping_postcode = "";
+		this.shiping_additiondetails = "";		
+		this.billing_address1 = "";
+		this.billing_address2 = "";
+		this.billing_state = "";
+		this.billing_city = "";
+		this.billing_postcode = "";
+		this.billing_addtionaldeatails = "";	
+		this.create_date = "";
+		this.shiping_fullname = "";
+		this.shiping_email = "";
+		this.billing_fullname = "";
+		this.billing_email = "";
+		this.total_amount = "";
+		this.grand_total = "";
+		this.shipping_charge = "";
+		this.order_no = "";
+		this.ip_address = "";
+		this.order_status = "";
+		this.cart_id = "";
+		this.token = "";
+		this.salt = "";
+		this.shipping_contact_no = "";
+		this.billing_contact_no = "";
+		this.invoiceProductList = new ArrayList<>();
+	}
 	public List<InvoiceDetails> getInvoiceProductList() {
 		return invoiceProductList;
 	}

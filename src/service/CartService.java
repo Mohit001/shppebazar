@@ -1214,38 +1214,40 @@ public class CartService {
 			
 			String insertInvoiceMasterQuery = 
 					"INSERT INTO "
-					+Database.InvoiceMaster.TABLE_NAME
+					+Database.InvoiceMasterTable.TABLE_NAME
 					+"("
-					+Database.InvoiceMaster.USER_ID
-					+", "+Database.InvoiceMaster.ORDER_TYPE
-					+", "+Database.InvoiceMaster.USER_TYPE
-					+", "+Database.InvoiceMaster.SHIPPING_ADDRESS1
-					+", "+Database.InvoiceMaster.SHIPPING_ADDRESS2
-					+", "+Database.InvoiceMaster.SHIPPING_STATE
-					+", "+Database.InvoiceMaster.SHIPPING_CITY
-					+", "+Database.InvoiceMaster.SHIPPING_POSTCODE
-					+", "+Database.InvoiceMaster.SHIPPING_ADDITIONAL_DETAILS
-					+", "+Database.InvoiceMaster.BILLING_ADDRESS1
-					+", "+Database.InvoiceMaster.BILLING_ADDRESS2
-					+", "+Database.InvoiceMaster.BILLING_STATE
-					+", "+Database.InvoiceMaster.BILLING_CITY
-					+", "+Database.InvoiceMaster.BILLING_POSTCODE
-					+", "+Database.InvoiceMaster.BILLING_ADDITIONAL_DETAILS
-					+", "+Database.InvoiceMaster.SHIPPING_FULL_NAME
-					+", "+Database.InvoiceMaster.SHIPPING_EMAIL
-					+", "+Database.InvoiceMaster.BILLING_FULL_NAME
-					+", "+Database.InvoiceMaster.BILLING_EMAIL
-					+", "+Database.InvoiceMaster.TOTAL_AMOUNT
-					+", "+Database.InvoiceMaster.GRAND_TOTAL
-					+", "+Database.InvoiceMaster.SHIPPING_CHARGE
-					+", "+Database.InvoiceMaster.ORDER_STATUS
-					+", "+Database.InvoiceMaster.CART_ID
-					+", "+Database.InvoiceMaster.TOKEN
-					+", "+Database.InvoiceMaster.SALT
-					+", "+Database.InvoiceMaster.CREATE_DATE
+					+Database.InvoiceMasterTable.USER_ID
+					+", "+Database.InvoiceMasterTable.ORDER_TYPE
+					+", "+Database.InvoiceMasterTable.USER_TYPE
+					+", "+Database.InvoiceMasterTable.SHIPPING_ADDRESS1
+					+", "+Database.InvoiceMasterTable.SHIPPING_ADDRESS2
+					+", "+Database.InvoiceMasterTable.SHIPPING_STATE
+					+", "+Database.InvoiceMasterTable.SHIPPING_CITY
+					+", "+Database.InvoiceMasterTable.SHIPPING_POSTCODE
+					+", "+Database.InvoiceMasterTable.SHIPPING_ADDITIONAL_DETAILS
+					+", "+Database.InvoiceMasterTable.BILLING_ADDRESS1
+					+", "+Database.InvoiceMasterTable.BILLING_ADDRESS2
+					+", "+Database.InvoiceMasterTable.BILLING_STATE
+					+", "+Database.InvoiceMasterTable.BILLING_CITY
+					+", "+Database.InvoiceMasterTable.BILLING_POSTCODE
+					+", "+Database.InvoiceMasterTable.BILLING_ADDITIONAL_DETAILS
+					+", "+Database.InvoiceMasterTable.SHIPPING_FULL_NAME
+					+", "+Database.InvoiceMasterTable.SHIPPING_EMAIL
+					+", "+Database.InvoiceMasterTable.BILLING_FULL_NAME
+					+", "+Database.InvoiceMasterTable.BILLING_EMAIL
+					+", "+Database.InvoiceMasterTable.TOTAL_AMOUNT
+					+", "+Database.InvoiceMasterTable.GRAND_TOTAL
+					+", "+Database.InvoiceMasterTable.SHIPPING_CHARGE
+					+", "+Database.InvoiceMasterTable.ORDER_STATUS
+					+", "+Database.InvoiceMasterTable.CART_ID
+					+", "+Database.InvoiceMasterTable.TOKEN
+					+", "+Database.InvoiceMasterTable.SALT
+					+", "+Database.InvoiceMasterTable.CREATE_DATE
+					+", "+Database.InvoiceMasterTable.SHIPPING_ADDRESS_CONTACT_NO
+					+", "+Database.InvoiceMasterTable.BILLING_ADDRESS_CONTACT_NO
 					+")"
 					+" VALUES"
-					+"(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+					+"(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 			
 			PreparedStatement preparedStatement = connection.prepareStatement(insertInvoiceMasterQuery, Statement.RETURN_GENERATED_KEYS);
 			preparedStatement.setInt(1, userCart.getUser_id());
@@ -1280,11 +1282,17 @@ public class CartService {
 			preparedStatement.setString(25, userCart.getToken());
 			preparedStatement.setString(26, userCart.getSalt());
 			
+			
+			
 			Date date = Calendar.getInstance().getTime();
 			SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
 			String createDate = simpleDateFormat.format(date);
 			
 			preparedStatement.setString(27, createDate);
+			
+			
+			preparedStatement.setString(28, shippingAddress.getContact_number());
+			preparedStatement.setString(29, billingAddress.getContact_number());
 			
 			int invoiceMasterAffectedRows = preparedStatement.executeUpdate();
 			if(invoiceMasterAffectedRows == 0) {
@@ -1304,23 +1312,23 @@ public class CartService {
 					
 					String insertInvoiceDetailsQuery = 
 							"INSERT INTO "
-							+Database.InvoiceDetails.TABLE_NAME
+							+Database.InvoiceDetailsTable.TABLE_NAME
 							+"("
-							+Database.InvoiceDetails.INVOICE_ID
-							+", "+Database.InvoiceDetails.PRODUCT_ID
-							+", "+Database.InvoiceDetails.PRODUCT_NAME
-							+", "+Database.InvoiceDetails.PRODUCT_CODE
-							+", "+Database.InvoiceDetails.PRODUCT_DESCRIPTION
-							+", "+Database.InvoiceDetails.PRODUCT_PRICE
-							+", "+Database.InvoiceDetails.PRODUCT_CAT_ID
-							+", "+Database.InvoiceDetails.PRODUCT_BRAND_ID
-							+", "+Database.InvoiceDetails.PRODUCT_GST_TYPE
-							+", "+Database.InvoiceDetails.PRODUCT_GST
-							+", "+Database.InvoiceDetails.PRODUCT_DISCOUNT_PRICE
-							+", "+Database.InvoiceDetails.PRODUCT_IMAGE_NAME
-							+", "+Database.InvoiceDetails.PRODUCT_CATEGORY_NAME
-							+", "+Database.InvoiceDetails.PRODUCT_BRAND_NAME
-							+", "+Database.InvoiceDetails.PRODUCT_QTY
+							+Database.InvoiceDetailsTable.INVOICE_ID
+							+", "+Database.InvoiceDetailsTable.PRODUCT_ID
+							+", "+Database.InvoiceDetailsTable.PRODUCT_NAME
+							+", "+Database.InvoiceDetailsTable.PRODUCT_CODE
+							+", "+Database.InvoiceDetailsTable.PRODUCT_DESCRIPTION
+							+", "+Database.InvoiceDetailsTable.PRODUCT_PRICE
+							+", "+Database.InvoiceDetailsTable.PRODUCT_CAT_ID
+							+", "+Database.InvoiceDetailsTable.PRODUCT_BRAND_ID
+							+", "+Database.InvoiceDetailsTable.PRODUCT_GST_TYPE
+							+", "+Database.InvoiceDetailsTable.PRODUCT_GST
+							+", "+Database.InvoiceDetailsTable.PRODUCT_DISCOUNT_PRICE
+							+", "+Database.InvoiceDetailsTable.PRODUCT_IMAGE_NAME
+							+", "+Database.InvoiceDetailsTable.PRODUCT_CATEGORY_NAME
+							+", "+Database.InvoiceDetailsTable.PRODUCT_BRAND_NAME
+							+", "+Database.InvoiceDetailsTable.PRODUCT_QTY
 							+")"
 							+" VALUES "
 							+"(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
