@@ -20,7 +20,7 @@ public class InvoiceDetails implements Serializable{
 	private String product_category_name;
 	private String product_brand_name;
 	private int product_qty;
-	
+	private String shipping_charge;
 	
 	
 	public InvoiceDetails() {
@@ -38,6 +38,7 @@ public class InvoiceDetails implements Serializable{
 		this.product_image_name = "";
 		this.product_category_name = "";
 		this.product_brand_name = "";
+		this.shipping_charge = "";
 	}
 	public int getInvoice_details_id() {
 		return invoice_details_id;
@@ -140,6 +141,12 @@ public class InvoiceDetails implements Serializable{
 	}
 	public void setProduct_qty(int product_qty) {
 		this.product_qty = product_qty;
+	}
+	public String getShipping_charge() {
+		return shipping_charge;
+	}
+	public void setShipping_charge(String shipping_charge) {
+		this.shipping_charge = shipping_charge;
 	}
 
 }

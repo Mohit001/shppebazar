@@ -139,7 +139,7 @@ public class HistoryServices {
 			if(resultSet.getRow() == 0) {
 				apiResponseStatus = ApiResponseStatus.ORDER_HISTORY_DETAILS_FAIL;
 			} else if(resultSet.getRow() > 1){
-				
+				apiResponseStatus = ApiResponseStatus.ORDER_HISTORY_DETAILS_FAIL;
 			}else {
 				resultSet.first();
 				
@@ -208,6 +208,7 @@ public class HistoryServices {
 						details.setProduct_category_name(UtilsString.getStirng(invoiceDetailsResultSet.getString(Database.InvoiceDetailsTable.PRODUCT_CATEGORY_NAME)));
 						details.setProduct_brand_name(UtilsString.getStirng(invoiceDetailsResultSet.getString(Database.InvoiceDetailsTable.PRODUCT_BRAND_NAME)));
 						details.setProduct_qty(invoiceDetailsResultSet.getInt(Database.InvoiceDetailsTable.PRODUCT_QTY));
+						details.setShipping_charge(invoiceDetailsResultSet.getString(Database.InvoiceDetailsTable.SHIPPING_CHARGE));
 						
 						invoiceDetailList.add(details);
 						invoiceDetailsResultSet.next();

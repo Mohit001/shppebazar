@@ -497,9 +497,10 @@ public class CartService {
 				+", "+Database.UserCartTable.CART_BILLING_ID
 				+", "+Database.UserCartTable.CART_PAYMENT_TYPE_ID
 				+", "+Database.UserCartTable.SALT
+				+", "+Database.UserCartTable.UNIQUE_ID
 				+")"
 				+" VALUES "
-				+"(?, ?, ?, ?, ?, ?, ?)";
+				+"(?, ?, ?, ?, ?, ?, ?, ?)";
 		
 		PreparedStatement statement = connection.prepareStatement(insertQuery, Statement.RETURN_GENERATED_KEYS);
 		statement.setInt(1, userCart.getUser_id());
@@ -509,6 +510,7 @@ public class CartService {
 		statement.setInt(5, userCart.getBilling_address_id());
 		statement.setInt(6, userCart.getPayment_type_id());
 		statement.setString(7, salt);
+		statement.setString(8, userCart.getUnique_id());
 		
 		int affectedRows = statement.executeUpdate();
 
@@ -1329,9 +1331,10 @@ public class CartService {
 							+", "+Database.InvoiceDetailsTable.PRODUCT_CATEGORY_NAME
 							+", "+Database.InvoiceDetailsTable.PRODUCT_BRAND_NAME
 							+", "+Database.InvoiceDetailsTable.PRODUCT_QTY
+							+", "+Database.InvoiceDetailsTable.SHIPPING_CHARGE
 							+")"
 							+" VALUES "
-							+"(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+							+"(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 					
 					PreparedStatement invoiceDetailsPreparedStatement = connection.prepareStatement(insertInvoiceDetailsQuery);
 					invoiceDetailsPreparedStatement.setInt(1, invoiceid);
@@ -1349,6 +1352,8 @@ public class CartService {
 					invoiceDetailsPreparedStatement.setString(13, userCartProduct.getCategory_name());
 					invoiceDetailsPreparedStatement.setString(14, userCartProduct.getBrand_name());
 					invoiceDetailsPreparedStatement.setInt(15, userCartProduct.getProduct_qty());
+					invoiceDetailsPreparedStatement.setString(16, 
+							String.valueOf(userCartProduct.getProduct_qty() * userCartProduct.getShipping_charge()));
 					
 					int invoiceDetailsAffectedRows = invoiceDetailsPreparedStatement.executeUpdate();
 					if(invoiceDetailsAffectedRows == 0) {
