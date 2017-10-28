@@ -1,9 +1,14 @@
 package model;
 
 import java.io.Serializable;
-import java.sql.Date;
+
 
 public class Address implements Serializable{
+	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	
 	private int address_id;
 	private String address1;
