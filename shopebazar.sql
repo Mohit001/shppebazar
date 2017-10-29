@@ -1,3 +1,11 @@
+-- phpMyAdmin SQL Dump
+-- version 4.6.5.2
+-- https://www.phpmyadmin.net/
+--
+-- Host: 127.0.0.1
+-- Generation Time: Oct 29, 2017 at 03:11 AM
+-- Server version: 10.1.21-MariaDB
+-- PHP Version: 7.1.1
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 SET time_zone = "+00:00";
@@ -11,6 +19,8 @@ SET time_zone = "+00:00";
 --
 -- Database: `shopebazar`
 --
+CREATE DATABASE IF NOT EXISTS `shopebazar` DEFAULT CHARACTER SET latin1 COLLATE latin1_swedish_ci;
+USE `shopebazar`;
 
 -- --------------------------------------------------------
 
@@ -18,6 +28,7 @@ SET time_zone = "+00:00";
 -- Table structure for table `brand_master`
 --
 
+DROP TABLE IF EXISTS `brand_master`;
 CREATE TABLE `brand_master` (
   `brand_id` int(11) NOT NULL,
   `brand_name` varchar(255) DEFAULT NULL,
@@ -46,6 +57,7 @@ INSERT INTO `brand_master` (`brand_id`, `brand_name`, `brand_description`, `is_e
 -- Table structure for table `category_master`
 --
 
+DROP TABLE IF EXISTS `category_master`;
 CREATE TABLE `category_master` (
   `cat_id` int(11) NOT NULL,
   `cat_name` varchar(255) DEFAULT NULL,
@@ -74,6 +86,7 @@ INSERT INTO `category_master` (`cat_id`, `cat_name`, `cat_description`, `cat_ima
 -- Table structure for table `contact_master`
 --
 
+DROP TABLE IF EXISTS `contact_master`;
 CREATE TABLE `contact_master` (
   `contact_id` int(11) NOT NULL,
   `name` varchar(255) DEFAULT NULL,
@@ -106,6 +119,7 @@ INSERT INTO `contact_master` (`contact_id`, `name`, `email`, `subject`, `massge`
 -- Table structure for table `gst_master`
 --
 
+DROP TABLE IF EXISTS `gst_master`;
 CREATE TABLE `gst_master` (
   `gst_id` int(11) NOT NULL,
   `gst_name` varchar(255) DEFAULT NULL,
@@ -121,6 +135,7 @@ CREATE TABLE `gst_master` (
 -- Table structure for table `invoice_details`
 --
 
+DROP TABLE IF EXISTS `invoice_details`;
 CREATE TABLE `invoice_details` (
   `invoice_details_id` int(11) NOT NULL,
   `invoice_id` int(11) DEFAULT NULL,
@@ -138,28 +153,29 @@ CREATE TABLE `invoice_details` (
   `product_image_name` varchar(255) DEFAULT NULL,
   `product_category_name` varchar(255) DEFAULT NULL,
   `product_brand_name` varchar(255) DEFAULT NULL,
-  `product_qty` int(255) DEFAULT NULL
+  `product_qty` int(255) DEFAULT NULL,
+  `shipping_charge` varchar(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Dumping data for table `invoice_details`
 --
 
-INSERT INTO `invoice_details` (`invoice_details_id`, `invoice_id`, `product_id`, `product_name`, `product_code`, `product_description`, `product_price`, `product_cat_id`, `product_brand_id`, `product_gst_type`, `product_gst`, `product_discount_price`, `create_date`, `product_image_name`, `product_category_name`, `product_brand_name`, `product_qty`) VALUES
-(1, 1, 2, '3D Mobile Screen Magnifier', 'Es-123', '&#9679;	Compatible with all iphones, Samsung phones, HTC phones, LG, Nokia phones, Blackberry phones, Sony phones, phone, ZTE phones, Motorola phones, Google phones and other brands of mobile phones.\r\n&#9679;	Magnification, it make each mobile phone has large screen clear movies like Reduce eye fatigue of movies and television brought on mobile phone, and stinging eyes and tears phenomenon.\r\n&#9679;	This is the New Mobile Phone Screen Magnifier Bracket and Enlarge Stand, which can 3x~5x magnify your phone screen so as to reduce your eyes'' fatigue during watching videos on the phone.\r\n&#9679;	Mobile phone adapter use skid material, prevent slip, fall. Folding design, small volume, convenient carrying on business travel.\r\n&#9679;	How to use it: Please avoid using in direct sunlight or strong light, avoid light cause is not clear, it will display better in the dark light environment.', '150', '2', '7', '%', '10', '0', '2017-09-30 19:34:47', '1_Foldable-3-Times-font-b-Mobile-b-font-font-b-Phone-b-font-font-b-Screen.jpg', 'Mobile Accessories', 'Enlarge Screen', 7),
-(2, 1, 4, 'Black Selfie Stick', 'b-12', '&#9679;	Enjoy multi-angle/group photo-taking with this portable selfie stick\r\n&#9679;	UNIVERSAL COMPATIBILITY: Compatible with almost all smartphones\r\n&#9679;	EASY TO USE: 1. Plug in the cord to your phone, 2. press the button to take photos.\r\n&#9679;	PREMIUM ALUMINIUM DESIGN : it comes with premium Silicon handel bar, Portable, Flexible, Easy to use\r\n&#9679;	Super Expendable: Extendable stick as long as 90cm. Adjustable ball head and thumb screw of monopod locks for multiple angle shooting with 180 degree position\r\n', '140', '2', '1', '%', '10', '0', '2017-09-30 19:34:48', '1_1295646_AB_01_FB.EPS_1000.jpg', 'Mobile Accessories', 'F2', 1),
-(3, 1, 5, 'MonoPod Selfie Stick ', 'f21', '&#9679;	Extra Firm Grip\r\n&#9679;	Extra Long Length\r\n&#9679;	For Long Lasting Use\r\n&#9679;	Super Stylish\r\n&#9679;	Super Sturdy\r\n', '125', '2', '1', '%', '10', '0', '2017-09-30 19:34:49', '1_2019BLK-B_1024x1024.jpg', 'Mobile Accessories', 'F2', 1),
-(4, 2, 5, 'MonoPod Selfie Stick ', 'f21', '&#9679;	Extra Firm Grip\r\n&#9679;	Extra Long Length\r\n&#9679;	For Long Lasting Use\r\n&#9679;	Super Stylish\r\n&#9679;	Super Sturdy\r\n', '125', '2', '1', '%', '10', '0', '2017-09-30 16:04:44', '1_2019BLK-B_1024x1024.jpg', 'Mobile Accessories', 'F2', 1),
-(5, 3, 1, 'Lamp With Torch', 'lamp-123', '&#9679;	LED is in advantages of energy-saving,high light,long life and high power. Both Highlight and dimlight for choices.,Great product for emergency purpose\r\n&#9679;	Superior design and construction allows lantern to be SUPER lightweight and compact. Lantern is EASILY collapsible with a simple push.\r\n&#9679;	Built with individual premium LEDs, lantern is built for maximum brightness whilst maintaining a super-long battery life.\r\n&#9679;	Can be used as USB Mobile Charger - only for emergency purpose upto 500mAH\r\n&#9679;	COLOR WILL BE SENT AS PER STOCK AVAILABILITY\r\n', '249', '4', '5', '%', '10', '0', '2017-09-30 16:12:29', '1_Camping-Lantern-LED-Solar-Rechargeable-Camp-Torch-Light-Flashlights-Emergency-Lamp-Power-Bank-for-Android-Cell.jpg', 'Torch', 'Solar Camping', 2),
-(8, 9, 1, 'Lamp With Torch', 'lamp-123', '&#9679;	LED is in advantages of energy-saving,high light,long life and high power. Both Highlight and dimlight for choices.,Great product for emergency purpose\r\n&#9679;	Superior design and construction allows lantern to be SUPER lightweight and compact. Lantern is EASILY collapsible with a simple push.\r\n&#9679;	Built with individual premium LEDs, lantern is built for maximum brightness whilst maintaining a super-long battery life.\r\n&#9679;	Can be used as USB Mobile Charger - only for emergency purpose upto 500mAH\r\n&#9679;	COLOR WILL BE SENT AS PER STOCK AVAILABILITY\r\n', '249', '47', '5', '%', '10.0', '0', NULL, '1_Camping-Lantern-LED-Solar-Rechargeable-Camp-Torch-Light-Flashlights-Emergency-Lamp-Power-Bank-for-Android-Cell.jpg', 'Torch', 'Solar Camping', 4),
-(9, 9, 2, '3D Mobile Screen Magnifier', 'Es-123', '&#9679;	Compatible with all iphones, Samsung phones, HTC phones, LG, Nokia phones, Blackberry phones, Sony phones, phone, ZTE phones, Motorola phones, Google phones and other brands of mobile phones.\r\n&#9679;	Magnification, it make each mobile phone has large screen clear movies like Reduce eye fatigue of movies and television brought on mobile phone, and stinging eyes and tears phenomenon.\r\n&#9679;	This is the New Mobile Phone Screen Magnifier Bracket and Enlarge Stand, which can 3x~5x magnify your phone screen so as to reduce your eyes'' fatigue during watching videos on the phone.\r\n&#9679;	Mobile phone adapter use skid material, prevent slip, fall. Folding design, small volume, convenient carrying on business travel.\r\n&#9679;	How to use it: Please avoid using in direct sunlight or strong light, avoid light cause is not clear, it will display better in the dark light environment.', '150', '47', '7', '%', '10.0', '0', NULL, '1_Foldable-3-Times-font-b-Mobile-b-font-font-b-Phone-b-font-font-b-Screen.jpg', 'Mobile Accessories', 'Enlarge Screen', 2),
-(10, 10, 5, 'MonoPod Selfie Stick ', 'f21', '&#9679;	Extra Firm Grip\r\n&#9679;	Extra Long Length\r\n&#9679;	For Long Lasting Use\r\n&#9679;	Super Stylish\r\n&#9679;	Super Sturdy\r\n', '125', '48', '1', '%', '10.0', '0', NULL, '1_2019BLK-B_1024x1024.jpg', 'Mobile Accessories', 'F2', 2),
-(11, 10, 3, 'Virtual Reality Box', 'vr-s12', '&#9679;	Large FOV: You can get a viewing angle of between 95 to 100 degrees, larger than many other VR glasses. Offer you a 1000 inches big screen at the distance of 3 meters. Offers you super 3D picture effect and wonderful feeling. You will not feel visual fatigue and dizzy even you use long time with the resin lens. The 3D glasses are made of ABS plastic and spherical resin lens materials.\r\n&#9679;	Experience Virtual Reality: This 3D VR Box 3.0 headsets will bring you to an immersive, fabulous virtual world while playing games, watching 3D videos & movies with this 3D headset. With this VR device you will find the VR world super amazing. If you want your child to have an unparalleled childhood or make you look different, then this 3D glasses will be your best choice.\r\n&#9679;	Adjustable spherical lens: This 3D gear come with two adjustable lens, allowing you to adjust the focus through moving the button on the top of the VR headset, so you can free up your myopia glasses (under 600 degree) when you enj', '350', '48', '6', '%', '10.0', '0', NULL, '1_71E-XFbPdqL._SL1280_.jpg', 'Mobile Accessories', 'ShineCom ', 1),
-(12, 10, 1, 'Lamp With Torch', 'lamp-123', '&#9679;	LED is in advantages of energy-saving,high light,long life and high power. Both Highlight and dimlight for choices.,Great product for emergency purpose\r\n&#9679;	Superior design and construction allows lantern to be SUPER lightweight and compact. Lantern is EASILY collapsible with a simple push.\r\n&#9679;	Built with individual premium LEDs, lantern is built for maximum brightness whilst maintaining a super-long battery life.\r\n&#9679;	Can be used as USB Mobile Charger - only for emergency purpose upto 500mAH\r\n&#9679;	COLOR WILL BE SENT AS PER STOCK AVAILABILITY\r\n', '249', '48', '5', '%', '10.0', '0', NULL, '1_Camping-Lantern-LED-Solar-Rechargeable-Camp-Torch-Light-Flashlights-Emergency-Lamp-Power-Bank-for-Android-Cell.jpg', 'Torch', 'Solar Camping', 2),
-(13, 11, 1, 'Lamp With Torch', 'lamp-123', '&#9679;	LED is in advantages of energy-saving,high light,long life and high power. Both Highlight and dimlight for choices.,Great product for emergency purpose\r\n&#9679;	Superior design and construction allows lantern to be SUPER lightweight and compact. Lantern is EASILY collapsible with a simple push.\r\n&#9679;	Built with individual premium LEDs, lantern is built for maximum brightness whilst maintaining a super-long battery life.\r\n&#9679;	Can be used as USB Mobile Charger - only for emergency purpose upto 500mAH\r\n&#9679;	COLOR WILL BE SENT AS PER STOCK AVAILABILITY\r\n', '249', '49', '5', '%', '10.0', '0', NULL, '1_Camping-Lantern-LED-Solar-Rechargeable-Camp-Torch-Light-Flashlights-Emergency-Lamp-Power-Bank-for-Android-Cell.jpg', 'Torch', 'Solar Camping', 1),
-(14, 12, 1, 'Lamp With Torch', 'lamp-123', '&#9679;	LED is in advantages of energy-saving,high light,long life and high power. Both Highlight and dimlight for choices.,Great product for emergency purpose\r\n&#9679;	Superior design and construction allows lantern to be SUPER lightweight and compact. Lantern is EASILY collapsible with a simple push.\r\n&#9679;	Built with individual premium LEDs, lantern is built for maximum brightness whilst maintaining a super-long battery life.\r\n&#9679;	Can be used as USB Mobile Charger - only for emergency purpose upto 500mAH\r\n&#9679;	COLOR WILL BE SENT AS PER STOCK AVAILABILITY\r\n', '249', '50', '5', '%', '10.0', '0', NULL, '1_Camping-Lantern-LED-Solar-Rechargeable-Camp-Torch-Light-Flashlights-Emergency-Lamp-Power-Bank-for-Android-Cell.jpg', 'Torch', 'Solar Camping', 1),
-(15, 13, 1, 'Lamp With Torch', 'lamp-123', '&#9679;	LED is in advantages of energy-saving,high light,long life and high power. Both Highlight and dimlight for choices.,Great product for emergency purpose\r\n&#9679;	Superior design and construction allows lantern to be SUPER lightweight and compact. Lantern is EASILY collapsible with a simple push.\r\n&#9679;	Built with individual premium LEDs, lantern is built for maximum brightness whilst maintaining a super-long battery life.\r\n&#9679;	Can be used as USB Mobile Charger - only for emergency purpose upto 500mAH\r\n&#9679;	COLOR WILL BE SENT AS PER STOCK AVAILABILITY\r\n', '249', '47', '5', '%', '10.0', '0', NULL, '1_Camping-Lantern-LED-Solar-Rechargeable-Camp-Torch-Light-Flashlights-Emergency-Lamp-Power-Bank-for-Android-Cell.jpg', 'Torch', 'Solar Camping', 4),
-(16, 13, 2, '3D Mobile Screen Magnifier', 'Es-123', '&#9679;	Compatible with all iphones, Samsung phones, HTC phones, LG, Nokia phones, Blackberry phones, Sony phones, phone, ZTE phones, Motorola phones, Google phones and other brands of mobile phones.\r\n&#9679;	Magnification, it make each mobile phone has large screen clear movies like Reduce eye fatigue of movies and television brought on mobile phone, and stinging eyes and tears phenomenon.\r\n&#9679;	This is the New Mobile Phone Screen Magnifier Bracket and Enlarge Stand, which can 3x~5x magnify your phone screen so as to reduce your eyes'' fatigue during watching videos on the phone.\r\n&#9679;	Mobile phone adapter use skid material, prevent slip, fall. Folding design, small volume, convenient carrying on business travel.\r\n&#9679;	How to use it: Please avoid using in direct sunlight or strong light, avoid light cause is not clear, it will display better in the dark light environment.', '150', '47', '7', '%', '10.0', '0', NULL, '1_Foldable-3-Times-font-b-Mobile-b-font-font-b-Phone-b-font-font-b-Screen.jpg', 'Mobile Accessories', 'Enlarge Screen', 2);
+INSERT INTO `invoice_details` (`invoice_details_id`, `invoice_id`, `product_id`, `product_name`, `product_code`, `product_description`, `product_price`, `product_cat_id`, `product_brand_id`, `product_gst_type`, `product_gst`, `product_discount_price`, `create_date`, `product_image_name`, `product_category_name`, `product_brand_name`, `product_qty`, `shipping_charge`) VALUES
+(1, 1, 2, '3D Mobile Screen Magnifier', 'Es-123', '&#9679;	Compatible with all iphones, Samsung phones, HTC phones, LG, Nokia phones, Blackberry phones, Sony phones, phone, ZTE phones, Motorola phones, Google phones and other brands of mobile phones.\r\n&#9679;	Magnification, it make each mobile phone has large screen clear movies like Reduce eye fatigue of movies and television brought on mobile phone, and stinging eyes and tears phenomenon.\r\n&#9679;	This is the New Mobile Phone Screen Magnifier Bracket and Enlarge Stand, which can 3x~5x magnify your phone screen so as to reduce your eyes\' fatigue during watching videos on the phone.\r\n&#9679;	Mobile phone adapter use skid material, prevent slip, fall. Folding design, small volume, convenient carrying on business travel.\r\n&#9679;	How to use it: Please avoid using in direct sunlight or strong light, avoid light cause is not clear, it will display better in the dark light environment.', '150', '2', '7', '%', '10', '0', '2017-09-30 19:34:47', '1_Foldable-3-Times-font-b-Mobile-b-font-font-b-Phone-b-font-font-b-Screen.jpg', 'Mobile Accessories', 'Enlarge Screen', 7, '210'),
+(2, 1, 4, 'Black Selfie Stick', 'b-12', '&#9679;	Enjoy multi-angle/group photo-taking with this portable selfie stick\r\n&#9679;	UNIVERSAL COMPATIBILITY: Compatible with almost all smartphones\r\n&#9679;	EASY TO USE: 1. Plug in the cord to your phone, 2. press the button to take photos.\r\n&#9679;	PREMIUM ALUMINIUM DESIGN : it comes with premium Silicon handel bar, Portable, Flexible, Easy to use\r\n&#9679;	Super Expendable: Extendable stick as long as 90cm. Adjustable ball head and thumb screw of monopod locks for multiple angle shooting with 180 degree position\r\n', '140', '2', '1', '%', '10', '0', '2017-09-30 19:34:48', '1_1295646_AB_01_FB.EPS_1000.jpg', 'Mobile Accessories', 'F2', 1, '30'),
+(3, 1, 5, 'MonoPod Selfie Stick ', 'f21', '&#9679;	Extra Firm Grip\r\n&#9679;	Extra Long Length\r\n&#9679;	For Long Lasting Use\r\n&#9679;	Super Stylish\r\n&#9679;	Super Sturdy\r\n', '125', '2', '1', '%', '10', '0', '2017-09-30 19:34:49', '1_2019BLK-B_1024x1024.jpg', 'Mobile Accessories', 'F2', 1, '30'),
+(4, 2, 5, 'MonoPod Selfie Stick ', 'f21', '&#9679;	Extra Firm Grip\r\n&#9679;	Extra Long Length\r\n&#9679;	For Long Lasting Use\r\n&#9679;	Super Stylish\r\n&#9679;	Super Sturdy\r\n', '125', '2', '1', '%', '10', '0', '2017-09-30 16:04:44', '1_2019BLK-B_1024x1024.jpg', 'Mobile Accessories', 'F2', 1, '30'),
+(5, 3, 1, 'Lamp With Torch', 'lamp-123', '&#9679;	LED is in advantages of energy-saving,high light,long life and high power. Both Highlight and dimlight for choices.,Great product for emergency purpose\r\n&#9679;	Superior design and construction allows lantern to be SUPER lightweight and compact. Lantern is EASILY collapsible with a simple push.\r\n&#9679;	Built with individual premium LEDs, lantern is built for maximum brightness whilst maintaining a super-long battery life.\r\n&#9679;	Can be used as USB Mobile Charger - only for emergency purpose upto 500mAH\r\n&#9679;	COLOR WILL BE SENT AS PER STOCK AVAILABILITY\r\n', '249', '4', '5', '%', '10', '0', '2017-09-30 16:12:29', '1_Camping-Lantern-LED-Solar-Rechargeable-Camp-Torch-Light-Flashlights-Emergency-Lamp-Power-Bank-for-Android-Cell.jpg', 'Torch', 'Solar Camping', 2, '60'),
+(8, 9, 1, 'Lamp With Torch', 'lamp-123', '&#9679;	LED is in advantages of energy-saving,high light,long life and high power. Both Highlight and dimlight for choices.,Great product for emergency purpose\r\n&#9679;	Superior design and construction allows lantern to be SUPER lightweight and compact. Lantern is EASILY collapsible with a simple push.\r\n&#9679;	Built with individual premium LEDs, lantern is built for maximum brightness whilst maintaining a super-long battery life.\r\n&#9679;	Can be used as USB Mobile Charger - only for emergency purpose upto 500mAH\r\n&#9679;	COLOR WILL BE SENT AS PER STOCK AVAILABILITY\r\n', '249', '47', '5', '%', '10.0', '0', NULL, '1_Camping-Lantern-LED-Solar-Rechargeable-Camp-Torch-Light-Flashlights-Emergency-Lamp-Power-Bank-for-Android-Cell.jpg', 'Torch', 'Solar Camping', 4, '120'),
+(9, 9, 2, '3D Mobile Screen Magnifier', 'Es-123', '&#9679;	Compatible with all iphones, Samsung phones, HTC phones, LG, Nokia phones, Blackberry phones, Sony phones, phone, ZTE phones, Motorola phones, Google phones and other brands of mobile phones.\r\n&#9679;	Magnification, it make each mobile phone has large screen clear movies like Reduce eye fatigue of movies and television brought on mobile phone, and stinging eyes and tears phenomenon.\r\n&#9679;	This is the New Mobile Phone Screen Magnifier Bracket and Enlarge Stand, which can 3x~5x magnify your phone screen so as to reduce your eyes\' fatigue during watching videos on the phone.\r\n&#9679;	Mobile phone adapter use skid material, prevent slip, fall. Folding design, small volume, convenient carrying on business travel.\r\n&#9679;	How to use it: Please avoid using in direct sunlight or strong light, avoid light cause is not clear, it will display better in the dark light environment.', '150', '47', '7', '%', '10.0', '0', NULL, '1_Foldable-3-Times-font-b-Mobile-b-font-font-b-Phone-b-font-font-b-Screen.jpg', 'Mobile Accessories', 'Enlarge Screen', 2, '60'),
+(10, 10, 5, 'MonoPod Selfie Stick ', 'f21', '&#9679;	Extra Firm Grip\r\n&#9679;	Extra Long Length\r\n&#9679;	For Long Lasting Use\r\n&#9679;	Super Stylish\r\n&#9679;	Super Sturdy\r\n', '125', '48', '1', '%', '10.0', '0', NULL, '1_2019BLK-B_1024x1024.jpg', 'Mobile Accessories', 'F2', 2, '60'),
+(11, 10, 3, 'Virtual Reality Box', 'vr-s12', '&#9679;	Large FOV: You can get a viewing angle of between 95 to 100 degrees, larger than many other VR glasses. Offer you a 1000 inches big screen at the distance of 3 meters. Offers you super 3D picture effect and wonderful feeling. You will not feel visual fatigue and dizzy even you use long time with the resin lens. The 3D glasses are made of ABS plastic and spherical resin lens materials.\r\n&#9679;	Experience Virtual Reality: This 3D VR Box 3.0 headsets will bring you to an immersive, fabulous virtual world while playing games, watching 3D videos & movies with this 3D headset. With this VR device you will find the VR world super amazing. If you want your child to have an unparalleled childhood or make you look different, then this 3D glasses will be your best choice.\r\n&#9679;	Adjustable spherical lens: This 3D gear come with two adjustable lens, allowing you to adjust the focus through moving the button on the top of the VR headset, so you can free up your myopia glasses (under 600 degree) when you enj', '350', '48', '6', '%', '10.0', '0', NULL, '1_71E-XFbPdqL._SL1280_.jpg', 'Mobile Accessories', 'ShineCom ', 1, '30'),
+(12, 10, 1, 'Lamp With Torch', 'lamp-123', '&#9679;	LED is in advantages of energy-saving,high light,long life and high power. Both Highlight and dimlight for choices.,Great product for emergency purpose\r\n&#9679;	Superior design and construction allows lantern to be SUPER lightweight and compact. Lantern is EASILY collapsible with a simple push.\r\n&#9679;	Built with individual premium LEDs, lantern is built for maximum brightness whilst maintaining a super-long battery life.\r\n&#9679;	Can be used as USB Mobile Charger - only for emergency purpose upto 500mAH\r\n&#9679;	COLOR WILL BE SENT AS PER STOCK AVAILABILITY\r\n', '249', '48', '5', '%', '10.0', '0', NULL, '1_Camping-Lantern-LED-Solar-Rechargeable-Camp-Torch-Light-Flashlights-Emergency-Lamp-Power-Bank-for-Android-Cell.jpg', 'Torch', 'Solar Camping', 2, '60'),
+(13, 11, 1, 'Lamp With Torch', 'lamp-123', '&#9679;	LED is in advantages of energy-saving,high light,long life and high power. Both Highlight and dimlight for choices.,Great product for emergency purpose\r\n&#9679;	Superior design and construction allows lantern to be SUPER lightweight and compact. Lantern is EASILY collapsible with a simple push.\r\n&#9679;	Built with individual premium LEDs, lantern is built for maximum brightness whilst maintaining a super-long battery life.\r\n&#9679;	Can be used as USB Mobile Charger - only for emergency purpose upto 500mAH\r\n&#9679;	COLOR WILL BE SENT AS PER STOCK AVAILABILITY\r\n', '249', '49', '5', '%', '10.0', '0', NULL, '1_Camping-Lantern-LED-Solar-Rechargeable-Camp-Torch-Light-Flashlights-Emergency-Lamp-Power-Bank-for-Android-Cell.jpg', 'Torch', 'Solar Camping', 1, '30'),
+(14, 12, 1, 'Lamp With Torch', 'lamp-123', '&#9679;	LED is in advantages of energy-saving,high light,long life and high power. Both Highlight and dimlight for choices.,Great product for emergency purpose\r\n&#9679;	Superior design and construction allows lantern to be SUPER lightweight and compact. Lantern is EASILY collapsible with a simple push.\r\n&#9679;	Built with individual premium LEDs, lantern is built for maximum brightness whilst maintaining a super-long battery life.\r\n&#9679;	Can be used as USB Mobile Charger - only for emergency purpose upto 500mAH\r\n&#9679;	COLOR WILL BE SENT AS PER STOCK AVAILABILITY\r\n', '249', '50', '5', '%', '10.0', '0', NULL, '1_Camping-Lantern-LED-Solar-Rechargeable-Camp-Torch-Light-Flashlights-Emergency-Lamp-Power-Bank-for-Android-Cell.jpg', 'Torch', 'Solar Camping', 1, '30'),
+(15, 13, 1, 'Lamp With Torch', 'lamp-123', '&#9679;	LED is in advantages of energy-saving,high light,long life and high power. Both Highlight and dimlight for choices.,Great product for emergency purpose\r\n&#9679;	Superior design and construction allows lantern to be SUPER lightweight and compact. Lantern is EASILY collapsible with a simple push.\r\n&#9679;	Built with individual premium LEDs, lantern is built for maximum brightness whilst maintaining a super-long battery life.\r\n&#9679;	Can be used as USB Mobile Charger - only for emergency purpose upto 500mAH\r\n&#9679;	COLOR WILL BE SENT AS PER STOCK AVAILABILITY\r\n', '249', '47', '5', '%', '10.0', '0', NULL, '1_Camping-Lantern-LED-Solar-Rechargeable-Camp-Torch-Light-Flashlights-Emergency-Lamp-Power-Bank-for-Android-Cell.jpg', 'Torch', 'Solar Camping', 4, '120'),
+(16, 13, 2, '3D Mobile Screen Magnifier', 'Es-123', '&#9679;	Compatible with all iphones, Samsung phones, HTC phones, LG, Nokia phones, Blackberry phones, Sony phones, phone, ZTE phones, Motorola phones, Google phones and other brands of mobile phones.\r\n&#9679;	Magnification, it make each mobile phone has large screen clear movies like Reduce eye fatigue of movies and television brought on mobile phone, and stinging eyes and tears phenomenon.\r\n&#9679;	This is the New Mobile Phone Screen Magnifier Bracket and Enlarge Stand, which can 3x~5x magnify your phone screen so as to reduce your eyes\' fatigue during watching videos on the phone.\r\n&#9679;	Mobile phone adapter use skid material, prevent slip, fall. Folding design, small volume, convenient carrying on business travel.\r\n&#9679;	How to use it: Please avoid using in direct sunlight or strong light, avoid light cause is not clear, it will display better in the dark light environment.', '150', '47', '7', '%', '10.0', '0', NULL, '1_Foldable-3-Times-font-b-Mobile-b-font-font-b-Phone-b-font-font-b-Screen.jpg', 'Mobile Accessories', 'Enlarge Screen', 2, '60');
 
 -- --------------------------------------------------------
 
@@ -167,6 +183,7 @@ INSERT INTO `invoice_details` (`invoice_details_id`, `invoice_id`, `product_id`,
 -- Table structure for table `invoice_master`
 --
 
+DROP TABLE IF EXISTS `invoice_master`;
 CREATE TABLE `invoice_master` (
   `invoice_id` int(11) NOT NULL,
   `user_id` int(11) DEFAULT NULL,
@@ -223,6 +240,7 @@ INSERT INTO `invoice_master` (`invoice_id`, `user_id`, `order_type`, `user_type`
 -- Table structure for table `location`
 --
 
+DROP TABLE IF EXISTS `location`;
 CREATE TABLE `location` (
   `location_id` int(11) NOT NULL,
   `location_name` varchar(255) DEFAULT NULL,
@@ -240,6 +258,7 @@ CREATE TABLE `location` (
 -- Table structure for table `login`
 --
 
+DROP TABLE IF EXISTS `login`;
 CREATE TABLE `login` (
   `user_id` int(11) NOT NULL,
   `email` varchar(45) NOT NULL,
@@ -264,6 +283,7 @@ INSERT INTO `login` (`user_id`, `email`, `password`, `is_enable`, `role`, `reffr
 -- Table structure for table `offers`
 --
 
+DROP TABLE IF EXISTS `offers`;
 CREATE TABLE `offers` (
   `offer_id` int(11) NOT NULL,
   `offer_name` varchar(255) DEFAULT NULL,
@@ -282,6 +302,7 @@ CREATE TABLE `offers` (
 -- Table structure for table `offer_mapping`
 --
 
+DROP TABLE IF EXISTS `offer_mapping`;
 CREATE TABLE `offer_mapping` (
   `offer_map_id` int(11) NOT NULL,
   `offer_id` int(11) DEFAULT NULL,
@@ -299,6 +320,7 @@ CREATE TABLE `offer_mapping` (
 -- Table structure for table `policy`
 --
 
+DROP TABLE IF EXISTS `policy`;
 CREATE TABLE `policy` (
   `policy_id` int(11) NOT NULL,
   `name` varchar(255) DEFAULT NULL,
@@ -314,6 +336,7 @@ CREATE TABLE `policy` (
 -- Table structure for table `product_image`
 --
 
+DROP TABLE IF EXISTS `product_image`;
 CREATE TABLE `product_image` (
   `imge_id` int(11) NOT NULL,
   `image_name` varchar(255) DEFAULT NULL,
@@ -331,6 +354,7 @@ CREATE TABLE `product_image` (
 -- Table structure for table `product_master`
 --
 
+DROP TABLE IF EXISTS `product_master`;
 CREATE TABLE `product_master` (
   `pro_mst_id` int(11) NOT NULL,
   `pro_name` varchar(255) DEFAULT NULL,
@@ -354,7 +378,7 @@ CREATE TABLE `product_master` (
 
 INSERT INTO `product_master` (`pro_mst_id`, `pro_name`, `pro_code`, `pro_description`, `pro_price`, `is_enable`, `create_date`, `cat_id`, `brand_id`, `user_id`, `gst_type`, `gst`, `discount_price`, `pro_image`) VALUES
 (1, 'Lamp With Torch', 'lamp-123', '&#9679;	LED is in advantages of energy-saving,high light,long life and high power. Both Highlight and dimlight for choices.,Great product for emergency purpose\r\n&#9679;	Superior design and construction allows lantern to be SUPER lightweight and compact. Lantern is EASILY collapsible with a simple push.\r\n&#9679;	Built with individual premium LEDs, lantern is built for maximum brightness whilst maintaining a super-long battery life.\r\n&#9679;	Can be used as USB Mobile Charger - only for emergency purpose upto 500mAH\r\n&#9679;	COLOR WILL BE SENT AS PER STOCK AVAILABILITY\r\n', '249', 1, '2017-09-25 08:00:05', 4, 5, 1, '%', 10, 0, '1_Camping-Lantern-LED-Solar-Rechargeable-Camp-Torch-Light-Flashlights-Emergency-Lamp-Power-Bank-for-Android-Cell.jpg'),
-(2, '3D Mobile Screen Magnifier', 'Es-123', '&#9679;	Compatible with all iphones, Samsung phones, HTC phones, LG, Nokia phones, Blackberry phones, Sony phones, phone, ZTE phones, Motorola phones, Google phones and other brands of mobile phones.\r\n&#9679;	Magnification, it make each mobile phone has large screen clear movies like Reduce eye fatigue of movies and television brought on mobile phone, and stinging eyes and tears phenomenon.\r\n&#9679;	This is the New Mobile Phone Screen Magnifier Bracket and Enlarge Stand, which can 3x~5x magnify your phone screen so as to reduce your eyes'' fatigue during watching videos on the phone.\r\n&#9679;	Mobile phone adapter use skid material, prevent slip, fall. Folding design, small volume, convenient carrying on business travel.\r\n&#9679;	How to use it: Please avoid using in direct sunlight or strong light, avoid light cause is not clear, it will display better in the dark light environment.', '150', 1, '2017-09-25 08:02:31', 2, 7, 1, '%', 10, 0, '1_Foldable-3-Times-font-b-Mobile-b-font-font-b-Phone-b-font-font-b-Screen.jpg'),
+(2, '3D Mobile Screen Magnifier', 'Es-123', '&#9679;	Compatible with all iphones, Samsung phones, HTC phones, LG, Nokia phones, Blackberry phones, Sony phones, phone, ZTE phones, Motorola phones, Google phones and other brands of mobile phones.\r\n&#9679;	Magnification, it make each mobile phone has large screen clear movies like Reduce eye fatigue of movies and television brought on mobile phone, and stinging eyes and tears phenomenon.\r\n&#9679;	This is the New Mobile Phone Screen Magnifier Bracket and Enlarge Stand, which can 3x~5x magnify your phone screen so as to reduce your eyes\' fatigue during watching videos on the phone.\r\n&#9679;	Mobile phone adapter use skid material, prevent slip, fall. Folding design, small volume, convenient carrying on business travel.\r\n&#9679;	How to use it: Please avoid using in direct sunlight or strong light, avoid light cause is not clear, it will display better in the dark light environment.', '150', 1, '2017-09-25 08:02:31', 2, 7, 1, '%', 10, 0, '1_Foldable-3-Times-font-b-Mobile-b-font-font-b-Phone-b-font-font-b-Screen.jpg'),
 (3, 'Virtual Reality Box', 'vr-s12', '&#9679;	Large FOV: You can get a viewing angle of between 95 to 100 degrees, larger than many other VR glasses. Offer you a 1000 inches big screen at the distance of 3 meters. Offers you super 3D picture effect and wonderful feeling. You will not feel visual fatigue and dizzy even you use long time with the resin lens. The 3D glasses are made of ABS plastic and spherical resin lens materials.\r\n&#9679;	Experience Virtual Reality: This 3D VR Box 3.0 headsets will bring you to an immersive, fabulous virtual world while playing games, watching 3D videos & movies with this 3D headset. With this VR device you will find the VR world super amazing. If you want your child to have an unparalleled childhood or make you look different, then this 3D glasses will be your best choice.\r\n&#9679;	Adjustable spherical lens: This 3D gear come with two adjustable lens, allowing you to adjust the focus through moving the button on the top of the VR headset, so you can free up your myopia glasses (under 600 degree) when you enj', '350', 1, '2017-09-25 08:06:24', 2, 6, 1, '%', 10, 0, '1_71E-XFbPdqL._SL1280_.jpg'),
 (4, 'Black Selfie Stick', 'b-12', '&#9679;	Enjoy multi-angle/group photo-taking with this portable selfie stick\r\n&#9679;	UNIVERSAL COMPATIBILITY: Compatible with almost all smartphones\r\n&#9679;	EASY TO USE: 1. Plug in the cord to your phone, 2. press the button to take photos.\r\n&#9679;	PREMIUM ALUMINIUM DESIGN : it comes with premium Silicon handel bar, Portable, Flexible, Easy to use\r\n&#9679;	Super Expendable: Extendable stick as long as 90cm. Adjustable ball head and thumb screw of monopod locks for multiple angle shooting with 180 degree position\r\n', '140', 1, '2017-09-25 08:08:08', 2, 1, 1, '%', 10, 0, '1_1295646_AB_01_FB.EPS_1000.jpg'),
 (5, 'MonoPod Selfie Stick ', 'f21', '&#9679;	Extra Firm Grip\r\n&#9679;	Extra Long Length\r\n&#9679;	For Long Lasting Use\r\n&#9679;	Super Stylish\r\n&#9679;	Super Sturdy\r\n', '125', 1, '2017-09-25 08:10:21', 2, 1, 1, '%', 10, 0, '1_2019BLK-B_1024x1024.jpg');
@@ -365,6 +389,7 @@ INSERT INTO `product_master` (`pro_mst_id`, `pro_name`, `pro_code`, `pro_descrip
 -- Table structure for table `product_package`
 --
 
+DROP TABLE IF EXISTS `product_package`;
 CREATE TABLE `product_package` (
   `pro_pkg_id` int(11) NOT NULL,
   `pro_mst_id` int(11) DEFAULT NULL,
@@ -383,6 +408,7 @@ CREATE TABLE `product_package` (
 -- Table structure for table `product_type`
 --
 
+DROP TABLE IF EXISTS `product_type`;
 CREATE TABLE `product_type` (
   `pro_type_id` int(11) NOT NULL,
   `type_id` int(11) DEFAULT NULL,
@@ -395,6 +421,7 @@ CREATE TABLE `product_type` (
 -- Table structure for table `profile`
 --
 
+DROP TABLE IF EXISTS `profile`;
 CREATE TABLE `profile` (
   `profie_id` int(11) NOT NULL,
   `user_id` int(11) NOT NULL,
@@ -425,6 +452,7 @@ INSERT INTO `profile` (`profie_id`, `user_id`, `account_type`, `compnay_name`, `
 -- Table structure for table `review_rating`
 --
 
+DROP TABLE IF EXISTS `review_rating`;
 CREATE TABLE `review_rating` (
   `rating_id` int(11) NOT NULL,
   `product_id` int(11) DEFAULT NULL,
@@ -442,6 +470,7 @@ CREATE TABLE `review_rating` (
 -- Table structure for table `sliders`
 --
 
+DROP TABLE IF EXISTS `sliders`;
 CREATE TABLE `sliders` (
   `silder_id` int(11) NOT NULL,
   `slider_name` varchar(255) DEFAULT NULL,
@@ -462,6 +491,7 @@ CREATE TABLE `sliders` (
 -- Table structure for table `type_master`
 --
 
+DROP TABLE IF EXISTS `type_master`;
 CREATE TABLE `type_master` (
   `type_id` int(11) NOT NULL,
   `type_name` varchar(255) DEFAULT NULL,
@@ -477,6 +507,7 @@ CREATE TABLE `type_master` (
 -- Table structure for table `user`
 --
 
+DROP TABLE IF EXISTS `user`;
 CREATE TABLE `user` (
   `user_id` int(11) NOT NULL,
   `fname` varchar(255) DEFAULT NULL,
@@ -509,6 +540,7 @@ INSERT INTO `user` (`user_id`, `fname`, `lname`, `password`, `create_date`, `is_
 -- Table structure for table `useradmin`
 --
 
+DROP TABLE IF EXISTS `useradmin`;
 CREATE TABLE `useradmin` (
   `useradmin_id` int(11) NOT NULL,
   `user_id` int(11) DEFAULT NULL,
@@ -534,6 +566,7 @@ INSERT INTO `useradmin` (`useradmin_id`, `user_id`, `create_date`, `updatedate`,
 -- Table structure for table `user_address`
 --
 
+DROP TABLE IF EXISTS `user_address`;
 CREATE TABLE `user_address` (
   `address_id` int(11) NOT NULL,
   `address1` varchar(255) DEFAULT NULL,
@@ -573,6 +606,7 @@ INSERT INTO `user_address` (`address_id`, `address1`, `address2`, `state`, `city
 -- Table structure for table `user_cart`
 --
 
+DROP TABLE IF EXISTS `user_cart`;
 CREATE TABLE `user_cart` (
   `cart_id` int(11) NOT NULL,
   `create_date` timestamp NULL DEFAULT NULL,
@@ -605,6 +639,7 @@ INSERT INTO `user_cart` (`cart_id`, `create_date`, `ip_address`, `user_id`, `car
 -- Table structure for table `user_cart_product`
 --
 
+DROP TABLE IF EXISTS `user_cart_product`;
 CREATE TABLE `user_cart_product` (
   `user_cart_product_id` int(11) NOT NULL,
   `cart_id` int(11) UNSIGNED ZEROFILL DEFAULT '00000000000',
@@ -633,7 +668,7 @@ CREATE TABLE `user_cart_product` (
 
 INSERT INTO `user_cart_product` (`user_cart_product_id`, `cart_id`, `product_id`, `product_name`, `product_qty`, `product_price`, `product_code`, `shipping_charge`, `status`, `gst_type`, `gst`, `subtotal`, `description`, `cat_id`, `brand_id`, `discount_price`, `image_name`, `category_name`, `brand_name`) VALUES
 (30, 00000000047, 00000000001, 'Lamp With Torch', 04, 249, 'lamp-123', 00030, 'open', '%', 10.00, '1116.0', '&#9679;	LED is in advantages of energy-saving,high light,long life and high power. Both Highlight and dimlight for choices.,Great product for emergency purpose\r\n&#9679;	Superior design and construction allows lantern to be SUPER lightweight and compact. Lantern is EASILY collapsible with a simple push.\r\n&#9679;	Built with individual premium LEDs, lantern is built for maximum brightness whilst maintaining a super-long battery life.\r\n&#9679;	Can be used as USB Mobile Charger - only for emergency purpose upto 500mAH\r\n&#9679;	COLOR WILL BE SENT AS PER STOCK AVAILABILITY\r\n', 4, 5, '0', '1_Camping-Lantern-LED-Solar-Rechargeable-Camp-Torch-Light-Flashlights-Emergency-Lamp-Power-Bank-for-Android-Cell.jpg', 'Torch', 'Solar Camping'),
-(31, 00000000047, 00000000002, '3D Mobile Screen Magnifier', 02, 150, 'Es-123', 00030, 'open', '%', 10.00, '360.0', '&#9679;	Compatible with all iphones, Samsung phones, HTC phones, LG, Nokia phones, Blackberry phones, Sony phones, phone, ZTE phones, Motorola phones, Google phones and other brands of mobile phones.\r\n&#9679;	Magnification, it make each mobile phone has large screen clear movies like Reduce eye fatigue of movies and television brought on mobile phone, and stinging eyes and tears phenomenon.\r\n&#9679;	This is the New Mobile Phone Screen Magnifier Bracket and Enlarge Stand, which can 3x~5x magnify your phone screen so as to reduce your eyes'' fatigue during watching videos on the phone.\r\n&#9679;	Mobile phone adapter use skid material, prevent slip, fall. Folding design, small volume, convenient carrying on business travel.\r\n&#9679;	How to use it: Please avoid using in direct sunlight or strong light, avoid light cause is not clear, it will display better in the dark light environment.', 2, 7, '0', '1_Foldable-3-Times-font-b-Mobile-b-font-font-b-Phone-b-font-font-b-Screen.jpg', 'Mobile Accessories', 'Enlarge Screen'),
+(31, 00000000047, 00000000002, '3D Mobile Screen Magnifier', 02, 150, 'Es-123', 00030, 'open', '%', 10.00, '360.0', '&#9679;	Compatible with all iphones, Samsung phones, HTC phones, LG, Nokia phones, Blackberry phones, Sony phones, phone, ZTE phones, Motorola phones, Google phones and other brands of mobile phones.\r\n&#9679;	Magnification, it make each mobile phone has large screen clear movies like Reduce eye fatigue of movies and television brought on mobile phone, and stinging eyes and tears phenomenon.\r\n&#9679;	This is the New Mobile Phone Screen Magnifier Bracket and Enlarge Stand, which can 3x~5x magnify your phone screen so as to reduce your eyes\' fatigue during watching videos on the phone.\r\n&#9679;	Mobile phone adapter use skid material, prevent slip, fall. Folding design, small volume, convenient carrying on business travel.\r\n&#9679;	How to use it: Please avoid using in direct sunlight or strong light, avoid light cause is not clear, it will display better in the dark light environment.', 2, 7, '0', '1_Foldable-3-Times-font-b-Mobile-b-font-font-b-Phone-b-font-font-b-Screen.jpg', 'Mobile Accessories', 'Enlarge Screen'),
 (32, 00000000048, 00000000005, 'MonoPod Selfie Stick ', 02, 125, 'f21', 00030, 'open', '%', 10.00, '310.0', '&#9679;	Extra Firm Grip\r\n&#9679;	Extra Long Length\r\n&#9679;	For Long Lasting Use\r\n&#9679;	Super Stylish\r\n&#9679;	Super Sturdy\r\n', 2, 1, '0', '1_2019BLK-B_1024x1024.jpg', 'Mobile Accessories', 'F2'),
 (33, 00000000048, 00000000003, 'Virtual Reality Box', 01, 350, 'vr-s12', 00030, 'open', '%', 10.00, '380.0', '&#9679;	Large FOV: You can get a viewing angle of between 95 to 100 degrees, larger than many other VR glasses. Offer you a 1000 inches big screen at the distance of 3 meters. Offers you super 3D picture effect and wonderful feeling. You will not feel visual fatigue and dizzy even you use long time with the resin lens. The 3D glasses are made of ABS plastic and spherical resin lens materials.\r\n&#9679;	Experience Virtual Reality: This 3D VR Box 3.0 headsets will bring you to an immersive, fabulous virtual world while playing games, watching 3D videos & movies with this 3D headset. With this VR device you will find the VR world super amazing. If you want your child to have an unparalleled childhood or make you look different, then this 3D glasses will be your best choice.\r\n&#9679;	Adjustable spherical lens: This 3D gear come with two adjustable lens, allowing you to adjust the focus through moving the button on the top of the VR headset, so you can free up your myopia glasses (under 600 degree) when you enj', 2, 6, '0', '1_71E-XFbPdqL._SL1280_.jpg', 'Mobile Accessories', 'ShineCom '),
 (34, 00000000048, 00000000001, 'Lamp With Torch', 02, 249, 'lamp-123', 00030, 'open', '%', 10.00, '558.0', '&#9679;	LED is in advantages of energy-saving,high light,long life and high power. Both Highlight and dimlight for choices.,Great product for emergency purpose\r\n&#9679;	Superior design and construction allows lantern to be SUPER lightweight and compact. Lantern is EASILY collapsible with a simple push.\r\n&#9679;	Built with individual premium LEDs, lantern is built for maximum brightness whilst maintaining a super-long battery life.\r\n&#9679;	Can be used as USB Mobile Charger - only for emergency purpose upto 500mAH\r\n&#9679;	COLOR WILL BE SENT AS PER STOCK AVAILABILITY\r\n', 4, 5, '0', '1_Camping-Lantern-LED-Solar-Rechargeable-Camp-Torch-Light-Flashlights-Emergency-Lamp-Power-Bank-for-Android-Cell.jpg', 'Torch', 'Solar Camping'),
@@ -645,6 +680,7 @@ INSERT INTO `user_cart_product` (`user_cart_product_id`, `cart_id`, `product_id`
 -- Table structure for table `user_role`
 --
 
+DROP TABLE IF EXISTS `user_role`;
 CREATE TABLE `user_role` (
   `role_id` int(11) NOT NULL,
   `name` varchar(255) DEFAULT NULL
@@ -664,6 +700,7 @@ INSERT INTO `user_role` (`role_id`, `name`) VALUES
 -- Table structure for table `volume_master`
 --
 
+DROP TABLE IF EXISTS `volume_master`;
 CREATE TABLE `volume_master` (
   `volume_id` int(11) NOT NULL,
   `volume_type` varchar(255) DEFAULT NULL,
@@ -675,10 +712,11 @@ CREATE TABLE `volume_master` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `Wishlist`
+-- Table structure for table `wishlist`
 --
 
-CREATE TABLE `Wishlist` (
+DROP TABLE IF EXISTS `wishlist`;
+CREATE TABLE `wishlist` (
   `wishlist_id` int(11) NOT NULL,
   `user_id` int(11) UNSIGNED ZEROFILL DEFAULT '00000000000',
   `product_id` int(11) UNSIGNED ZEROFILL DEFAULT '00000000000'
@@ -845,9 +883,9 @@ ALTER TABLE `volume_master`
   ADD PRIMARY KEY (`volume_id`);
 
 --
--- Indexes for table `Wishlist`
+-- Indexes for table `wishlist`
 --
-ALTER TABLE `Wishlist`
+ALTER TABLE `wishlist`
   ADD PRIMARY KEY (`wishlist_id`);
 
 --
@@ -985,9 +1023,9 @@ ALTER TABLE `user_role`
 ALTER TABLE `volume_master`
   MODIFY `volume_id` int(11) NOT NULL AUTO_INCREMENT;
 --
--- AUTO_INCREMENT for table `Wishlist`
+-- AUTO_INCREMENT for table `wishlist`
 --
-ALTER TABLE `Wishlist`
+ALTER TABLE `wishlist`
   MODIFY `wishlist_id` int(11) NOT NULL AUTO_INCREMENT;
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
