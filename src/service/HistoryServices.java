@@ -60,7 +60,8 @@ public class HistoryServices {
 					+" FROM "
 					+Database.InvoiceMasterTable.TABLE_NAME
 					+" WHERE "
-					+Database.InvoiceMasterTable.USER_ID+"=?";
+					+Database.InvoiceMasterTable.USER_ID+"=?"
+					+" ORDER BY "+Database.InvoiceMasterTable.INVOICE_ID+" DESC";
 			PreparedStatement getinvoicelistStatement = connection.prepareStatement(invoiceListQuery);
 			getinvoicelistStatement.setInt(1, user_id);
 			ResultSet resultSet = getinvoicelistStatement.executeQuery();
