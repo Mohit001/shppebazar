@@ -46,7 +46,7 @@ public class HistoryServices {
 		
 		List<InvoiceMaster> list = new ArrayList<>();
 		
-		try {
+		try {	
 			
 			DatabaseConnector connector = new DatabaseConnector();
 			Connection connection = connector.getConnection();
