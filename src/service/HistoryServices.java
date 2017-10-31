@@ -46,7 +46,7 @@ public class HistoryServices {
 		
 		List<InvoiceMaster> list = new ArrayList<>();
 		
-		try {
+		try {	
 			
 			DatabaseConnector connector = new DatabaseConnector();
 			Connection connection = connector.getConnection();
@@ -60,7 +60,8 @@ public class HistoryServices {
 					+" FROM "
 					+Database.InvoiceMasterTable.TABLE_NAME
 					+" WHERE "
-					+Database.InvoiceMasterTable.USER_ID+"=?";
+					+Database.InvoiceMasterTable.USER_ID+"=?"
+					+" ORDER BY "+Database.InvoiceMasterTable.INVOICE_ID+" DESC";
 			PreparedStatement getinvoicelistStatement = connection.prepareStatement(invoiceListQuery);
 			getinvoicelistStatement.setInt(1, user_id);
 			ResultSet resultSet = getinvoicelistStatement.executeQuery();
@@ -139,7 +140,7 @@ public class HistoryServices {
 			if(resultSet.getRow() == 0) {
 				apiResponseStatus = ApiResponseStatus.ORDER_HISTORY_DETAILS_FAIL;
 			} else if(resultSet.getRow() > 1){
-				
+				apiResponseStatus = ApiResponseStatus.ORDER_HISTORY_DETAILS_FAIL;
 			}else {
 				resultSet.first();
 				
@@ -208,6 +209,7 @@ public class HistoryServices {
 						details.setProduct_category_name(UtilsString.getStirng(invoiceDetailsResultSet.getString(Database.InvoiceDetailsTable.PRODUCT_CATEGORY_NAME)));
 						details.setProduct_brand_name(UtilsString.getStirng(invoiceDetailsResultSet.getString(Database.InvoiceDetailsTable.PRODUCT_BRAND_NAME)));
 						details.setProduct_qty(invoiceDetailsResultSet.getInt(Database.InvoiceDetailsTable.PRODUCT_QTY));
+						details.setShipping_charge(invoiceDetailsResultSet.getString(Database.InvoiceDetailsTable.SHIPPING_CHARGE));
 						
 						invoiceDetailList.add(details);
 						invoiceDetailsResultSet.next();

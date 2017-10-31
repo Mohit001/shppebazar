@@ -209,6 +209,7 @@ public class Database {
 		public static final String PRODUCT_CATEGORY_NAME= "product_category_name";
 		public static final String PRODUCT_BRAND_NAME= "product_brand_name";
 		public static final String PRODUCT_QTY= "product_qty";
+		public static final String SHIPPING_CHARGE= "shipping_charge"; 
 	}
 	
 	

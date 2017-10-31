@@ -22,6 +22,8 @@ public class UserCart implements Serializable{
 	private int cartCount;
 	private List<UserCartProduct> userCartProduct;
 	private String shipping_charge;
+	private String unique_id;
+	
 	
 	
 	
@@ -135,6 +137,12 @@ public class UserCart implements Serializable{
 	}
 	public void setShipping_charge(String shipping_charge) {
 		this.shipping_charge = shipping_charge;
+	}
+	public String getUnique_id() {
+		return unique_id;
+	}
+	public void setUnique_id(String unique_id) {
+		this.unique_id = unique_id;
 	}
 	
 	
