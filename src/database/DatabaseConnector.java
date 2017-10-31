@@ -46,16 +46,16 @@ public class DatabaseConnector {
 //		dataSource.setPort(3306);
 		
 		// msp local
-		/*dataSource.setServerName("192.168.0.209");
-		dataSource.setDatabaseName("shopebazar");
-		dataSource.setUser("msp");
-		dataSource.setPassword("msp");*/
-		
-		// mohit home local
-		dataSource.setServerName("localhost");
+		dataSource.setServerName("192.168.0.209");
 		dataSource.setDatabaseName("shopebazar");
 		dataSource.setUser("msp");
 		dataSource.setPassword("msp");
+		
+		/*// mohit home local
+		dataSource.setServerName("localhost");
+		dataSource.setDatabaseName("shopebazar");
+		dataSource.setUser("msp");
+		dataSource.setPassword("msp");*/
 		
 		// bita live
 		/*dataSource.setServerName("shopbazar.ckljk2jrftsu.us-east-1.rds.amazonaws.com");

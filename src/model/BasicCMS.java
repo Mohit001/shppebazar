@@ -11,16 +11,16 @@ public class BasicCMS implements Serializable{
     private String page_title;
     private String contenturl;
 
-    @Override
-    public String toString() {
-        return "BasicCMS{" +
-                "pageid='" + pageid + '\'' +
-                ", page_title='" + page_title + '\'' +
-                ", contenturl='" + contenturl + '\'' +
-                '}';
-    }
+    
 
-    public String getPageid() {
+    public BasicCMS() {
+		super();
+		this.pageid = "";
+		this.page_title = "";
+		this.contenturl = "";
+	}
+
+	public String getPageid() {
         return pageid;
     }
 

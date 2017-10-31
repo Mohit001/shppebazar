@@ -40,6 +40,7 @@ public class UserCart implements Serializable{
 		this.salt = "";
 		this.userCartProduct = new ArrayList<>();
 		this.shipping_charge = "";
+		this.unique_id = "";
 	}
 	public int getCart_id() {
 		return cart_id;

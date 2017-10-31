@@ -1,6 +1,7 @@
 package model;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 public class Environment implements Serializable{
@@ -20,6 +21,17 @@ public class Environment implements Serializable{
 	private List<BasicCMS> basicCMSPage;
 		
 	
+	public Environment() {
+		super();
+		this.currency_sign = "\u20B9";
+		this.currency_multiplier = 1;
+		this.token = "";
+		this.cartProductList = new ArrayList<>();
+		this.imagePrefix = "";
+		this.thumbPrefix = "";
+		this.paymentInfo = new PaymentInfo();
+		this.basicCMSPage = new ArrayList<>();
+	}
 	public boolean isLoginCompalsory() {
 		return loginCompalsory;
 	}
