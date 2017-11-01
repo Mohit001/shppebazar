@@ -189,8 +189,8 @@ public class CategoryServices {
 	 * @throws JsonProcessingException
 	 */
 	@GET
-	@Path("/getProducts/{category_id}")
-	public Response getCategoryProduct(@PathParam("category_id") int category_id) throws JsonProcessingException {
+	@Path("/getProducts/{user_id}/{category_id}")
+	public Response getCategoryProduct(@PathParam("user_id") int user_id, @PathParam("category_id") int category_id) throws JsonProcessingException {
 		String responseJson = "";
 		ApiResponseStatus apiResponseStatus = ApiResponseStatus.OUT_OF_SERVICE;
 		BaseResponse<List<Product>> response = new BaseResponse<>();
@@ -286,14 +286,38 @@ public class CategoryServices {
 					brandNameResultSet.first();
 					product.setBrand_name(UtilsString.getStirng(brandNameResultSet.getString(Database.BrandMaster.BRAND_NAME)));
 										
+					
+					// set wishlist id if added to wishlist
+					
+					String wishlistQuery = "SELECT * FROM "
+							+Database.WISHLISTMASTER.TABLE_NAME
+							+" WHERE "
+							+Database.WISHLISTMASTER.USER_ID+"=?"
+							+" AND "
+							+Database.WISHLISTMASTER.PRODUCT_ID+"=?";
+					PreparedStatement wishlistStatement = connection.prepareStatement(wishlistQuery);
+					wishlistStatement.setInt(1, user_id);
+					wishlistStatement.setInt(2, product.getPro_mst_id());
+					ResultSet wishlistResultSet = wishlistStatement.executeQuery();
+					wishlistResultSet.last();
+					if(wishlistResultSet.getRow() > 0){
+						product.setWishlist_id(wishlistResultSet.getInt(Database.WISHLISTMASTER.WISHLIST_ID));
+					}
+					
 					// add product to list
 					productList.add(product);
+					
+					wishlistResultSet.close();
+					brandNameResultSet.close();
+					catNameResultSet.close();
+					
+					wishlistStatement.close();
+					brandNameStatement.close();
+					catNameStatement.close();
 					
 					// move cursor to next item
 					resultSet.next();
 				}while(!resultSet.isAfterLast());
-				
-				
 				
 				apiResponseStatus = ApiResponseStatus.CATEGORY_PRODUCT_FOUND;
 			}
@@ -315,6 +339,141 @@ public class CategoryServices {
 			response.setStatus(apiResponseStatus.getStatus_code());
 			response.setMessage(apiResponseStatus.getStatus_message());
 			response.setInfo(productList);
+			responseJson = mapper.writeValueAsString(response);
+			
+
+		}
+		
+		return Response.status(Status.OK).entity(responseJson).build();
+	}
+	
+	
+	@GET
+	@Path("/product/details/{user_id}/{product_id}")
+	public Response getProductDetails(@PathParam("user_id") int user_id, @PathParam("product_id") int product_id) throws JsonProcessingException {
+		String responseJson = "";
+		 
+		ApiResponseStatus apiResponseStatus = ApiResponseStatus.OUT_OF_SERVICE;
+		BaseResponse<Product> response = new BaseResponse<>();
+		response.setStatus(apiResponseStatus.getStatus_code());
+		response.setMessage(apiResponseStatus.getStatus_message());
+		Product product = null;
+		
+		
+		try {
+			
+			DatabaseConnector connector = new DatabaseConnector();
+			Connection connection = connector.getConnection();
+			
+			String query = "SELECT * From "
+					+Database.ProductMaster.TABLE_NAME
+					+" WHERE "
+					+Database.ProductMaster.PRO_MST_ID+" = "+ product_id;
+			
+			PreparedStatement statement = connection.prepareStatement(query);
+			ResultSet resultSet = statement.executeQuery();
+			
+			resultSet.last();
+			if(resultSet.getRow() == 0) {
+				apiResponseStatus = ApiResponseStatus.PRODUCT_NOT_FOUND;
+			} else {
+				
+				resultSet.first();
+				// add category to list
+
+				product = new Product();
+				product.setPro_mst_id(resultSet.getInt(Database.ProductMaster.PRO_MST_ID));
+				product.setPro_name(UtilsString.getStirng(resultSet.getString(Database.ProductMaster.PRO_NAME)));
+				product.setPro_code(UtilsString.getStirng(resultSet.getString(Database.ProductMaster.PRO_CODE)));
+				product.setPro_description(UtilsString.getStirng(resultSet.getString(Database.ProductMaster.PRO_DESCRIPTION)));
+				product.setPro_price(UtilsString.getStirng(resultSet.getString(Database.ProductMaster.PRO_PRICE)));
+				product.setIs_enable(resultSet.getInt(Database.ProductMaster.IS_ENABLE));
+				product.setCat_id(resultSet.getInt(Database.ProductMaster.CAT_ID));
+				product.setBrand_id(resultSet.getInt(Database.ProductMaster.BRAND_ID));
+				product.setUser_id(resultSet.getInt(Database.ProductMaster.USER_ID));
+				product.setGst_type(UtilsString.getStirng(resultSet.getString(Database.ProductMaster.GST_TYPE)));
+				product.setGst(resultSet.getInt(Database.ProductMaster.GST));
+				product.setDiscount_price(resultSet.getInt(Database.ProductMaster.DISCOUNT_PRICE));
+				product.setPro_image(UtilsString.getStirng(resultSet.getString(Database.ProductMaster.PRO_IMAGE)));
+				product.setProductImage(getProductImageGallery(product.getPro_mst_id()));
+				
+				// set cat name
+				String catNameQuery = "SELECT "
+						+Database.CategoryMaster.CAT_NAME
+						+" FROM "
+						+Database.CategoryMaster.TABLE_NAME
+						+" WHERE "
+						+Database.CategoryMaster.CAT_ID+"=?";
+				
+				PreparedStatement catNameStatement = connection.prepareStatement(catNameQuery);
+				catNameStatement.setInt(1, product.getCat_id());
+				ResultSet catNameResultSet = catNameStatement.executeQuery();
+				catNameResultSet.first();
+				product.setCat_name(UtilsString.getStirng(catNameResultSet.getString(Database.CategoryMaster.CAT_NAME)));
+				
+				
+				//set brand name
+				
+				String brandNameQuery = "SELECT "
+						+Database.BrandMaster.BRAND_NAME
+						+" FROM "
+						+Database.BrandMaster.TABLE_NAME
+						+" WHERE "
+						+Database.BrandMaster.BRAND_ID+"=?";
+				
+				PreparedStatement brandNameStatement = connection.prepareStatement(brandNameQuery);
+				brandNameStatement.setInt(1, product.getBrand_id());
+				ResultSet brandNameResultSet = brandNameStatement.executeQuery();
+				brandNameResultSet.first();
+				product.setBrand_name(UtilsString.getStirng(brandNameResultSet.getString(Database.BrandMaster.BRAND_NAME)));
+									
+				
+				// set wishlist id if added to wishlist
+				
+				String wishlistQuery = "SELECT * FROM "
+						+Database.WISHLISTMASTER.TABLE_NAME
+						+" WHERE "
+						+Database.WISHLISTMASTER.USER_ID+"=?"
+						+" AND "
+						+Database.WISHLISTMASTER.PRODUCT_ID+"=?";
+				PreparedStatement wishlistStatement = connection.prepareStatement(wishlistQuery);
+				wishlistStatement.setInt(1, user_id);
+				wishlistStatement.setInt(2, product.getPro_mst_id());
+				ResultSet wishlistResultSet = wishlistStatement.executeQuery();
+				wishlistResultSet.last();
+				if(wishlistResultSet.getRow() > 0){
+					product.setWishlist_id(wishlistResultSet.getInt(Database.WISHLISTMASTER.WISHLIST_ID));
+				}
+				
+				
+				wishlistResultSet.close();
+				brandNameResultSet.close();
+				catNameResultSet.close();
+				
+				wishlistStatement.close();
+				brandNameStatement.close();
+				catNameStatement.close();
+				
+				apiResponseStatus = ApiResponseStatus.PRODUCT_FOUND;
+			}
+			
+			
+		}catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			product = new Product();
+			apiResponseStatus = ApiResponseStatus.DATABASE_CONNECTINO_ERROR;
+			
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			product = new Product();
+			apiResponseStatus = ApiResponseStatus.MYSQL_EXCEPTION;
+		} finally {
+			
+			response.setStatus(apiResponseStatus.getStatus_code());
+			response.setMessage(apiResponseStatus.getStatus_message());
+			response.setInfo(product);
 			responseJson = mapper.writeValueAsString(response);
 			
 

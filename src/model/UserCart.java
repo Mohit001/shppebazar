@@ -23,11 +23,17 @@ public class UserCart implements Serializable{
 	private List<UserCartProduct> userCartProduct;
 	private String shipping_charge;
 	private String unique_id;
+	private String order_from;
 	
 	
 	
 	
-	
+	public String getOrder_from() {
+		return order_from;
+	}
+	public void setOrder_from(String order_from) {
+		this.order_from = order_from;
+	}
 	public UserCart() {
 		super();
 		this.create_date = "";
@@ -41,6 +47,7 @@ public class UserCart implements Serializable{
 		this.userCartProduct = new ArrayList<>();
 		this.shipping_charge = "";
 		this.unique_id = "";
+		this.order_from = "";
 	}
 	public int getCart_id() {
 		return cart_id;

@@ -188,6 +188,7 @@ public class Database {
 		public static final String SHIPPING_ADDRESS_CONTACT_NO = "shipping_contact_no";
 		public static final String BILLING_ADDRESS_CONTACT_NO = "billing_contact_no";
 		public static final String CART_ID = "cart_id";
+		public static final String ORDER_FROM = "order_from";
 	}
 	
 	public static class InvoiceDetailsTable{
@@ -211,6 +212,15 @@ public class Database {
 		public static final String PRODUCT_QTY= "product_qty";
 		public static final String SHIPPING_CHARGE= "shipping_charge"; 
 	}
+	
+	
+	public static class WISHLISTMASTER{
+		public static final String TABLE_NAME = "wishlist_master";
+		public static final String WISHLIST_ID= "wishlist_id";
+		public static final String USER_ID= "user_id";
+		public static final String PRODUCT_ID= "product_id";
+	}
+	
 	
 	
 

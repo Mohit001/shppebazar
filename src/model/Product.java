@@ -1,10 +1,15 @@
 package model;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 public class Product implements Serializable{
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private int pro_mst_id;
 	private String pro_name;
 	private String pro_code;
@@ -21,8 +26,21 @@ public class Product implements Serializable{
 	private int discount_price;
 	private String pro_image;
 	private List<ProductImage> productImage;
+	private int wishlist_id;
 	
 	
+	public Product() {
+		super();
+		this.pro_name = "";
+		this.pro_code = "";
+		this.pro_description = "";
+		this.pro_price = "";
+		this.cat_name = "";
+		this.brand_name = "";
+		this.gst_type = "";
+		this.pro_image = "";
+		this.productImage = new ArrayList<>();
+	}
 	public int getPro_mst_id() {
 		return pro_mst_id;
 	}
@@ -120,6 +138,12 @@ public class Product implements Serializable{
 	}
 	public void setBrand_name(String brand_name) {
 		this.brand_name = brand_name;
+	}
+	public int getWishlist_id() {
+		return wishlist_id;
+	}
+	public void setWishlist_id(int wishlist_id) {
+		this.wishlist_id = wishlist_id;
 	}
 	
 	
