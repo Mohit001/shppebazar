@@ -38,9 +38,7 @@ public class InvoiceMaster implements Serializable{
 	private String salt;
 	private String shipping_contact_no;
 	private String billing_contact_no;
-	private List<InvoiceDetails> invoiceProductList;
-	
-	
+	private String order_from;
 	
 	public InvoiceMaster() {
 		super();
@@ -75,6 +73,7 @@ public class InvoiceMaster implements Serializable{
 		this.shipping_contact_no = "";
 		this.billing_contact_no = "";
 		this.invoiceProductList = new ArrayList<>();
+		this.order_from = "";
 	}
 	public List<InvoiceDetails> getInvoiceProductList() {
 		return invoiceProductList;
@@ -275,4 +274,14 @@ public class InvoiceMaster implements Serializable{
 		this.billing_contact_no = billing_contact_no;
 	}
 	
+	public String getOrder_from() {
+		return order_from;
+	}
+	public void setOrder_from(String order_from) {
+		this.order_from = order_from;
+	}
+	private List<InvoiceDetails> invoiceProductList;
+	
+	
+
 }

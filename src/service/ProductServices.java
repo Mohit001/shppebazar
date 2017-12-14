@@ -35,8 +35,8 @@ public class ProductServices {
 	ObjectMapper mapper = new ObjectMapper();
 	
 	@GET
-	@Path("/{id}")
-	public Response getProductDetails(@PathParam("id") int id) throws JsonProcessingException {
+	@Path("/{user_id}/{product_id}")
+	public Response getProductDetails(@PathParam("user_id") int user_id, @PathParam("product_id") int product_id) throws JsonProcessingException {
 		String responseJson = "";
 		 
 		ApiResponseStatus apiResponseStatus = ApiResponseStatus.OUT_OF_SERVICE;
@@ -69,7 +69,7 @@ public class ProductServices {
 					+" FROM "
 					+Database.ProductMaster.TABLE_NAME
 					+" WHERE "
-					+Database.ProductMaster.PRO_MST_ID+" = "+ id;
+					+Database.ProductMaster.PRO_MST_ID+" = "+ product_id;
 			
 			PreparedStatement statement = connection.prepareStatement(query);
 			ResultSet resultSet = statement.executeQuery();
@@ -95,10 +95,31 @@ public class ProductServices {
 				product.setGst(resultSet.getInt(Database.ProductMaster.GST));
 				product.setDiscount_price(resultSet.getInt(Database.ProductMaster.DISCOUNT_PRICE));
 				product.setPro_image(UtilsString.getStirng(resultSet.getString(Database.ProductMaster.PRO_IMAGE)));
-				product.setProductImage(getProductImageGallery(id));
+				product.setProductImage(getProductImageGallery(product_id));
 				
 				// get category name
 //				String catNameQuery = "SELECT "
+				
+				String wishlistQuery = "SELECT * FROM "
+						+Database.WISHLISTMASTER.TABLE_NAME
+						+" WHERE "
+						+Database.WISHLISTMASTER.USER_ID+"=?"
+						+" AND "
+						+Database.WISHLISTMASTER.PRODUCT_ID+"=?";
+				PreparedStatement wishlistStatement = connection.prepareStatement(wishlistQuery);
+				wishlistStatement.setInt(1, user_id);
+				wishlistStatement.setInt(2, product_id);
+				ResultSet wishlistResultSet = wishlistStatement.executeQuery();
+				wishlistResultSet.last();
+				if(wishlistResultSet.getRow() > 0){
+					product.setWishlist_id(wishlistResultSet.getInt(Database.WISHLISTMASTER.WISHLIST_ID));
+				}
+				
+				resultSet.close();
+				wishlistResultSet.close();
+				
+				statement.close();
+				wishlistStatement.close();
 				
 				
 				apiResponseStatus = ApiResponseStatus.PRODUCT_FOUND;

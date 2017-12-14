@@ -1247,9 +1247,10 @@ public class CartService {
 					+", "+Database.InvoiceMasterTable.CREATE_DATE
 					+", "+Database.InvoiceMasterTable.SHIPPING_ADDRESS_CONTACT_NO
 					+", "+Database.InvoiceMasterTable.BILLING_ADDRESS_CONTACT_NO
+					+", "+Database.InvoiceMasterTable.ORDER_FROM
 					+")"
 					+" VALUES"
-					+"(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+					+"(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 			
 			PreparedStatement preparedStatement = connection.prepareStatement(insertInvoiceMasterQuery, Statement.RETURN_GENERATED_KEYS);
 			preparedStatement.setInt(1, userCart.getUser_id());
@@ -1295,6 +1296,7 @@ public class CartService {
 			
 			preparedStatement.setString(28, shippingAddress.getContact_number());
 			preparedStatement.setString(29, billingAddress.getContact_number());
+			preparedStatement.setString(30, userCart.getOrder_from());
 			
 			int invoiceMasterAffectedRows = preparedStatement.executeUpdate();
 			if(invoiceMasterAffectedRows == 0) {

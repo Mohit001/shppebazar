@@ -1,6 +1,7 @@
 package model;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 public class UserCart implements Serializable{
@@ -22,8 +23,32 @@ public class UserCart implements Serializable{
 	private List<UserCartProduct> userCartProduct;
 	private String shipping_charge;
 	private String unique_id;
+	private String order_from;
 	
 	
+	
+	
+	public String getOrder_from() {
+		return order_from;
+	}
+	public void setOrder_from(String order_from) {
+		this.order_from = order_from;
+	}
+	public UserCart() {
+		super();
+		this.create_date = "";
+		this.ip_address = "";
+		this.cart_status = "";
+		this.token = "";
+		this.shippingAddress = new Address();
+		this.billingAddress = new Address();
+		this.payment_type_code = "";
+		this.salt = "";
+		this.userCartProduct = new ArrayList<>();
+		this.shipping_charge = "";
+		this.unique_id = "";
+		this.order_from = "";
+	}
 	public int getCart_id() {
 		return cart_id;
 	}

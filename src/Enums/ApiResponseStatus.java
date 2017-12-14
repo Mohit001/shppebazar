@@ -87,6 +87,13 @@ public enum ApiResponseStatus {
 	ORDER_HISTORY_DETAILS_FAIL(0, "Please provide valid order id"),
 	ORDER_HISTORY_DETAILS_SUCCESS(1, "Order details"),
 	
+	// Wishlist
+	WISHLIST_GET_FAIL_EMPTY(0, "Sorry!! No product added into wishlist"),
+	WISHLIST_GET_SUCCESS(1, "Your wishlist products fatch successfully"),
+	WISHLIST_ADD_FAIL(0, "Fail to add in wishlist"),
+	WISHLIST_ADD_SUCCESS(1, "Product added to wishlist successfully."),
+	WISHLIST_REMOVE_FAIL(0, "Fail to remove wishlist product"),
+	WISHLIST_REMOVE_SUCCESS(1, "Product remove from wishlist successfully."),
 	
 	//database related enums range 1001 - 1099
 	DATABASE_CONNECTINO_ERROR(1001, "Server encounter issue to connect database."),
