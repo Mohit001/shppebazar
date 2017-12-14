@@ -45,7 +45,7 @@ public class Service {
 		List<Person> list = new ArrayList<>();
 		Person person = new Person();
 		person.setUser_id(1);
-		person.setName("test");
+		person.setFname("test");
 		list.add(person);
 		try {
 			 responseString = mapper.writeValueAsString(list);
@@ -66,7 +66,7 @@ public class Service {
 		try {
 			Person person = mapper.readValue(jsonRequest, Person.class);
 			System.out.println(person.toString());
-			person.setName("this is updated name");
+			person.setFname("this is updated name");
 			responseString = mapper.writeValueAsString(person);
 		} catch (JsonParseException e) {
 			// TODO Auto-generated catch block
