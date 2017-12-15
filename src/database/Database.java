@@ -8,17 +8,20 @@ public class Database {
 	 *
 	 */
 	public static class Login {
-		public static final String TABLE_NAME = "login";
+		public static final String TABLE_NAME = "user";
 		public static final String USER_ID = "user_id";
 		public static final String EMAIL = "email";
 		public static final String PASSWORD = "password";
 		public static final String IS_ENABLE = "is_enable";
-		public static final String ROLE = "role";
-		public static final String REFFERENCE_ID = "reffrence_id";
+		public static final String FNAME = "fname";
+		public static final String LNAME = "lname";
+		public static final String PHONE = "phone";
+		
+		
 
 	}
 
-	public static class Profile {
+	/*public static class Profile {
 		public static final String TABLE_NAME = "profile";
 		public static final String PROFILE_ID = "profie_id";
 		public static final String USER_ID = "user_id";
@@ -33,7 +36,7 @@ public class Database {
 		public static final String ALTERNET_MOBILE = "alternet_mobile";
 		public static final String MOBILE = "mobile";
 
-	}
+	}*/
 
 	public static class CategoryMaster {
 		public static final String TABLE_NAME = "category_master";

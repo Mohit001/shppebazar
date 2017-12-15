@@ -33,7 +33,6 @@ import model.BasicCMS;
 import model.Environment;
 import model.PaymentInfo;
 import model.Person;
-import model.Profile;
 import model.UserCartProduct;
 
 @Path("/user")
@@ -246,22 +245,12 @@ public class UserService {
 				Connection connection = connector.getConnection();
 				String query = "SELECT "
 						+ Database.Login.TABLE_NAME + "." + Database.Login.USER_ID
+						+ ", "+Database.Login.TABLE_NAME + "."+Database.Login.FNAME
+						+ ", "+Database.Login.TABLE_NAME + "."+Database.Login.LNAME
 						+ ", "+Database.Login.TABLE_NAME + "."+Database.Login.EMAIL
-						+ ", "+Database.Profile.TABLE_NAME + "."+Database.Profile.COMPANY_NAME
-						+ ", "+Database.Profile.TABLE_NAME+"."+Database.Profile.FIRST_NAME
-						+ ", "+Database.Profile.TABLE_NAME+"."+Database.Profile.LAST_NAME
-						+", "+Database.Profile.TABLE_NAME+"."+Database.Profile.STATE
-						+", "+Database.Profile.TABLE_NAME+"."+Database.Profile.COUNTRY
-						+", "+Database.Profile.TABLE_NAME+"."+Database.Profile.CITY
-						+", "+Database.Profile.TABLE_NAME+"."+Database.Profile.STREET_ADDRESS
-						+", "+Database.Profile.TABLE_NAME+"."+Database.Profile.ALTERNET_MOBILE
-						+", "+Database.Profile.TABLE_NAME+"."+Database.Profile.MOBILE
+						+ ", "+Database.Login.TABLE_NAME + "."+Database.Login.PHONE
 						+" FROM "
 						+Database.Login.TABLE_NAME
-						+" INNER JOIN "
-						+Database.Profile.TABLE_NAME
-						+" ON "
-						+Database.Login.TABLE_NAME+"."+Database.Login.USER_ID+" = "+Database.Profile.TABLE_NAME+"."+Database.Profile.USER_ID
 						+" WHERE "
 						+Database.Login.TABLE_NAME+"."+Database.Login.EMAIL+" = ?"
 						+" AND "
@@ -280,22 +269,11 @@ public class UserService {
 					apiResponseStatus = ApiResponseStatus.MULTIPLE_USER_FOUND;
 				} else {
 					resultSet.first();
-					Profile profile = new Profile();
-					profile.setCompnay_name(resultSet.getString(Database.Profile.COMPANY_NAME));
-					profile.setFname(resultSet.getString(Database.Profile.FIRST_NAME));
-					profile.setLname(resultSet.getString(Database.Profile.LAST_NAME));
-					profile.setState(resultSet.getString(Database.Profile.STATE));
-					profile.setCountry(resultSet.getString(Database.Profile.COUNTRY));
-					profile.setState(resultSet.getString(Database.Profile.STATE));
-					profile.setCity(resultSet.getString(Database.Profile.CITY));
-					profile.setStreet_address(resultSet.getString(Database.Profile.STREET_ADDRESS));
-					profile.setAlternet_mobile(resultSet.getString(Database.Profile.ALTERNET_MOBILE));
-					profile.setMobile(resultSet.getString(Database.Profile.MOBILE));
-					
-
 					user.setUser_id(resultSet.getInt(Database.Login.USER_ID));
-					user.setEmail(resultSet.getString(Database.Login.EMAIL));
-					user.setProfile(profile);
+					user.setFname(resultSet.getString(Database.Login.FNAME));
+					user.setEmail(resultSet.getString(Database.Login.LNAME));
+					user.setFname(resultSet.getString(Database.Login.EMAIL));
+					user.setEmail(resultSet.getString(Database.Login.PHONE));
 					
 					response.setInfo(user);
 					
@@ -449,23 +427,13 @@ public class UserService {
 				
 				String query = "SELECT "
 						+ Database.Login.TABLE_NAME + "." + Database.Login.USER_ID
+						+ ", "+Database.Login.TABLE_NAME + "."+Database.Login.FNAME
+						+ ", "+Database.Login.TABLE_NAME + "."+Database.Login.LNAME
 						+ ", "+Database.Login.TABLE_NAME + "."+Database.Login.EMAIL
 						+ ", "+Database.Login.TABLE_NAME + "."+Database.Login.PASSWORD
-						+ ", "+Database.Profile.TABLE_NAME + "."+Database.Profile.COMPANY_NAME
-						+ ", "+Database.Profile.TABLE_NAME+"."+Database.Profile.FIRST_NAME
-						+ ", "+Database.Profile.TABLE_NAME+"."+Database.Profile.LAST_NAME
-						+", "+Database.Profile.TABLE_NAME+"."+Database.Profile.STATE
-						+", "+Database.Profile.TABLE_NAME+"."+Database.Profile.COUNTRY
-						+", "+Database.Profile.TABLE_NAME+"."+Database.Profile.CITY
-						+", "+Database.Profile.TABLE_NAME+"."+Database.Profile.STREET_ADDRESS
-						+", "+Database.Profile.TABLE_NAME+"."+Database.Profile.ALTERNET_MOBILE
-						+", "+Database.Profile.TABLE_NAME+"."+Database.Profile.MOBILE
+						+ ", "+Database.Login.TABLE_NAME + "."+Database.Login.PHONE
 						+" FROM "
 						+Database.Login.TABLE_NAME
-						+" LEFT JOIN "
-						+Database.Profile.TABLE_NAME
-						+" ON "
-						+Database.Login.TABLE_NAME+"."+Database.Login.USER_ID+" = "+Database.Profile.TABLE_NAME+"."+Database.Profile.USER_ID
 						+" WHERE "
 						+Database.Login.TABLE_NAME+"."+Database.Login.USER_ID+" = ?";
 				
@@ -480,23 +448,12 @@ public class UserService {
 				} else if(resultSet.getRow() > 1) {
 					apiResponseStatus = ApiResponseStatus.MULTIPLE_USER_FOUND;
 				} else {
-					Profile profile = new Profile();
-					profile.setCompnay_name(resultSet.getString(Database.Profile.COMPANY_NAME));
-					profile.setFname(resultSet.getString(Database.Profile.FIRST_NAME));
-					profile.setLname(resultSet.getString(Database.Profile.LAST_NAME));
-					profile.setState(resultSet.getString(Database.Profile.STATE));
-					profile.setCountry(resultSet.getString(Database.Profile.COUNTRY));
-					profile.setState(resultSet.getString(Database.Profile.STATE));
-					profile.setCity(resultSet.getString(Database.Profile.CITY));
-					profile.setStreet_address(resultSet.getString(Database.Profile.STREET_ADDRESS));
-					profile.setAlternet_mobile(resultSet.getString(Database.Profile.ALTERNET_MOBILE));
-					profile.setMobile(resultSet.getString(Database.Profile.MOBILE));
-					
-						
 					user.setUser_id(resultSet.getInt(Database.Login.USER_ID));
+					user.setFname(resultSet.getString(Database.Login.FNAME));
+					user.setLname(resultSet.getString(Database.Login.LNAME));
 					user.setEmail(resultSet.getString(Database.Login.EMAIL));
 					user.setPassword(resultSet.getString(Database.Login.PASSWORD));
-					user.setProfile(profile);
+					user.setPhone(resultSet.getString(Database.Login.PHONE));
 					
 					response.setInfo(user);
 					
@@ -606,81 +563,30 @@ public class UserService {
 					query = "INSERT INTO "
 							+Database.Login.TABLE_NAME
 							+"("
-							+Database.Login.EMAIL
+							+Database.Login.FNAME
+							+"," +Database.Login.LNAME
+							+"," +Database.Login.EMAIL
 							+"," +Database.Login.PASSWORD
+							+"," +Database.Login.PHONE
 							+"," +Database.Login.IS_ENABLE
-							+"," +Database.Login.ROLE
-							+"," +Database.Login.REFFERENCE_ID
 							+")"
 							+" VALUES "
-							+"(?,?,?,?,?)";
+							+"(?,?,?,?,?,?)";
 					
 					statement = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
-					statement.setString(1, user.getEmail());
-					statement.setString(2, user.getPassword());
-					statement.setInt(3, 1); // set default enable = 1
-					statement.setInt(4, 3); // set default user role = 3
-					statement.setInt(5, 1); // set default reference id = 1(admin)
+					statement.setString(1, user.getFname());
+					statement.setString(2, user.getLname());
+					statement.setString(3, user.getEmail());
+					statement.setString(4, user.getPassword());
+					statement.setString(5, user.getPhone());
+					statement.setInt(6, 1); // set default enable = 1
 					
-					int afftectedRow = statement.executeUpdate();
 					resultSet = statement.getGeneratedKeys();
+					int lastInsertedID = resultSet.getInt(1);
 					
-					if(afftectedRow == 0) {
-						apiResponseStatus = ApiResponseStatus.MYSQL_EXCEPTION;
-					} else {
-						resultSet.first();
-						int lastInsertedID = resultSet.getInt(1); // last inserted user_id will always on index = 1
-						resultSet.close();
-						
-						Profile profile = user.getProfile();
-						
-						// insert data into profile table
-						query = "INSERT INTO "
-								+Database.Profile.TABLE_NAME
-								+"("
-								+Database.Profile.USER_ID
-								+"," +Database.Profile.ACCOUNT_TYPE
-								+"," +Database.Profile.COMPANY_NAME
-								+"," +Database.Profile.FIRST_NAME
-								+"," +Database.Profile.LAST_NAME
-								+"," +Database.Profile.STATE
-								+"," +Database.Profile.COUNTRY
-								+"," +Database.Profile.CITY
-								+"," +Database.Profile.STREET_ADDRESS
-								+"," +Database.Profile.ALTERNET_MOBILE
-								+"," +Database.Profile.MOBILE
-								+")"
-								+" VALUES "
-								+"(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-						
-						statement = connection.prepareStatement(query);
-						statement.setInt(1, lastInsertedID);
-						statement.setInt(2, 1); // static value to match database
-						statement.setString(3, UtilsString.getStirng(profile.getCompnay_name()));
-						statement.setString(4, UtilsString.getStirng(profile.getFname()));
-						statement.setString(5, UtilsString.getStirng(profile.getLname()));
-						statement.setString(6, UtilsString.getStirng(profile.getState()));
-						statement.setString(7, UtilsString.getStirng(profile.getCountry()));
-						statement.setString(8, UtilsString.getStirng(profile.getCity()));
-						statement.setString(9, UtilsString.getStirng(profile.getStreet_address()));
-						statement.setString(10, UtilsString.getStirng(profile.getAlternet_mobile()));
-						statement.setString(11, UtilsString.getStirng(profile.getMobile()));
-						
-						afftectedRow = statement.executeUpdate();
-						
-						if(afftectedRow == 0) {
-							//rollback transaction
-							connection.rollback();
-						} else {
-							user.setUser_id(lastInsertedID);
-							profile.setUser_id(lastInsertedID);
-							user.setProfile(profile);
-						}
-						
-						
-						apiResponseStatus = ApiResponseStatus.REGISTRATION_SUCCESS;
-						
-					}
+					user.setUser_id(lastInsertedID);
+					
+					apiResponseStatus = ApiResponseStatus.REGISTRATION_SUCCESS;
 					
 					System.out.println(statement.toString());
 					
@@ -797,56 +703,22 @@ public class UserService {
 					query = "UPDATE "
 							+Database.Login.TABLE_NAME
 							+" SET "
-							+Database.Login.PASSWORD+"=?"
+							+Database.Login.FNAME+"=?"
+							+", "+Database.Login.LNAME+"=?"
+							+", "+Database.Login.PASSWORD+"=?"
+							+", "+Database.Login.PHONE+"=?"
 							+" WHERE "
 							+Database.Login.USER_ID+"=?";
 					
 					statement = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
-					statement.setString(1, user.getPassword());
-					statement.setInt(2, user.getUser_id());
+					statement.setString(1, user.getFname());
+					statement.setString(2, user.getLname());
+					statement.setString(3, user.getPassword());
+					statement.setString(4, user.getPhone());
+					statement.setInt(5, user.getUser_id());
+					
 					int afftectedRow = statement.executeUpdate();
-						
-					Profile profile = user.getProfile();
-					
-					// insert data into profile table
-					query = "UPDATE "
-							+Database.Profile.TABLE_NAME
-							+" SET "
-							+Database.Profile.FIRST_NAME+"=?"
-							+"," +Database.Profile.LAST_NAME+"=?"
-							+"," +Database.Profile.MOBILE+"=?"
-//							+"," +Database.Profile.COMPANY_NAME+"=?"
-//							+"," +Database.Profile.STATE+"=?"
-//							+"," +Database.Profile.COUNTRY+"=?"
-//							+"," +Database.Profile.CITY+"=?"
-//							+"," +Database.Profile.STREET_ADDRESS+"=?"
-//							+"," +Database.Profile.ALTERNET_MOBILE+"=?"
-							+" WHERE "
-							+Database.Profile.USER_ID+"=?";
-					
-					statement = connection.prepareStatement(query);
-					statement.setString(1, UtilsString.getStirng(profile.getFname()));
-					statement.setString(2, UtilsString.getStirng(profile.getLname()));
-					statement.setString(3, UtilsString.getStirng(profile.getMobile()));
-//					statement.setString(4, UtilsString.getStirng(profile.getCompnay_name()));
-//					statement.setString(5, UtilsString.getStirng(profile.getState()));
-//					statement.setString(6, UtilsString.getStirng(profile.getCountry()));
-//					statement.setString(7, UtilsString.getStirng(profile.getCity()));
-//					statement.setString(8, UtilsString.getStirng(profile.getStreet_address()));
-//					statement.setString(9, UtilsString.getStirng(profile.getAlternet_mobile()));
-					
-					statement.setInt(4, user.getUser_id());
-//					statement.setInt(10, user.getUser_id());
-					
-					afftectedRow = statement.executeUpdate();
-					
-					if(afftectedRow == 0) {
-						//rollback transaction
-						connection.rollback();
-						apiResponseStatus = ApiResponseStatus.UPDATE_PROFILE_FAIL;
-					} else {
-						apiResponseStatus = ApiResponseStatus.UPDATE_PROFILE_SUCCESS;	
-					}
+					apiResponseStatus = ApiResponseStatus.UPDATE_PROFILE_SUCCESS;	
 					
 //					System.out.println(statement.toString());
 					
