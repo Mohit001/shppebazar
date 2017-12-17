@@ -581,12 +581,19 @@ public class UserService {
 					statement.setString(5, user.getPhone());
 					statement.setInt(6, 1); // set default enable = 1
 					
-					resultSet = statement.getGeneratedKeys();
-					int lastInsertedID = resultSet.getInt(1);
-					
-					user.setUser_id(lastInsertedID);
-					
-					apiResponseStatus = ApiResponseStatus.REGISTRATION_SUCCESS;
+					int affectedraws = statement.executeUpdate();
+					if(affectedraws == 1) {
+						resultSet = statement.getGeneratedKeys();
+						resultSet.first();
+						int lastInsertedID = resultSet.getInt(1);
+						
+						user.setUser_id(lastInsertedID);
+						
+						apiResponseStatus = ApiResponseStatus.REGISTRATION_SUCCESS;
+					} else {
+						apiResponseStatus = apiResponseStatus.REGISTRATION_FAIL;
+					}
+
 					
 					System.out.println(statement.toString());
 					

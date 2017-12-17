@@ -225,6 +225,13 @@ public class Database {
 	}
 	
 	
+	public static class BESTSELLERS{
+		public static final String TABLE_NAME = "best_saller";
+		public static final String WISHLIST_ID= "Id";
+		public static final String PRODUCT_ID= "product_id";
+		
+	}
+	
 	
 
 }

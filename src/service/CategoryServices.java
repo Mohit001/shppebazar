@@ -347,6 +347,343 @@ public class CategoryServices {
 		return Response.status(Status.OK).entity(responseJson).build();
 	}
 	
+	/** 
+	 * @return {@link List<Product>}
+	 * @throws JsonProcessingException
+	 */
+	@GET
+	@Path("/getTopBestSellersProduct/{user_id}")
+	public Response getTopBestSellersProduct(@PathParam("user_id") int user_id) throws JsonProcessingException {
+		String responseJson = "";
+		ApiResponseStatus apiResponseStatus = ApiResponseStatus.OUT_OF_SERVICE;
+		BaseResponse<List<Product>> response = new BaseResponse<>();
+		response.setStatus(apiResponseStatus.getStatus_code());
+		response.setMessage(apiResponseStatus.getStatus_message());
+		List<Product> productList = new ArrayList<>();
+		Product product = new Product();
+		
+		
+		try {
+			
+			DatabaseConnector connector = new DatabaseConnector();
+			Connection connection = connector.getConnection();
+			
+			String query = "SELECT "
+					+Database.ProductMaster.PRO_MST_ID
+					+", "+Database.ProductMaster.PRO_NAME
+					+", "+Database.ProductMaster.PRO_CODE
+					+", "+Database.ProductMaster.PRO_DESCRIPTION
+					+", "+Database.ProductMaster.PRO_PRICE
+					+", "+Database.ProductMaster.IS_ENABLE
+					+", "+Database.ProductMaster.CREATE_DATE
+					+", "+Database.ProductMaster.CAT_ID
+					+", "+Database.ProductMaster.BRAND_ID
+					+", "+Database.ProductMaster.USER_ID
+					+", "+Database.ProductMaster.GST_TYPE
+					+", "+Database.ProductMaster.GST
+					+", "+Database.ProductMaster.DISCOUNT_PRICE
+					+", "+Database.ProductMaster.PRO_IMAGE
+					+", "+Database.ProductMaster.PRO_IMAGE
+					+", "+Database.ProductMaster.PRO_IMAGE
+					+", "+Database.ProductMaster.PRO_IMAGE
+					+", "+Database.ProductMaster.PRO_IMAGE
+					+", "+Database.ProductMaster.PRO_IMAGE
+					+" FROM "
+					+Database.ProductMaster.TABLE_NAME
+					+" WHERE "
+					+Database.ProductMaster.PRO_MST_ID+" in ( "
+					+ "SELECT "
+					+Database.BESTSELLERS.PRODUCT_ID
+					+" FROM "
+					+Database.BESTSELLERS.TABLE_NAME
+					+") LIMIT 5";
+			
+			PreparedStatement statement = connection.prepareStatement(query);
+			ResultSet resultSet = statement.executeQuery();
+			
+			resultSet.last();
+			if(resultSet.getRow() == 0) {
+				apiResponseStatus = ApiResponseStatus.CATEGORY_PRODUCT_NOT_FOUND;
+			} else {
+				
+				resultSet.first();
+				do {
+					product = new Product();
+					product.setPro_mst_id(resultSet.getInt(Database.ProductMaster.PRO_MST_ID));
+					product.setPro_name(UtilsString.getStirng(resultSet.getString(Database.ProductMaster.PRO_NAME)));
+					product.setPro_code(UtilsString.getStirng(resultSet.getString(Database.ProductMaster.PRO_CODE)));
+					product.setPro_description(UtilsString.getStirng(resultSet.getString(Database.ProductMaster.PRO_DESCRIPTION)));
+					product.setPro_price(UtilsString.getStirng(resultSet.getString(Database.ProductMaster.PRO_PRICE)));
+					product.setIs_enable(resultSet.getInt(Database.ProductMaster.IS_ENABLE));
+					product.setCat_id(resultSet.getInt(Database.ProductMaster.CAT_ID));
+					product.setBrand_id(resultSet.getInt(Database.ProductMaster.BRAND_ID));
+					product.setUser_id(resultSet.getInt(Database.ProductMaster.USER_ID));
+					product.setGst_type(UtilsString.getStirng(resultSet.getString(Database.ProductMaster.GST_TYPE)));
+					product.setGst(resultSet.getInt(Database.ProductMaster.GST));
+					product.setDiscount_price(resultSet.getInt(Database.ProductMaster.DISCOUNT_PRICE));
+					product.setPro_image(UtilsString.getStirng(resultSet.getString(Database.ProductMaster.PRO_IMAGE)));
+					product.setProductImage(getProductImageGallery(product.getPro_mst_id()));
+					
+					// set cat name
+					/*String catNameQuery = "SELECT "
+							+Database.CategoryMaster.CAT_NAME
+							+" FROM "
+							+Database.CategoryMaster.TABLE_NAME
+							+" WHERE "
+							+Database.CategoryMaster.CAT_ID+"=?";
+					
+					PreparedStatement catNameStatement = connection.prepareStatement(catNameQuery);
+					catNameStatement.setInt(1, category_id);
+					ResultSet catNameResultSet = catNameStatement.executeQuery();
+					catNameResultSet.first();
+					product.setCat_name(UtilsString.getStirng(catNameResultSet.getString(Database.CategoryMaster.CAT_NAME)));*/
+					
+					
+					//set brand name
+					
+					String brandNameQuery = "SELECT "
+							+Database.BrandMaster.BRAND_NAME
+							+" FROM "
+							+Database.BrandMaster.TABLE_NAME
+							+" WHERE "
+							+Database.BrandMaster.BRAND_ID+"=?";
+					
+					PreparedStatement brandNameStatement = connection.prepareStatement(brandNameQuery);
+					brandNameStatement.setInt(1, product.getBrand_id());
+					ResultSet brandNameResultSet = brandNameStatement.executeQuery();
+					brandNameResultSet.first();
+					product.setBrand_name(UtilsString.getStirng(brandNameResultSet.getString(Database.BrandMaster.BRAND_NAME)));
+										
+					
+					// set wishlist id if added to wishlist
+					
+					String wishlistQuery = "SELECT * FROM "
+							+Database.WISHLISTMASTER.TABLE_NAME
+							+" WHERE "
+							+Database.WISHLISTMASTER.USER_ID+"=?"
+							+" AND "
+							+Database.WISHLISTMASTER.PRODUCT_ID+"=?";
+					PreparedStatement wishlistStatement = connection.prepareStatement(wishlistQuery);
+					wishlistStatement.setInt(1, user_id);
+					wishlistStatement.setInt(2, product.getPro_mst_id());
+					ResultSet wishlistResultSet = wishlistStatement.executeQuery();
+					wishlistResultSet.last();
+					if(wishlistResultSet.getRow() > 0){
+						product.setWishlist_id(wishlistResultSet.getInt(Database.WISHLISTMASTER.WISHLIST_ID));
+					}
+					
+					// add product to list
+					productList.add(product);
+					
+					wishlistResultSet.close();
+					brandNameResultSet.close();
+//					catNameResultSet.close();
+					
+					wishlistStatement.close();
+					brandNameStatement.close();
+//					catNameStatement.close();
+					
+					// move cursor to next item
+					resultSet.next();
+				}while(!resultSet.isAfterLast());
+				
+				apiResponseStatus = ApiResponseStatus.CATEGORY_PRODUCT_FOUND;
+			}
+			
+			
+		}catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			productList = new ArrayList<>();
+			apiResponseStatus = ApiResponseStatus.DATABASE_CONNECTINO_ERROR;
+			
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			productList = new ArrayList<>();
+			apiResponseStatus = ApiResponseStatus.MYSQL_EXCEPTION;
+		} finally {
+			
+			response.setStatus(apiResponseStatus.getStatus_code());
+			response.setMessage(apiResponseStatus.getStatus_message());
+			response.setInfo(productList);
+			responseJson = mapper.writeValueAsString(response);
+			
+
+		}
+		
+		return Response.status(Status.OK).entity(responseJson).build();
+	}
+	
+	
+	/** 
+	 * @return {@link List<Product>}
+	 * @throws JsonProcessingException
+	 */
+	@GET
+	@Path("/getAllBestSellersProduct/{user_id}")
+	public Response getAllBestSellersProduct(@PathParam("user_id") int user_id) throws JsonProcessingException {
+		String responseJson = "";
+		ApiResponseStatus apiResponseStatus = ApiResponseStatus.OUT_OF_SERVICE;
+		BaseResponse<List<Product>> response = new BaseResponse<>();
+		response.setStatus(apiResponseStatus.getStatus_code());
+		response.setMessage(apiResponseStatus.getStatus_message());
+		List<Product> productList = new ArrayList<>();
+		Product product = new Product();
+		
+		
+		try {
+			
+			DatabaseConnector connector = new DatabaseConnector();
+			Connection connection = connector.getConnection();
+			
+			String query = "SELECT "
+					+Database.ProductMaster.PRO_MST_ID
+					+", "+Database.ProductMaster.PRO_NAME
+					+", "+Database.ProductMaster.PRO_CODE
+					+", "+Database.ProductMaster.PRO_DESCRIPTION
+					+", "+Database.ProductMaster.PRO_PRICE
+					+", "+Database.ProductMaster.IS_ENABLE
+					+", "+Database.ProductMaster.CREATE_DATE
+					+", "+Database.ProductMaster.CAT_ID
+					+", "+Database.ProductMaster.BRAND_ID
+					+", "+Database.ProductMaster.USER_ID
+					+", "+Database.ProductMaster.GST_TYPE
+					+", "+Database.ProductMaster.GST
+					+", "+Database.ProductMaster.DISCOUNT_PRICE
+					+", "+Database.ProductMaster.PRO_IMAGE
+					+", "+Database.ProductMaster.PRO_IMAGE
+					+", "+Database.ProductMaster.PRO_IMAGE
+					+", "+Database.ProductMaster.PRO_IMAGE
+					+", "+Database.ProductMaster.PRO_IMAGE
+					+", "+Database.ProductMaster.PRO_IMAGE
+					+" FROM "
+					+Database.ProductMaster.TABLE_NAME
+					+" WHERE "
+					+Database.ProductMaster.PRO_MST_ID+" in ( "
+					+ "SELECT "
+					+Database.BESTSELLERS.PRODUCT_ID
+					+" FROM "
+					+Database.BESTSELLERS.TABLE_NAME
+					+")";
+			
+			PreparedStatement statement = connection.prepareStatement(query);
+			ResultSet resultSet = statement.executeQuery();
+			
+			resultSet.last();
+			if(resultSet.getRow() == 0) {
+				apiResponseStatus = ApiResponseStatus.CATEGORY_PRODUCT_NOT_FOUND;
+			} else {
+				
+				resultSet.first();
+				do {
+					product = new Product();
+					product.setPro_mst_id(resultSet.getInt(Database.ProductMaster.PRO_MST_ID));
+					product.setPro_name(UtilsString.getStirng(resultSet.getString(Database.ProductMaster.PRO_NAME)));
+					product.setPro_code(UtilsString.getStirng(resultSet.getString(Database.ProductMaster.PRO_CODE)));
+					product.setPro_description(UtilsString.getStirng(resultSet.getString(Database.ProductMaster.PRO_DESCRIPTION)));
+					product.setPro_price(UtilsString.getStirng(resultSet.getString(Database.ProductMaster.PRO_PRICE)));
+					product.setIs_enable(resultSet.getInt(Database.ProductMaster.IS_ENABLE));
+					product.setCat_id(resultSet.getInt(Database.ProductMaster.CAT_ID));
+					product.setBrand_id(resultSet.getInt(Database.ProductMaster.BRAND_ID));
+					product.setUser_id(resultSet.getInt(Database.ProductMaster.USER_ID));
+					product.setGst_type(UtilsString.getStirng(resultSet.getString(Database.ProductMaster.GST_TYPE)));
+					product.setGst(resultSet.getInt(Database.ProductMaster.GST));
+					product.setDiscount_price(resultSet.getInt(Database.ProductMaster.DISCOUNT_PRICE));
+					product.setPro_image(UtilsString.getStirng(resultSet.getString(Database.ProductMaster.PRO_IMAGE)));
+					product.setProductImage(getProductImageGallery(product.getPro_mst_id()));
+					
+					// set cat name
+					/*String catNameQuery = "SELECT "
+							+Database.CategoryMaster.CAT_NAME
+							+" FROM "
+							+Database.CategoryMaster.TABLE_NAME
+							+" WHERE "
+							+Database.CategoryMaster.CAT_ID+"=?";
+					
+					PreparedStatement catNameStatement = connection.prepareStatement(catNameQuery);
+					catNameStatement.setInt(1, category_id);
+					ResultSet catNameResultSet = catNameStatement.executeQuery();
+					catNameResultSet.first();
+					product.setCat_name(UtilsString.getStirng(catNameResultSet.getString(Database.CategoryMaster.CAT_NAME)));*/
+					
+					
+					//set brand name
+					
+					String brandNameQuery = "SELECT "
+							+Database.BrandMaster.BRAND_NAME
+							+" FROM "
+							+Database.BrandMaster.TABLE_NAME
+							+" WHERE "
+							+Database.BrandMaster.BRAND_ID+"=?";
+					
+					PreparedStatement brandNameStatement = connection.prepareStatement(brandNameQuery);
+					brandNameStatement.setInt(1, product.getBrand_id());
+					ResultSet brandNameResultSet = brandNameStatement.executeQuery();
+					brandNameResultSet.first();
+					product.setBrand_name(UtilsString.getStirng(brandNameResultSet.getString(Database.BrandMaster.BRAND_NAME)));
+										
+					
+					// set wishlist id if added to wishlist
+					
+					String wishlistQuery = "SELECT * FROM "
+							+Database.WISHLISTMASTER.TABLE_NAME
+							+" WHERE "
+							+Database.WISHLISTMASTER.USER_ID+"=?"
+							+" AND "
+							+Database.WISHLISTMASTER.PRODUCT_ID+"=?";
+					PreparedStatement wishlistStatement = connection.prepareStatement(wishlistQuery);
+					wishlistStatement.setInt(1, user_id);
+					wishlistStatement.setInt(2, product.getPro_mst_id());
+					ResultSet wishlistResultSet = wishlistStatement.executeQuery();
+					wishlistResultSet.last();
+					if(wishlistResultSet.getRow() > 0){
+						product.setWishlist_id(wishlistResultSet.getInt(Database.WISHLISTMASTER.WISHLIST_ID));
+					}
+					
+					// add product to list
+					productList.add(product);
+					
+					wishlistResultSet.close();
+					brandNameResultSet.close();
+//					catNameResultSet.close();
+					
+					wishlistStatement.close();
+					brandNameStatement.close();
+//					catNameStatement.close();
+					
+					// move cursor to next item
+					resultSet.next();
+				}while(!resultSet.isAfterLast());
+				
+				apiResponseStatus = ApiResponseStatus.CATEGORY_PRODUCT_FOUND;
+			}
+			
+			
+		}catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			productList = new ArrayList<>();
+			apiResponseStatus = ApiResponseStatus.DATABASE_CONNECTINO_ERROR;
+			
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			productList = new ArrayList<>();
+			apiResponseStatus = ApiResponseStatus.MYSQL_EXCEPTION;
+		} finally {
+			
+			response.setStatus(apiResponseStatus.getStatus_code());
+			response.setMessage(apiResponseStatus.getStatus_message());
+			response.setInfo(productList);
+			responseJson = mapper.writeValueAsString(response);
+			
+
+		}
+		
+		return Response.status(Status.OK).entity(responseJson).build();
+	}
+	
 	
 	@GET
 	@Path("/product/details/{user_id}/{product_id}")
